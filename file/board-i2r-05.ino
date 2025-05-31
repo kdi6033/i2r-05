@@ -611,18 +611,6 @@ void WifiMqtt::loop() {
     this->reconnectMQTT();
   }
   client.loop();
-
-  // LED 점멸 로직 mqtt가 연결되면 2초간격으로 점멸한다.
-  if (isConnectedMqtt) {
-    dev.setColor(0, 255, 0);   // 녹색
-    if (statusSendCounter < 3) {
-      dev.sendStatusCheckChange(false);
-      statusSendCounter++;
-      delay(1000); // 잠시 대기 후 전송 (필요 시 조정)
-    }
-  } else {
-    dev.setColor(255, 0, 0);   // 빨강색
-  }
 }
 
 void WifiMqtt::reconnectMQTT() {
@@ -1700,11 +1688,27 @@ void parseJSONPayload(byte* payload, unsigned int length) {
   }
 }
 
+unsigned long lastLedUpdateTime = 0;  // LED 상태 마지막 업데이트 시간
+const unsigned long ledInterval = 3000; // 3초 간격 (3000ms)
+
 void loop() {
-  if(!ble.boot) {
+  if (!ble.boot) {
     dev.loop();
     wifi.loop();
     timeManager.loop();
   }
+
   dev.checkFactoryDefault();
+
+  // 3초마다 LED 색상 변경
+  unsigned long currentMillis = millis();
+  if (currentMillis - lastLedUpdateTime >= ledInterval) {
+    lastLedUpdateTime = currentMillis;
+    if (wifi.isConnectedMqtt) {
+      dev.setColor(0, 255, 0);   // 녹색
+    } else {
+      dev.setColor(255, 0, 0);   // 빨강색
+    }
+  }
 }
+
