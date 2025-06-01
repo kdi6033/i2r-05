@@ -882,3 +882,43 @@ void loop() {
   client.loop();
 }
 ```
+
+## ✅ 1.3" OLED LCD 128x64
+- Resolution: 128*64
+- Control chip: SSH1106
+- Display area: 29.42 x 14.7mm
+- Driving voltage: 3.3-5V
+- Operating temperature: -40 ℃ to 70 ℃
+- Interface type: IIC/I2C  interface
+- SSH1106은 SSD1306 컨트롤러와 호환됩니다. 차이점은 SSH1106은 RAM 공간이 132x64이지만 SSD1306은 128x64입니다. 그렇기 때문에 SSD1306프로그램 사용시 두번째 줄(0x02) 부터 화면을 시작하여 주셔야 합니다.
+프로그램은 다음 두가지 라이브러리를 사용합니다. chatGPT 에서는  U8GLIB Library 를 추천 해서 이것으로 프로그램 합니다.
+- U8GLIB Library
+u8glib의 예제를 테스트하여 보시려면 아두이노 예제 스케치 코드 중 아래의 define문 comment처리를 제거한 후 컴파일하셔야 합니다.
+U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE); // I2C / TWI
+- Adafruit_SSD1306 library
+본 라이브러리를 사용하기 위해서는 Adafruit_GFX 라이브러리를 추가로 설치하셔야 합니다.
+라이브러리의 예제코드를 테스트하기 위해서는 ssd1306_128x64_i2c.ino를 컴파일하셔야 합니다.
+본 제품의 기본 I2C주소는 0x3C로 예제코드의 초기화 코드를 아래와 같이 변경하여야 합니다.
+display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x64)
+
+✅ "hello world" 츨력 프로그램
+```
+#include <Wire.h>
+#include <U8g2lib.h>
+
+// SH1106용 I2C 설정, FULL 버퍼
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, /* reset=*/ U8X8_PIN_NONE);
+
+void setup() {
+  Wire.begin(18, 17);  // SDA=18, SCL=17
+  u8g2.begin();
+}
+
+void loop() {
+  u8g2.clearBuffer();
+  u8g2.setFont(u8g2_font_ncenB14_tr); // 폰트 설정
+  u8g2.drawStr(0, 32, "Hello World");
+  u8g2.sendBuffer();
+  delay(1000);
+}
+```
