@@ -950,7 +950,7 @@ void loop() {
 }
 ```
 
-✅ 눈동자 움직이는 그래픽 프로그램
+##### ✅ 눈동자 움직이는 그래픽 프로그램
 ```
 #include <Wire.h>
 #include <U8g2lib.h>
