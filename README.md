@@ -1051,3 +1051,52 @@ void drawSleepingEye(int cx, int cy) {
   }
 }
 ```
+
+🟦 FastLED 라이브러리 사용하는 그래픽 프로그램
+
+```
+#include <FastLED.h>
+
+#define NUM_LEDS 16
+#define DATA_PIN 9
+#define LED_TYPE WS2812B
+#define COLOR_ORDER GRB
+
+CRGB leds[NUM_LEDS];
+
+void setup() {
+  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.clear();
+  FastLED.show();
+}
+
+void loop() {
+  fill_solid(leds, NUM_LEDS, CRGB::Red);
+  FastLED.show();
+  delay(1000);
+
+  fill_solid(leds, NUM_LEDS, CRGB::Green);
+  FastLED.show();
+  delay(1000);
+
+  fill_solid(leds, NUM_LEDS, CRGB::Blue);
+  FastLED.show();
+  delay(1000);
+}
+```
+🎨 색상표
+| 색상명    | 코드                               |
+| ------ | -------------------------------- |
+| 빨강     | `CRGB::Red` or `CRGB(255,0,0)`   |
+| 초록     | `CRGB::Green` or `CRGB(0,255,0)` |
+| 파랑     | `CRGB::Blue` or `CRGB(0,0,255)`  |
+| 노랑     | `CRGB::Yellow`                   |
+| 시안(청록) | `CRGB::Cyan`                     |
+| 보라     | `CRGB::Purple`                   |
+| 흰색     | `CRGB::White`                    |
+| 검정(꺼짐) | `CRGB::Black`                    |
+
+
+
+
+
