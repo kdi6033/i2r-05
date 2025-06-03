@@ -1096,7 +1096,74 @@ void loop() {
 | 흰색     | `CRGB::White`                    |
 | 검정(꺼짐) | `CRGB::Black`                    |
 
+##### ✅ 무지개 🌈 / 점멸 ✨ / 흐름 💨
+```
+#include <FastLED.h>
 
+#define NUM_LEDS 16       // LED 개수
+#define DATA_PIN 9        // 데이터 핀 (D9)
+#define LED_TYPE WS2812B  // LED 종류
+#define COLOR_ORDER GRB   // 색 순서
 
+CRGB leds[NUM_LEDS];
+uint8_t gHue = 0;         // 무지개 색상 변화용
+
+void setup() {
+  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.clear();
+  FastLED.show();
+}
+
+void loop() {
+  rainbowEffect();      // 무지개 효과
+  blinkEffect();        // 점멸 효과
+  flowingEffect();      // 흐름 효과
+}
+
+// 🌈 무지개 효과
+void rainbowEffect() {
+  for (int i = 0; i < 100; i++) {
+    fill_rainbow(leds, NUM_LEDS, gHue++);
+    FastLED.show();
+    delay(50);
+  }
+}
+
+// ✨ 점멸 효과
+void blinkEffect() {
+  for (int i = 0; i < 5; i++) {
+    fill_solid(leds, NUM_LEDS, CRGB::White); // 켜짐
+    FastLED.show();
+    delay(300);
+
+    fill_solid(leds, NUM_LEDS, CRGB::Black); // 꺼짐
+    FastLED.show();
+    delay(300);
+  }
+}
+
+// 💨 흐름 효과 (앞에서 뒤로 번지는 느낌)
+void flowingEffect() {
+  for (int i = 0; i < NUM_LEDS; i++) {
+    leds[i] = CRGB::Blue;
+    if (i > 0) leds[i - 1] = CRGB::Black; // 이전 LED 끄기
+    FastLED.show();
+    delay(100);
+  }
+  leds[NUM_LEDS - 1] = CRGB::Black; // 마지막도 끄기
+  FastLED.show();
+}
+```
+
+| 효과  | 설명                               |
+| --- | -------------------------------- |
+| 무지개 | `fill_rainbow()` 함수로 자동 색상 변화 구현 |
+| 점멸  | `fill_solid()`으로 흰색-검정 반복        |
+| 흐름  | 하나의 LED가 켜지면서 앞에서 뒤로 이동하는 효과     |
+
+🛠 응용 아이디어
+흐름을 양방향으로 → i = NUM_LEDS-1 ~ 0 순회    
+점멸 색상 랜덤화 → CHSV(random8(),255,255)    
+무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
 
