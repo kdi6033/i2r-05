@@ -116,30 +116,9 @@ ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 �
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
 블루투스는 스마트폰의 블루투스와 연결하여 와이파이 정보를 보드로 전송하여 통신 접속을 하게 합니다. 
 
-# 1. i2r-05 Shield V1 보드
-<img width="482" alt="i2r Shield V1" src="https://github.com/user-attachments/assets/fcc54b19-4a71-4e17-8461-90e9ae864907" />    
 
- Arduino 기반의 다목적 학습 보드로, 추가적인 납땜이나 복잡한 배선 없이 다양한 실험을 수행할 수 있습니다. 보드에 내장된 다양한 모듈을 활용하여, 코드를 다운로드하는 것만으로 실험을 완료할 수 있도록 설계되었습니다.
- 
-| i2r-05 | name | 설명 |
-|--------|-------|-------|
-| 47 | LED1 D13 파랑 | 여러 개의 LED가 포함되어 있어 디지털 출력 실험 가능 |
-| 38 | LED2 D12 빨강 | 여러 개의 LED가 포함되어 있어 디지털 출력 실험 가능 |
-| 8 | SW1 D2 | 입력 실험을 위한 버튼 제공 |
-| 9 | SW2 D3 | 입력 실험을 위한 버튼 제공 |
-| 1 | Rotation A0 | 가변 저항을 이용한 아날로그 입력 실험 가능 |
-| 11 | Buzzer D5 | 소리를 내는 장치로, 알람 및 음향 실험 가능 |
-| 2 | Light A1 | 조도 센서를 이용한 빛 감지 실험 가능 |
-| 10 | DHT11 D4 | 	온도 측정 실험 가능 |
-| 4  | LM35 A2 | 	온도 측정 실험 가능 |
-| 15 | RGB LED red | 빨간색 Led 입력 핀 |
-| 21 | RGB LED green | 녹색 Led 입력 핀 |
-| 16 | RGB LED blue | 파란색 Led 입력 핀 |
-| 12 | IR Receiver D6 | 	적외선 리모컨을 이용한 제어 가능 |
-
-
-## 1.1 RGB Led 제어 (48번핀)
-48번 RGB Led가 연결되어 있어서 색상을 제어하는 프로그램 입니다.    
+## 보드의 RGB Led 제어 (48번핀)
+보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="RGB Led" width="100">  48번 RGB Led 제어    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 이 한선으로 칼라를 제어 합니다. 빨강 파랑 녹색 불들어오게 프로그램 해줘
@@ -173,6 +152,95 @@ void setColor(uint8_t red, uint8_t green, uint8_t blue) {
   strip.show();                                         // 설정한 색상을 출력
 }
 ```
+
+Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 일어 나서 제어용 프로그램과 함깨 구성하면 에러가 자주 발생하여 FastLED.h 를 사용해서 Led를 제어 합니다.   
+이는 I2C와 충돌이 일어 날 수 있으나 앞에 프로그램 보다는 효율적 입니다.    
+다음은 무지개 효과, 점멸, 밝기를 조절하는 프로그램 입니다.
+```
+#include <FastLED.h>
+
+#define NUM_LEDS 1         // LED 개수 (1개)
+#define DATA_PIN 48        // 데이터 핀 (GPIO 48 고정)
+#define LED_TYPE WS2812B   // LED 종류
+#define COLOR_ORDER GRB    // 색 순서
+
+CRGB leds[NUM_LEDS];
+uint8_t gHue = 0;          // 색상 변화용 변수
+
+void setup() {
+  FastLED.addLeds<LED_TYPE, DATA_PIN, COLOR_ORDER>(leds, NUM_LEDS);
+  FastLED.clear();
+  FastLED.show();
+}
+
+void loop() {
+  rainbowEffect();   // 🌈 무지개 효과
+  blinkEffect();     // ✨ 점멸 효과
+  flowingEffect();   // 💨 흐름 효과 (1개 LED용으로 동작)
+}
+
+// 🌈 무지개 효과 (1개 LED 색상 부드럽게 변화)
+void rainbowEffect() {
+  for (int i = 0; i < 100; i++) {
+    leds[0] = CHSV(gHue++, 255, 255); // 색상 변화
+    FastLED.show();
+    delay(50);
+  }
+}
+
+// ✨ 점멸 효과 (흰색으로 깜빡임)
+void blinkEffect() {
+  for (int i = 0; i < 5; i++) {
+    leds[0] = CRGB::White;
+    //leds[0] = CRGB(255, 255, 255);
+    FastLED.show();
+    delay(300);
+
+    leds[0] = CRGB::Black;
+    //leds[0] = CRGB(0, 0, 0);
+    FastLED.show();
+    delay(300);
+  }
+}
+
+// 💨 흐름 효과 (1개 LED만 사용하여 밝기 변화 느낌)
+void flowingEffect() {
+  // 밝기가 점점 밝아졌다가 어두워지는 흐름 효과
+  for (int b = 0; b <= 255; b += 5) {
+    leds[0] = CHSV(gHue, 255, b);
+    FastLED.show();
+    delay(20);
+  }
+  for (int b = 255; b >= 0; b -= 5) {
+    leds[0] = CHSV(gHue, 255, b);
+    FastLED.show();
+    delay(20);
+  }
+}
+```
+
+# 1. i2r-05 Shield V1 보드
+<img width="482" alt="i2r Shield V1" src="https://github.com/user-attachments/assets/fcc54b19-4a71-4e17-8461-90e9ae864907" />    
+
+ Arduino 기반의 다목적 학습 보드로, 추가적인 납땜이나 복잡한 배선 없이 다양한 실험을 수행할 수 있습니다. 보드에 내장된 다양한 모듈을 활용하여, 코드를 다운로드하는 것만으로 실험을 완료할 수 있도록 설계되었습니다.
+ 
+| i2r-05 | name | 설명 |
+|--------|-------|-------|
+| 47 | LED1 D13 파랑 | 여러 개의 LED가 포함되어 있어 디지털 출력 실험 가능 |
+| 38 | LED2 D12 빨강 | 여러 개의 LED가 포함되어 있어 디지털 출력 실험 가능 |
+| 8 | SW1 D2 | 입력 실험을 위한 버튼 제공 |
+| 9 | SW2 D3 | 입력 실험을 위한 버튼 제공 |
+| 1 | Rotation A0 | 가변 저항을 이용한 아날로그 입력 실험 가능 |
+| 11 | Buzzer D5 | 소리를 내는 장치로, 알람 및 음향 실험 가능 |
+| 2 | Light A1 | 조도 센서를 이용한 빛 감지 실험 가능 |
+| 10 | DHT11 D4 | 	온도 측정 실험 가능 |
+| 4  | LM35 A2 | 	온도 측정 실험 가능 |
+| 15 | RGB LED red | 빨간색 Led 입력 핀 |
+| 21 | RGB LED green | 녹색 Led 입력 핀 |
+| 16 | RGB LED blue | 파란색 Led 입력 핀 |
+| 12 | IR Receiver D6 | 	적외선 리모컨을 이용한 제어 가능 |
+
+
 ## 1.2 Led 제어 (47, 38 번핀)
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
 
