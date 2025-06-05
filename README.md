@@ -167,7 +167,8 @@ void setColor(uint8_t red, uint8_t green, uint8_t blue) {
 
 Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 일어 나서 제어용 프로그램과 함깨 구성하면 에러가 자주 발생하여 FastLED.h 를 사용해서 Led를 제어 합니다.   
 이는 I2C와 충돌이 일어 날 수 있으나 앞에 프로그램 보다는 효율적 입니다.    
-다음은 무지개 효과, 점멸, 밝기를 조절하는 프로그램 입니다.
+다음은 무지개 효과, 점멸, 밝기를 조절하는 프로그램 입니다.    
+
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="RGB Led" width="100">  무지게, 점멸,흐름 효과 프로그램    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 무지게, 점멸,흐름 효과 프로그램 해줘
