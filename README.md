@@ -1257,7 +1257,94 @@ void flowingEffect() {
 점멸 색상 랜덤화 → CHSV(random8(),255,255)    
 무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
-## ✅ VL53L0X 거리측정센서
+## ✅ VL53L0X Time-of-Flight (ToF) 거리 센서
 <img src="https://github.com/user-attachments/assets/1e3b3bde-cb82-42ad-af43-7e03a7ce1e27" alt="VL53L0X" width="300">
+
+### 🔍 개요
+VL53L0X는 STMicroelectronics에서 개발한 **레이저 기반 Time-of-Flight(ToF) 거리 센서**입니다.  
+적외선 레이저 펄스를 발사하고 반사되는 시간을 측정하여 **매우 정확한 거리**를 측정할 수 있습니다.  
+광량, 반사율, 색상에 크게 영향을 받지 않아 안정적인 측정이 가능하며, 소형 폼팩터로 IoT, 로봇, HMI 등에 적합합니다.
+
+---
+
+### 📐 주요 사양
+
+| 항목                  | 내용                                     |
+|-----------------------|------------------------------------------|
+| 센서 모델             | VL53L0X                                  |
+| 측정 방식             | Time-of-Flight (ToF), 적외선 레이저 사용 |
+| 측정 거리             | **30mm ~ 2000mm** (일반적으로 30cm 내외가 정확) |
+| 정확도                | ±3% 이내                                 |
+| 분해능                | 1mm 단위                                 |
+| 동작 전압             | 2.6 ~ 3.5V (보통 3.3V 또는 5V 보드 전원 지원) |
+| 인터페이스            | I2C (SCL, SDA)                           |
+| 동작 온도             | -20°C ~ 70°C                             |
+| 레이저 클래스         | Class 1 (안전함)                         |
+| I2C 주소              | 기본: 0x29                               |
+| 크기                  | 약 18mm x 12mm (보드에 따라 다름)         |
+
+---
+
+### ⚙️ 핀 설명 (보드에 따라 다름)
+
+| 핀 이름 | 기능 설명                                      |
+|---------|------------------------------------------------|
+| VIN     | 전원 입력 (3.3V 또는 5V)                        |
+| GND     | 접지                                           |
+| SDA     | I2C 데이터                                     |
+| SCL     | I2C 클럭                                       |
+| XSHUT   | 전원 제어 (여러 센서 사용 시 주소 설정에 활용) |
+| GPIO1   | 인터럽트 출력 (일반적으로 사용하지 않음)       |
+
+---
+
+### 🧩 응용 분야
+- 로봇 거리 센서
+- 장애물 회피
+- 손 제스처 감지
+- 사람 또는 물체 감지
+- IoT 환경 거리 측정기
+
+
+> 🛠 예제 코드 
+```
+#include <Wire.h>
+#include "Adafruit_VL53L0X.h"
+
+Adafruit_VL53L0X lox = Adafruit_VL53L0X();
+
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  // ESP32용 I2C 핀 설정 (SDA = 18, SCL = 17)
+  Wire.begin(18, 17);
+
+  // VL53L0X 초기화
+  if (!lox.begin()) {
+    Serial.println(F("VL53L0X 초기화 실패! 연결을 확인하세요."));
+    while (1);
+  }
+
+  Serial.println(F("VL53L0X 거리 측정 시작"));
+}
+
+void loop() {
+  VL53L0X_RangingMeasurementData_t measure;
+
+  // 거리 측정 실행
+  lox.rangingTest(&measure, false); // false: 디버그 출력 없음
+
+  if (measure.RangeStatus != 4) {  // 4는 측정 실패
+    Serial.print("거리: ");
+    Serial.print(measure.RangeMilliMeter);
+    Serial.println(" mm");
+  } else {
+    Serial.println("측정 실패");
+  }
+
+  delay(500);  // 0.5초 간격
+}
+```
 
 
