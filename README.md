@@ -177,7 +177,7 @@ Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 �
 
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="RGB Led" width="100">  무지게, 점멸,흐름 효과 프로그램    
 ```
-esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 무지게, 점멸,흐름 효과 프로그램 해줘
+esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. FastLED.h를 이용해서 무지게, 점멸,흐름 효과 프로그램 해줘
 ```
 ```
 #include <FastLED.h>
