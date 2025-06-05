@@ -1257,4 +1257,8 @@ void flowingEffect() {
 점멸 색상 랜덤화 → CHSV(random8(),255,255)    
 무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
+## ✅ VL53L0X 거리측정센서
+![image](https://github.com/user-attachments/assets/1e3b3bde-cb82-42ad-af43-7e03a7ce1e27)
+
+
 
