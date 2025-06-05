@@ -117,6 +117,16 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 
 [📺 영상 보기- AI IoT 아두이노 보드 와이파이, 크라우드 연결](https://youtu.be/R9wEoO4aQpU)
 
+## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 와이파이, 크라우드 연결**](https://youtu.be/R9wEoO4aQpU)
+
+> 🧠 이 영상에서는 **i2r-05 AI IoT 보드**를 Wi-Fi 및 클라우드에 연결하는 방법을 자세히 설명합니다.
+> - 📡 와이파이 설정 방법
+> - ☁️ 크라우드 연동 방법
+> - 📱 웹앱 접속 및 제어 방법
+
+🎬 지금 바로 확인하세요 👉 [https://youtu.be/R9wEoO4aQpU](https://youtu.be/R9wEoO4aQpU)
+
+
 
 ## 보드의 RGB Led 제어 (48번핀)
 보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
