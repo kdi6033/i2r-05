@@ -600,12 +600,12 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 # Otto Ninja 로봇
 배선연결 요약
-|이름 | 핀번호 |
-|-----|-------|
-| LF | 7번 |
-| LL | 6번 |
-| RF | 5번 |
-| RL | 4번 |
+|이름 | 핀번호 | 모터이름 |
+|-----|-------|-------|
+| LF | 7번 | servoLF |
+| LL | 6번 | servoLL |
+| RF | 5번 | servoRF |
+| RL | 4번 | servoRL |
 
 ```
 서보모터를 esp32 보드 i2r-05 에 연결합니다. LF 7번, LL 6번, RF 5번, RL 4번 핀에 연결 했습니다.
