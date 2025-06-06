@@ -729,6 +729,73 @@ void loop() {
   delay(3000); // 다음 루프 전 잠시 대기
 }
 ```
+
+✅ 로봇 조립
+Otto Ninja 로봇의 정확한 동작을 위해 왼쪽 다리(LL) 및 오른쪽 다리(RL)의 서보 모터는 반드시 90도(중립 위치)로 설정한 상태에서 조립해 주세요.    
+이 위치에서 조립하지 않으면 걷기 동작이 비정상적으로 작동하거나 다리가 틀어질 수 있습니다.    
+
+📌 TIP:
+서보 모터에 전원을 공급한 후, 초기 위치(90도)로 이동시킨 다음 조립하세요.    
+조립 전에 아래의 코드로 모터를 90도로 고정 한 후 조립하세요.    
+
+```
+#include <ESP32Servo.h>
+
+// LF 서보모터를 7번 핀에 연결
+const int LF_PIN = 7;
+Servo lfServo;
+
+// LL 서보모터를 7번 핀에 연결
+const int RF_PIN = 5;
+Servo rfServo;
+
+void setup() {
+  Serial.begin(115200);
+
+  // 180도 서보모터 초기화
+  lfServo.setPeriodHertz(50);  // 서보 주파수 설정 (일반적으로 50Hz)
+  lfServo.attach(LF_PIN, 500, 2400);  // 최소/최대 펄스 폭 (마이크로초 단위, 서보에 따라 다름)
+  rfServo.setPeriodHertz(50);  // 서보 주파수 설정 (일반적으로 50Hz)
+  rfServo.attach(RF_PIN, 500, 2400);  // 최소/최대 펄스 폭 (마이크로초 단위, 서보에 따라 다름)
+  Serial.println("LF RF 서보모터 제어 시작");
+
+  Serial.println("lf 0도");
+  lfServo.write(0);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("lf 90도");
+  lfServo.write(90);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("lf 180도");
+  lfServo.write(180);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("lf 90도");
+  lfServo.write(90);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("rf 0도");
+  rfServo.write(0);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("rf 90도");
+  rfServo.write(90);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("rf 180도");
+  rfServo.write(180);  // 90도 위치로 이동
+  delay(1000);
+
+  Serial.println("rf 90도");
+  rfServo.write(90);  // 90도 위치로 이동
+  delay(1000);
+}
+
+void loop() {
+}
+```
+
 ✅ MQTT 통신에 의한 전진 후진 통신 프로그램
 chatGpt 에 다음과 같이 요구하세 
 ```
