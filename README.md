@@ -743,52 +743,54 @@ Otto Ninja 로봇의 정확한 동작을 위해 왼쪽 다리(LL) 및 오른쪽 
 
 // LF 서보모터를 7번 핀에 연결
 const int LF_PIN = 7;
-Servo lfServo;
+Servo servoLF;
 
-// LL 서보모터를 7번 핀에 연결
+// RF 서보모터를 5번 핀에 연결
 const int RF_PIN = 5;
-Servo rfServo;
+Servo servoRF;
 
 void setup() {
   Serial.begin(115200);
 
   // 180도 서보모터 초기화
-  lfServo.setPeriodHertz(50);  // 서보 주파수 설정 (일반적으로 50Hz)
-  lfServo.attach(LF_PIN, 500, 2400);  // 최소/최대 펄스 폭 (마이크로초 단위, 서보에 따라 다름)
-  rfServo.setPeriodHertz(50);  // 서보 주파수 설정 (일반적으로 50Hz)
-  rfServo.attach(RF_PIN, 500, 2400);  // 최소/최대 펄스 폭 (마이크로초 단위, 서보에 따라 다름)
+  servoLF.setPeriodHertz(50);
+  servoLF.attach(LF_PIN, 500, 2400);
+
+  servoRF.setPeriodHertz(50);
+  servoRF.attach(RF_PIN, 500, 2400);
+
   Serial.println("LF RF 서보모터 제어 시작");
 
-  Serial.println("lf 0도");
-  lfServo.write(0);  // 90도 위치로 이동
+  Serial.println("servoLF 0도");
+  servoLF.write(0);
   delay(1000);
 
-  Serial.println("lf 90도");
-  lfServo.write(90);  // 90도 위치로 이동
+  Serial.println("servoLF 90도");
+  servoLF.write(90);
   delay(1000);
 
-  Serial.println("lf 180도");
-  lfServo.write(180);  // 90도 위치로 이동
+  Serial.println("servoLF 180도");
+  servoLF.write(180);
   delay(1000);
 
-  Serial.println("lf 90도");
-  lfServo.write(90);  // 90도 위치로 이동
+  Serial.println("servoLF 90도");
+  servoLF.write(90);
   delay(1000);
 
-  Serial.println("rf 0도");
-  rfServo.write(0);  // 90도 위치로 이동
+  Serial.println("servoRF 0도");
+  servoRF.write(0);
   delay(1000);
 
-  Serial.println("rf 90도");
-  rfServo.write(90);  // 90도 위치로 이동
+  Serial.println("servoRF 90도");
+  servoRF.write(90);
   delay(1000);
 
-  Serial.println("rf 180도");
-  rfServo.write(180);  // 90도 위치로 이동
+  Serial.println("servoRF 180도");
+  servoRF.write(180);
   delay(1000);
 
-  Serial.println("rf 90도");
-  rfServo.write(90);  // 90도 위치로 이동
+  Serial.println("servoRF 90도");
+  servoRF.write(90);
   delay(1000);
 }
 
