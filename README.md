@@ -654,34 +654,35 @@ void loop() {
 ```
 #include <ESP32Servo.h>
 
-Servo servo360;
+// LL 모터: 6번 핀, 이름: servoLL
+Servo servoLL;
 
 void setup() {
   Serial.begin(115200);
-  servo360.setPeriodHertz(50);
-  servo360.attach(6, 500, 2400);  // 핀 6번에 연결
+  servoLL.setPeriodHertz(50);
+  servoLL.attach(6, 500, 2400);  // 핀 6번에 연결
 
   Serial.println("360도 서보모터 정지값 보정 테스트");
 }
 
 void loop() {
   // 전진
-  servo360.write(120);
+  servoLL.write(120);
   Serial.println("▶ 전진");
   delay(2000);
 
   // 정지 - 보정된 마이크로초 사용
-  servo360.writeMicroseconds(1500); // ← 필요시 1485~1515로 조정
+  servoLL.writeMicroseconds(1500); // ← 필요시 1485~1515로 조정
   Serial.println("⏹ 정지");
   delay(2000);
 
   // 후진
-  servo360.write(60);
+  servoLL.write(60);
   Serial.println("◀ 후진");
   delay(2000);
 
   // 정지
-  servo360.writeMicroseconds(1500); // ← 다시 정지
+  servoLL.writeMicroseconds(1500); // ← 다시 정지
   Serial.println("⏹ 정지");
   delay(2000);
 }
