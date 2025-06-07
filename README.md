@@ -1680,3 +1680,57 @@ void updateBreathingEffect() {
   }
 }
 ```
+
+✅ 과목 문단명
+▶️ 유튜브void updateFlowingEffect() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousFlowMillis >= 100) {
+    previousFlowMillis = currentMillis;
+
+    fill_solid(leds, NUM_LEDS, CRGB::Black);
+    leds[flowIndex] = CRGB::Blue;
+    flowIndex = (flowIndex + 1) % NUM_LEDS;
+
+    FastLED.show();
+  }
+}
+
+void updateBreathingEffect() {
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousBreathMillis >= 20) {
+    previousBreathMillis = currentMillis;
+
+    if (breathUp) {
+      breathBrightness += 5;
+      if (breathBrightness >= 255) {
+        breathBrightness = 255;
+        breathUp = false;
+      }
+    } else {
+      breathBrightness -= 5;
+      if (breathBrightness <= 0) {
+        breathBrightness = 0;
+        breathUp = true;
+      }
+    }
+
+    fill_solid(leds, NUM_LEDS, CHSV(gHue, 255, breathBrightness));
+    FastLED.show();
+  }
+}
+```
+
+✅ 과목 문단명
+▶️[유튜브] 유튜브
+🔰 개요 및 준비
+📖 학습 목표 및 기대 효과
+🎯 요약 / 정리 / 확장 학습
+⚙️ 개발 환경 및 준비물
+🧰 필요 라이브러리 설치 방법 
+💻 소프트웨어 
+🔍	결과 확인, 테스트
+🌐 확장 기능 (통신)
+📚 참고 자료 및 링크
+💡	팁 / 확장 아이디어
+🧠 학생 과제 또는 연습 문제
+🤖	로봇 프로젝트 / 자율 동작 시스템
