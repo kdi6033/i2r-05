@@ -798,7 +798,7 @@ void loop() {
 }
 ```
 
-💻 로봇 전후진 프로그램
+##### 💻 로봇 전후진 프로그램
 String command = "FORWARD";  // "FORWARD", "BACKWARD", "STOP"
 command 설정에 따라 전진 후진 정지 하는 프로그램 입니다.
 ```
@@ -890,7 +890,88 @@ void loop() {
 
 ```
 
-✅ MQTT 통신에 의한 전진 후진 통신 프로그램
+##### 💻 로봇 속도 조절 전후진 프로그램
+- 서보모터는 1500us 기준으로 속도와 방향을 제어합니다
+- 속도는 1500이면 정지하고 이보다 작으면 역회전 이보다 크면 정회전 합니다.
+- 속도가 너무 낮거나 너무 높으면 동작 불안정 또는 고장 위험
+- 안정적인 동작을 위해 1500을 기준으로 위야래 100~300으로 제한하는 것이 좋음
+- constrain() 함수로 속도를 자동 보정하면 사용자 실수 방지 가능
+  
+```
+#include <ESP32Servo.h>
+#include <Arduino.h>
+
+// === 핀 번호 정의 ===
+const int LF_PIN = 7;  // 180도 서보
+const int RF_PIN = 5;  // 180도 서보
+const int LL_PIN = 6;  // 360도 서보
+const int RL_PIN = 4;  // 360도 서보
+
+// === 서보 객체 정의 ===
+Servo servoLF;
+Servo servoRF;
+Servo servoLL;
+Servo servoRL;
+
+// === 제어 명령 ===
+String command = "FORWARD";  // "FORWARD", "BACKWARD", "STOP"
+
+// === 동작 함수 정의 ===
+void moveForward(int speed) {
+  speed = constrain(speed, 100, 300); // 권장 범위 자동 보정
+  int pulse = 1500 + speed;
+  servoLL.writeMicroseconds(pulse);
+  servoRL.writeMicroseconds(1500 - speed); // 반대방향 회전
+  Serial.print("▶ 전진 (보정된 속도): "); Serial.println(speed);
+}
+
+void moveBackward(int speed) {
+  speed = constrain(speed, 100, 300); // 권장 범위 자동 보정
+  int pulse = 1500 - speed;
+  servoLL.writeMicroseconds(pulse);
+  servoRL.writeMicroseconds(1500 + speed); // 반대방향 회전
+  Serial.print("◀ 후진 (보정된 속도): "); Serial.println(speed);
+}
+
+void stopMoving() {
+  servoLL.writeMicroseconds(1500);
+  servoRL.writeMicroseconds(1500);
+  Serial.println("⏹ 정지");
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // 서보 초기화
+  servoLF.setPeriodHertz(50);
+  servoLF.attach(LF_PIN, 500, 2400);
+  servoRF.setPeriodHertz(50);
+  servoRF.attach(RF_PIN, 500, 2400);
+  servoLL.setPeriodHertz(50);
+  servoLL.attach(LL_PIN, 500, 2400);
+  servoRL.setPeriodHertz(50);
+  servoRL.attach(RL_PIN, 500, 2400);
+
+  moveForward(50);   // 100으로 자동 보정됨
+  delay(1000);
+
+  stopMoving();
+  delay(500);
+
+  moveBackward(400); // 300으로 자동 보정됨
+  delay(1000);
+
+  stopMoving();
+  delay(500);
+  
+}
+
+void loop() {
+
+}
+```
+
+##### 💻 MQTT 통신에 의한 전진 후진 통신 프로그램
 chatGpt 에 다음과 같이 요구하세 
 ```
 아두이노 esp32 s3로 프로그램 합니다.
