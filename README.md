@@ -798,6 +798,98 @@ void loop() {
 }
 ```
 
+💻 로봇 전후진 프로그램
+String command = "FORWARD";  // "FORWARD", "BACKWARD", "STOP"
+command 설정에 따라 전진 후진 정지 하는 프로그램 입니다.
+```
+#include <ESP32Servo.h>
+#include <Arduino.h>
+
+// === 핀 번호 정의 ===
+const int LF_PIN = 7;  // 180도 서보
+const int RF_PIN = 5;  // 180도 서보
+const int LL_PIN = 6;  // 360도 서보
+const int RL_PIN = 4;  // 360도 서보
+
+// === 서보 객체 정의 ===
+Servo servoLF;
+Servo servoRF;
+Servo servoLL;
+Servo servoRL;
+
+// === 제어 명령 ===
+String command = "FORWARD";  // "FORWARD", "BACKWARD", "STOP"
+
+// === 동작 함수 정의 ===
+void moveForward() {
+  servoLF.write(180);
+  servoRF.write(0);
+  delay(500);
+  servoLL.write(120);
+  servoRL.write(120);
+  Serial.println("▶ 전진");
+}
+
+void moveBackward() {
+  servoLF.write(180);
+  servoRF.write(0);
+  delay(500);
+  servoLL.write(60);
+  servoRL.write(60);
+  Serial.println("◀ 후진");
+}
+
+void stopMoving() {
+  //servoLF.write(90);
+  //servoRF.write(90);
+  servoLL.writeMicroseconds(1500);
+  servoRL.writeMicroseconds(1500);
+  Serial.println("⏹ 정지");
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  // 서보 초기화
+  servoLF.setPeriodHertz(50);
+  servoLF.attach(LF_PIN, 500, 2400);
+
+  servoRF.setPeriodHertz(50);
+  servoRF.attach(RF_PIN, 500, 2400);
+
+  servoLL.setPeriodHertz(50);
+  servoLL.attach(LL_PIN, 500, 2400);
+
+  servoRL.setPeriodHertz(50);
+  servoRL.attach(RL_PIN, 500, 2400);
+
+  stopMoving();  // 초기 정지
+  delay(3000);
+  moveForward();
+  delay(3000);
+  stopMoving();
+  moveBackward();
+  delay(3000);
+  stopMoving();
+  
+}
+
+void loop() {
+  // 명령 실행
+  /*
+  command.toUpperCase();
+  if (command == "FORWARD") {
+    moveForward();
+  } else if (command == "BACKWARD") {
+    moveBackward();
+  } else {
+    stopMoving();
+  }
+  */
+}
+
+```
+
 ✅ MQTT 통신에 의한 전진 후진 통신 프로그램
 chatGpt 에 다음과 같이 요구하세 
 ```
@@ -1416,7 +1508,7 @@ void loop() {
 }
 ```
 
-##### ✅ 통합 프로그램: OLED 눈 + LED 효과 + 거리 측정 출력 (Serial)
+##### 💻 통합 프로그램: OLED 눈 + LED 효과 + 거리 측정 출력 (Serial)
 센서 3개를 통합해서 동작하는 프로그램
 ```
 #include <FastLED.h>
