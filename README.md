@@ -1681,44 +1681,6 @@ void updateBreathingEffect() {
 }
 ```
 
-✅ 과목 문단명
-▶️ 유튜브void updateFlowingEffect() {
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousFlowMillis >= 100) {
-    previousFlowMillis = currentMillis;
-
-    fill_solid(leds, NUM_LEDS, CRGB::Black);
-    leds[flowIndex] = CRGB::Blue;
-    flowIndex = (flowIndex + 1) % NUM_LEDS;
-
-    FastLED.show();
-  }
-}
-
-void updateBreathingEffect() {
-  unsigned long currentMillis = millis();
-  if (currentMillis - previousBreathMillis >= 20) {
-    previousBreathMillis = currentMillis;
-
-    if (breathUp) {
-      breathBrightness += 5;
-      if (breathBrightness >= 255) {
-        breathBrightness = 255;
-        breathUp = false;
-      }
-    } else {
-      breathBrightness -= 5;
-      if (breathBrightness <= 0) {
-        breathBrightness = 0;
-        breathUp = true;
-      }
-    }
-
-    fill_solid(leds, NUM_LEDS, CHSV(gHue, 255, breathBrightness));
-    FastLED.show();
-  }
-}
-```
 
 ✅ 과목 문단명
 ▶️[유튜브] 유튜브
