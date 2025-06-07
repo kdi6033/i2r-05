@@ -1326,7 +1326,7 @@ void flowingEffect() {
 점멸 색상 랜덤화 → CHSV(random8(),255,255)    
 무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
-## ✅ VL53L0X Time-of-Flight (ToF) 거리 센서
+## 🔰 VL53L0X Time-of-Flight (ToF) 거리 센서
 <img src="https://github.com/user-attachments/assets/1e3b3bde-cb82-42ad-af43-7e03a7ce1e27" alt="VL53L0X" width="300">
 
 ### 🔍 개요
@@ -1336,7 +1336,7 @@ VL53L0X는 STMicroelectronics에서 개발한 **레이저 기반 Time-of-Flight(
 
 ---
 
-### 📐 주요 사양
+### 📖 주요 사양
 
 | 항목                  | 내용                                     |
 |-----------------------|------------------------------------------|
@@ -1375,7 +1375,7 @@ VL53L0X는 STMicroelectronics에서 개발한 **레이저 기반 Time-of-Flight(
 - IoT 환경 거리 측정기
 
 
-> 🛠 예제 코드 
+> 💻 예제 코드 
 ```
 #include <Wire.h>
 #include "Adafruit_VL53L0X.h"
