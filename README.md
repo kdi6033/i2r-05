@@ -302,6 +302,61 @@ void loop() {
 }
 ```
 
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Led Control" width="100">  와이파이 연결과 Led    
+```
+와이파이 연결프로그램 만들어줘 ssid:i2r pw:00000000
+처음에 빨간색 led, 연결되면 파란색 led 불들어오게 프로그램 해줘
+led는 low 일 때 on 됩니다.
+```
+아두이노 프로그램
+```
+#include <WiFi.h>
+
+// Wi-Fi 설정
+const char* ssid = "i2r";
+const char* password = "00000000";
+
+// LED 핀 설정 (LOW일 때 ON)
+const int RED_LED_PIN = 47;
+const int BLUE_LED_PIN = 38;
+
+void setup() {
+  Serial.begin(115200);
+
+  // LED 핀을 출력으로 설정
+  pinMode(RED_LED_PIN, OUTPUT);
+  pinMode(BLUE_LED_PIN, OUTPUT);
+
+  // 초기 상태: 빨간 LED ON, 파란 LED OFF
+  digitalWrite(RED_LED_PIN, LOW);   // 빨간색 ON
+  digitalWrite(BLUE_LED_PIN, HIGH); // 파란색 OFF
+
+  // Wi-Fi 연결 시도
+  WiFi.begin(ssid, password);
+  Serial.print("Wi-Fi 연결 시도 중");
+
+  int retry = 0;
+  while (WiFi.status() != WL_CONNECTED && retry < 20) {
+    delay(500);
+    Serial.print(".");
+    retry++;
+  }
+
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.println("\n✅ Wi-Fi 연결 성공!");
+    digitalWrite(RED_LED_PIN, HIGH);   // 빨간색 OFF
+    digitalWrite(BLUE_LED_PIN, LOW);   // 파란색 ON
+  } else {
+    Serial.println("\n❌ Wi-Fi 연결 실패!");
+    // 빨간 LED 유지
+  }
+}
+
+void loop() {
+  // 연결 상태 유지 확인용
+}
+```
+
 ## 1.3 스위치 입력 (8, 9 번핀)
 ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 스위치를 누를 때마다 시리얼 포트로 해당 상태를 출력하는 Arduino 프로그램입니다.    
 
