@@ -115,7 +115,7 @@ ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 �
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
 블루투스는 스마트폰의 블루투스와 연결하여 와이파이 정보를 보드로 전송하여 통신 접속을 하게 합니다. 
 
-## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 와이파이, 크라우드 연결**](https://youtu.be/R9wEoO4aQpU)
+##### 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 와이파이, 크라우드 연결**](https://youtu.be/R9wEoO4aQpU)
 
 > 🧠 이 영상에서는 **i2r-05 AI IoT 보드**를 Wi-Fi 및 클라우드에 연결하는 방법을 자세히 설명합니다.
 > - 📡 와이파이 설정 방법
