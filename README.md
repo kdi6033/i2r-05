@@ -77,7 +77,6 @@ ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 
 - Vector Extension (AI 가속기) 포함
 - TensorFlow Lite, ESP-DSP 최적화 지원
 
---------------------------------------------------------------------
 
 ### 2. ESP32-S3-WROOM-1-N16R8의 장점
 - 대용량 PSRAM (8MB) 탑재 : 이미지 처리, AI 모델, 오디오 스트리밍 등에 적합
@@ -251,6 +250,8 @@ void flowingEffect() {
   }
 }
 ```
+
+--------------------------------------------------------------------
 
 # ✅ 2. i2r-05 Shield V1 보드
 <img width="482" alt="i2r Shield V1" src="https://github.com/user-attachments/assets/fcc54b19-4a71-4e17-8461-90e9ae864907" />    
