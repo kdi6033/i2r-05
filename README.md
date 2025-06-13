@@ -110,7 +110,7 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
 
-# 1. ESP32 블루투스(BLE) 통신 개요 및 실습
+# 1. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
 ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 강력한 무선 모듈입니다.
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
 블루투스는 스마트폰의 블루투스와 연결하여 와이파이 정보를 보드로 전송하여 통신 접속을 하게 합니다. 
@@ -136,7 +136,7 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 > 크라우드에 접속하여 스위치, 온도, 습도, 아나로그 센서, 조도센서 등을 원격으로 모니터링 제어 하는 방법을 소개한다.
 
 
-## 보드의 RGB Led 제어 (48번핀)
+## ✅ 보드의 RGB Led 제어 (48번핀)
 보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
 
 ## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
