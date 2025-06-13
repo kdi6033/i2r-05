@@ -1862,6 +1862,20 @@ void updateBreathingEffect() {
 # ✅ 4. Ionic Framework 앱 프로그램
 Ionic Framework 앱은 HTML, CSS, JavaScript 기반의 하이브리드 앱 개발 프레임워크로, 한 번의 개발로 Android와 iOS 모두에 배포 가능한 앱을 제작할 수 있습니다. 빠른 UI 구성과 다양한 플러그인 지원이 장점입니다.    
 
+사전 설치 프로그램
+nodejs 설치   https://nodejs.org/ko
+npm install -g @ionic/cli
+npm install @capacitor-community/bluetooth-le
+ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:
+
+프로그램 수정 후
+ionic build
+npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요
+npx cap sync
+ionic cap add android  //한번만 실행하면 됨
+npx cap open android
+
+
 
 
 ✅ 과목 문단명
