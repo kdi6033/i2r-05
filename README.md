@@ -109,7 +109,7 @@ ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 
 arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아래와 같습니다.
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
-# 1. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
+# ✅ 1. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
 ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 강력한 무선 모듈입니다.
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
 블루투스는 스마트폰의 블루투스와 연결하여 와이파이 정보를 보드로 전송하여 통신 접속을 하게 합니다. 
@@ -248,7 +248,7 @@ void flowingEffect() {
 }
 ```
 
-# 2. i2r-05 Shield V1 보드
+# ✅ 2. i2r-05 Shield V1 보드
 <img width="482" alt="i2r Shield V1" src="https://github.com/user-attachments/assets/fcc54b19-4a71-4e17-8461-90e9ae864907" />    
 
  Arduino 기반의 다목적 학습 보드로, 추가적인 납땜이나 복잡한 배선 없이 다양한 실험을 수행할 수 있습니다. 보드에 내장된 다양한 모듈을 활용하여, 코드를 다운로드하는 것만으로 실험을 완료할 수 있도록 설계되었습니다.
@@ -269,8 +269,9 @@ void flowingEffect() {
 | 16 | RGB LED blue | 파란색 Led 입력 핀 |
 | 12 | IR Receiver D6 | 	적외선 리모컨을 이용한 제어 가능 |
 
+=====================================================================
 
-## 2.1 Led 제어 (47, 38 번핀)
+## ✅ 2.1 Led 제어 (47, 38 번핀)
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
 
 ## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
@@ -358,7 +359,7 @@ void loop() {
 }
 ```
 
-## 2.2 스위치 입력 (8, 9 번핀)
+## ✅ 2.2 스위치 입력 (8, 9 번핀)
 ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 스위치를 누를 때마다 시리얼 포트로 해당 상태를 출력하는 Arduino 프로그램입니다.  
 ## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 스위치 입력**](https://youtu.be/KBWlxocToo8)
 
