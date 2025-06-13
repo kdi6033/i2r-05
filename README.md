@@ -130,7 +130,7 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 
 
 
-## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 웹앱 사용법**](https://youtu.be/R9wEoO4aQpU)
+## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 웹앱 사용법**](https://youtu.be/R9wEoO4aQpU)
 
 > 크라우드에 접속하여 스위치, 온도, 습도, 아나로그 센서, 조도센서 등을 원격으로 모니터링 제어 하는 방법을 소개한다.
 
@@ -138,7 +138,7 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 ## ✅ 보드의 RGB Led 제어 (48번핀)
 보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
 
-## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
+## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
 
 > 보드에는 RGB Led가 48번으로 장착되었습니다.  이 Led의 색상을 제어하는 프로그램 입니다.
 > 무지게, 점멸,흐름 효과 프로그램
@@ -272,6 +272,8 @@ void flowingEffect() {
 
 ## 2.1 Led 제어 (47, 38 번핀)
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
+
+## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
 
 ##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  47, 38번 Led 제어    
 ```
