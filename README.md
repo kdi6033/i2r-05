@@ -185,7 +185,7 @@ Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 �
 이는 I2C와 충돌이 일어 날 수 있으나 앞에 프로그램 보다는 효율적 입니다.    
 다음은 무지개 효과, 점멸, 밝기를 조절하는 프로그램 입니다.    
 
-## <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  무지게, 점멸,흐름 효과 프로그램    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 무지게, 점멸,흐름 효과 프로그램    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. FastLED.h를 이용해서 무지게, 점멸,흐름 효과 프로그램 해줘
 ```
@@ -282,7 +282,7 @@ ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 
 
 ## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  47, 38번 Led 제어    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻  47, 38번 Led 제어    
 ```
 esp32 s3 보드 47, 38번 핀에 led가 연결되어 있습니다. 1초 간격으로 교차로 점등하게 프록램 해줘요
 ```
@@ -310,7 +310,7 @@ void loop() {
 }
 ```
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  와이파이 연결과 Led    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 와이파이 연결과 Led    
 ```
 와이파이 연결프로그램 만들어줘 ssid:i2r pw:00000000
 처음에 빨간색 led, 연결되면 파란색 led 불들어오게 프로그램 해줘
@@ -371,7 +371,7 @@ void loop() {
 ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 스위치를 누를 때마다 시리얼 포트로 해당 상태를 출력하는 Arduino 프로그램입니다.  
 ## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 스위치 입력**](https://youtu.be/KBWlxocToo8)
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  8, 9번 스위치 입력    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 8, 9번 스위치 입력    
 ```
 esp32 s3 보드 8, 9 번핀에 스위치가 연결되어 있습니다. 스위치를 누르면 시리얼포트로 이를 알려줘
 ```
@@ -422,7 +422,7 @@ void loop() {
 
 ## 2.3 아나로그 입력 (1 번핀)
 ESP32-S3 보드의 1번 핀에 아날로그 입력이 연결하여 해당 값을 읽어서 시리얼 포트로 출력하는 Arduino 프로그램입니다.
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  1번 아나로그 입력    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 1번 아나로그 입력    
 ```
 esp32 s3 보드 1 번핀에 아나로그 입력이 연결되어 있습니다. 입력 값을 시리얼포트로 알려줘
 ```
