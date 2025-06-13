@@ -107,7 +107,8 @@ ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 
 - MicroPython
 - FreeRTOS 기반 멀티태스킹 지원
 
-arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아래와 같습니다.
+arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아래와 같습니다.    
+
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
 -----------------------------------------------------------------
