@@ -109,7 +109,6 @@ ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 
 arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아래와 같습니다.
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
-
 # 1. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
 ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 강력한 무선 모듈입니다.
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
@@ -144,7 +143,7 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 > 보드에는 RGB Led가 48번으로 장착되었습니다.  이 Led의 색상을 제어하는 프로그램 입니다.
 > 무지게, 점멸,흐름 효과 프로그램
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="RGB Led" width="100">  48번 RGB Led 제어    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  48번 RGB Led 제어    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 이 한선으로 칼라를 제어 합니다. 빨강 파랑 녹색 불들어오게 프로그램 해줘
 ```
@@ -182,7 +181,7 @@ Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 �
 이는 I2C와 충돌이 일어 날 수 있으나 앞에 프로그램 보다는 효율적 입니다.    
 다음은 무지개 효과, 점멸, 밝기를 조절하는 프로그램 입니다.    
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="RGB Led" width="100">  무지게, 점멸,흐름 효과 프로그램    
+## <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  무지게, 점멸,흐름 효과 프로그램    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. FastLED.h를 이용해서 무지게, 점멸,흐름 효과 프로그램 해줘
 ```
@@ -274,7 +273,7 @@ void flowingEffect() {
 ## 1.2 Led 제어 (47, 38 번핀)
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Led Control" width="100">  47, 38번 Led 제어    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  47, 38번 Led 제어    
 ```
 esp32 s3 보드 47, 38번 핀에 led가 연결되어 있습니다. 1초 간격으로 교차로 점등하게 프록램 해줘요
 ```
@@ -302,7 +301,7 @@ void loop() {
 }
 ```
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Led Control" width="100">  와이파이 연결과 Led    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  와이파이 연결과 Led    
 ```
 와이파이 연결프로그램 만들어줘 ssid:i2r pw:00000000
 처음에 빨간색 led, 연결되면 파란색 led 불들어오게 프로그램 해줘
@@ -360,7 +359,7 @@ void loop() {
 ## 1.3 스위치 입력 (8, 9 번핀)
 ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 스위치를 누를 때마다 시리얼 포트로 해당 상태를 출력하는 Arduino 프로그램입니다.    
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Switch Input" width="100">  8,9번 스위치 입력    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  8,9번 스위치 입력    
 ```
 esp32 s3 보드 8,9 번핀에 스위치가 연결되어 있습니다. 스위치를 누르면 시리얼포트로 이를 알려줘
 ```
@@ -389,7 +388,7 @@ void loop() {
 
 ## 1.4 아나로그 입력 (1 번핀)
 ESP32-S3 보드의 1번 핀에 아날로그 입력이 연결하여 해당 값을 읽어서 시리얼 포트로 출력하는 Arduino 프로그램입니다.
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Analog Input" width="100">  1번 아나로그 입력    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  1번 아나로그 입력    
 ```
 esp32 s3 보드 1 번핀에 아나로그 입력이 연결되어 있습니다. 입력 값을 시리얼포트로 알려줘
 ```
@@ -418,7 +417,7 @@ void loop() {
 
 ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 코드를 작성했습니다. 부저는 PWM 신호를 통해 제어되며, 이를 통해 다양한 음을 생성할 수 있습니다.    
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Buzzer 출력" width="100">  11번 Buzzer 출력    
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  11번 Buzzer 출력    
 ```
 esp32 s3 보드 11 번핀에 Buzzer가 연결되어 있습니다. 출력이 나오게 프로그램해줘
 ```
@@ -438,7 +437,7 @@ void loop() {
   delay(500);                               // 500ms 대기
 }
 ```
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="음악연주" width="100">  음악연주   
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  음악연주   
 ```
 부져로 음악연주하는 프로그램 만들어줘
 ```
@@ -489,7 +488,7 @@ void loop() {
 
 ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 코드를 작성했습니다. 부저는 PWM 신호를 통해 제어되며, 이를 통해 다양한 음을 생성할 수 있습니다.    
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="Light 센서" width="100">  Light 센서
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  Light 센서
 ```
 sp32 s3 보드 2 번핀에 Light 센서가 연결되어 있습니다. 조도를 출력하는 프로그램해줘
 ```
@@ -527,7 +526,7 @@ void loop() {
 
 이 프로그램은 DHT 라이브러리를 사용하여 온도와 습도를 읽고 시리얼 모니터에 출력합니다.   
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="DHT11 온습도 센서" width="100">  DHT11 온습도 센서
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  DHT11 온습도 센서
 ```
 sp32 s3 보드 10 번핀에  DHT11 온습도 센서가 연결되어 있습니다. 온습도를 출력하는 프로그램해
 ```
@@ -580,7 +579,7 @@ void loop() {
 
 LM35 온도 센서는 아날로그 출력 타입의 온도 센서입니다. 온도를 섭씨(°C)로 측정하며, 출력 전압은 섭씨 1도당 10mV입니다. 이를 ESP32-S3의 4번 핀에 연결하여 값을 읽고 온도를 출력하는 프로그램은 다음과 같이 작성할 수 있습니다.
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="LM35 온도 센서" width="100">  LM35 온도 센서
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  LM35 온도 센서
 ```
 LM35 센서가 4번핀에 연결되어 있어요 프로그램 해주세요
 ```
@@ -615,7 +614,7 @@ void loop() {
 
 이 프로그램은 RGB LED의 각 핀에 대해 LED의 밝기를 제어합니다. 빨강, 초록, 파랑, 흰색의 조합을 통해 다양한 색상을 순차적으로 출력합니다.
 
-<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="RGB Led 센서" width="100">  RGB Led 센서
+##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  RGB Led 센서
 ```
 15,21,16 이 차례로 red, green, blue 가 연결되어 있습니다. led 프로그램 해줘
 ```
