@@ -1870,8 +1870,18 @@ Ionic Framework 앱은 HTML, CSS, JavaScript 기반의 하이브리드 앱 개�
 📌 사전 설치 프로그램    
 Ionic 앱에서 BLE 같은 하드웨어 기능을 사용하려면 네이티브(Android/iOS) 기능이 필요합니다. 이를 위해 Capacitor를 프로젝트에 통합해 네이티브 기능 접근을 가능하게 하고, BLE 통신을 위한 @capacitor-community/bluetooth-le 라이브러리를 설치합니다. Ionic CLI는 프로젝트 생성 및 실행에 필수입니다.    
 - npm install -g @ionic/cli    
-- npm install @capacitor-community/bluetooth-le    
-- ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:    
+- npm install @capacitor-community/bluetooth-le
+- ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:
+
+🟢 ionic 프로젝트 만들기
+다음과 같이 ionic을 시작 합니다.
+```
+ionic start
+? Use the app creation wizard? No
+? Framework: React
+? Project name: ionicOttoNinja
+? Starter template: tabs
+```
 
 📌 프로그램 실행
 - ionic build    
