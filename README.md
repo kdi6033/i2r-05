@@ -1895,9 +1895,9 @@ code ionicOttoNinja
 
 🟢 안드로이드 실핸 후 수정    
 - 현재 시간 (2025년6월) 안드로이드에서 지원하는 java 버젼으로 수정해야 합니다.     
-- 🔧 [build.gradle (android/app)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Capp%5Cbuild.gradle)) – Android 설정 파일
-- 🔧 build.gradle (android/build.gradle) – Android 최상위 build.gradle
-- 🔧 gradle-wrapper.properties (android/gradle/wrapper/gradle-wrapper.properties) – Gradle 버전 설정 파일
+- 🔗 [build.gradle (android/app)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Capp%5Cbuild.gradle)) – Android 설정 파일
+- 🔗 [build.gradle (android)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Cbuild.gradle))
+- 🔗 [gradle-wrapper.properties](https://github.com/kdi6033/i2r-05/blob/main/file/gradle-wrapper.properties(android%5Cgradle%5Cwrapper%5Cgradle-wrapper.properties))
 
 ✅ 과목 문단명
 ▶️[유튜브] 유튜브
@@ -1910,6 +1910,7 @@ code ionicOttoNinja
 📦  필요 라이브러리 설치 방법 
 💻 소프트웨어 
 🔍	결과 확인, 테스트
+🔗 링크
 🌐 확장 기능 (통신)
 📚 참고 자료 및 링크
 💡	팁 / 확장 아이디어
