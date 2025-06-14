@@ -1889,7 +1889,6 @@ code ionicOttoNinja
 ```
 📌 프로그램 실행
 - ionic build    
-- npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요    
 - npx cap sync    
 - ionic cap add android  //한번만 실행하면 됨    
 - npx cap open android    
