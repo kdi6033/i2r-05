@@ -1881,8 +1881,12 @@ ionic start
 ? Framework: React
 ? Project name: ionicOttoNinja
 ? Starter template: tabs
+? Create free Ionic account? (y/N) n
 ```
-
+프로젝트 생성이 완료되면 visual code로 프로젝트를 시작 합니다.
+```
+code ionicOttoNinja
+```
 📌 프로그램 실행
 - ionic build    
 - npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요    
