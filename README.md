@@ -1868,14 +1868,15 @@ Ionic Framework 앱은 HTML, CSS, JavaScript 기반의 하이브리드 앱 개�
 - 사이트: https://adoptium.net/temurin/releases/?version=17
 
 📌 사전 설치 프로그램    
-npm install -g @ionic/cli    
-npm install @capacitor-community/bluetooth-le    
-ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:    
+Ionic 앱에서 BLE 같은 하드웨어 기능을 사용하려면 네이티브(Android/iOS) 기능이 필요합니다. 이를 위해 Capacitor를 프로젝트에 통합해 네이티브 기능 접근을 가능하게 하고, BLE 통신을 위한 @capacitor-community/bluetooth-le 라이브러리를 설치합니다. Ionic CLI는 프로젝트 생성 및 실행에 필수입니다.    
+- npm install -g @ionic/cli    
+- npm install @capacitor-community/bluetooth-le    
+- ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:    
 
 📌 프로그램 실행
-ionic build    
-npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요    
-npx cap sync    
+- ionic build    
+- npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요    
+- npx cap sync    
 ionic cap add android  //한번만 실행하면 됨    
 npx cap open android    
 
