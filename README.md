@@ -1878,8 +1878,8 @@ npx cap sync
 ionic cap add android  //한번만 실행하면 됨    
 npx cap open android    
 
-📌 안드로이드 실핸 후 수정    
-- 안드로이드 프로그램에서 다음에 java 버젼을 수정해 주세요.     
+🟢 안드로이드 실핸 후 수정    
+- 현재 시간 (2025년6월) 안드로이드에서 지원하는 java 버젼으로 수정해야 합니다.     
 
 
 
