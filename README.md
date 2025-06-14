@@ -1865,21 +1865,21 @@ Ionic Framework 앱은 HTML, CSS, JavaScript 기반의 하이브리드 앱 개�
 - JDK 버전 (JAVA_HOME) 17 로 설치 합니다. 현재 시간(2025년 6월) 이 보다 높은 버젼은 ionic에서 지원 하지 않습니다. 윈도우에서는 설리 후 환경변수에 설정을 해주세요. 환경변수 설정은 chagpt 에 물어 보세요.
 
 
-사전 설치 프로그램
-nodejs 설치   https://nodejs.org/ko
-npm install -g @ionic/cli
-npm install @capacitor-community/bluetooth-le
-ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:
+📌 사전 설치 프로그램    
+nodejs 설치   https://nodejs.org/ko    
+npm install -g @ionic/cli    
+npm install @capacitor-community/bluetooth-le    
+ionic integrations enable capacitor   //Add Capacitor to your Ionic Project:    
 
-프로그램 수정 후
-ionic build
-npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요
-npx cap sync
-ionic cap add android  //한번만 실행하면 됨
-npx cap open android
+📌 프로그램 실행
+ionic build    
+npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요    
+npx cap sync    
+ionic cap add android  //한번만 실행하면 됨    
+npx cap open android    
 
-📌 안드로이드 실핸 후 수정
-- 안드로이드 프로그램에서 다음에 java 버젼을 수정해 주세요. 
+📌 안드로이드 실핸 후 수정    
+- 안드로이드 프로그램에서 다음에 java 버젼을 수정해 주세요.     
 
 
 
