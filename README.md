@@ -1863,6 +1863,7 @@ void updateBreathingEffect() {
 Ionic Framework 앱은 HTML, CSS, JavaScript 기반의 하이브리드 앱 개발 프레임워크로, 한 번의 개발로 Android와 iOS 모두에 배포 가능한 앱을 제작할 수 있습니다. 빠른 UI 구성과 다양한 플러그인 지원이 장점입니다.    
 📌 준비
 - JDK 버전 (JAVA_HOME) 17 로 설치 합니다. 현재 시간(2025년 6월) 이 보다 높은 버젼은 ionic에서 지원 하지 않습니다. 윈도우에서는 설리 후 환경변수에 설정을 해주세요. 환경변수 설정은 chagpt 에 물어 보세요.
+- 사이트: https://adoptium.net/temurin/releases/?version=17
 
 
 📌 사전 설치 프로그램    
