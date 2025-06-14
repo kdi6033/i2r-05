@@ -1877,8 +1877,8 @@ Ionic 앱에서 BLE 같은 하드웨어 기능을 사용하려면 네이티브(A
 - ionic build    
 - npx cap init  //Initialize Capacitor:   이미 capacitor.config.ts 파일이 있으므로, 이 파일을 그대로 사용함으로 실행하지 마세요    
 - npx cap sync    
-ionic cap add android  //한번만 실행하면 됨    
-npx cap open android    
+- ionic cap add android  //한번만 실행하면 됨    
+- npx cap open android    
 
 🟢 안드로이드 실핸 후 수정    
 - 현재 시간 (2025년6월) 안드로이드에서 지원하는 java 버젼으로 수정해야 합니다.     
