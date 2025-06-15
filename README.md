@@ -1896,6 +1896,12 @@ code ionicOttoNinja
 🟢 안드로이드 실핸 후 수정    
 - 현재 시간 (2025년6월) 안드로이드에서 지원하는 java 버젼으로 수정해야 합니다.     
 - 🔗 [build.gradle (android/app)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Capp%5Cbuild.gradle)) – android\app\build.gradle 에 위치
+  ```
+      compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+      }
+  ```
 - 🔗 [build.gradle (android)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Cbuild.gradle)) - android\build.gradle 에 위치
 - 🔗 [gradle-wrapper.properties](https://github.com/kdi6033/i2r-05/blob/main/file/gradle-wrapper.properties(android%5Cgradle%5Cwrapper%5Cgradle-wrapper.properties)) - android\gradle\wrapper\gradle-wrapper.properties 에 위치
 
