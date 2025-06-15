@@ -1894,7 +1894,7 @@ code ionicOttoNinja
 - npx cap open android    
 
 🟢 안드로이드 실핸 후 수정    
-- 현재 시간 (2025년6월) 안드로이드에서 지원하는 java 버젼으로 수정해야 합니다.     
+- 현재 시간 (2025년6월) 안드로이드에서 지원하는 java 버젼으로 수정해야 합니다. 수정된 부분만 표기하니 링크파일을 참조해서 수정하거나 전체를 대체 하세요.     
 - 🔗 [build.gradle (android/app)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Capp%5Cbuild.gradle)) – android\app\build.gradle 에 위치
   ```
       compileOptions {
@@ -1903,7 +1903,22 @@ code ionicOttoNinja
       }
   ```
 - 🔗 [build.gradle (android)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Cbuild.gradle)) - android\build.gradle 에 위치
+  ```
+      dependencies {
+        classpath 'com.android.tools.build:gradle:8.3.0'
+        classpath 'com.google.gms:google-services:4.4.2'
+      }
+
+      tasks.withType(JavaCompile).configureEach {
+        sourceCompatibility = JavaVersion.VERSION_17
+        targetCompatibility = JavaVersion.VERSION_17
+        options.release = 17
+      }
+  ```
 - 🔗 [gradle-wrapper.properties](https://github.com/kdi6033/i2r-05/blob/main/file/gradle-wrapper.properties(android%5Cgradle%5Cwrapper%5Cgradle-wrapper.properties)) - android\gradle\wrapper\gradle-wrapper.properties 에 위치
+  ```
+    distributionUrl=https\://services.gradle.org/distributions/gradle-8.6-all.zip
+  ```
 
 📌 프로그램 수정 후에는 다음을 실행 합니다.
 ```
