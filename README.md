@@ -1899,6 +1899,16 @@ code ionicOttoNinja
 - 🔗 [build.gradle (android)](https://github.com/kdi6033/i2r-05/blob/main/file/build.gradle(android%5Cbuild.gradle)) - android\build.gradle 에 위치
 - 🔗 [gradle-wrapper.properties](https://github.com/kdi6033/i2r-05/blob/main/file/gradle-wrapper.properties(android%5Cgradle%5Cwrapper%5Cgradle-wrapper.properties)) - android\gradle\wrapper\gradle-wrapper.properties 에 위치
 
+📌 프로그램 수정 후에는 다음을 실행 합니다.
+```
+ionic build
+npx cap sync
+```
+Android Studio에서 
+```
+File > Sync Project with Gradle Files
+```
+
 ✅ 과목 문단명
 ▶️[유튜브] 유튜브
 📌🔰 개요 및 준비
