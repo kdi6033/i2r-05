@@ -127,6 +127,57 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 
 -----------------------------------------------------------------
 # 조도센서 (GY302)
+i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH1750) 조도 센서용 아두이노 프로그램 입니다.
+
+- GY-320은 GY-302의 오기일 가능성이 높으며, 실제 센서는 BH1750을 사용합니다.
+- 해당 센서는 I2C 통신 방식이며, i2r‑05 보드의 핀맵에 따라 다음처럼 연결합니다:
+
+📦 설치 라이브러리
+- Arduino IDE에서 BH1750 by Christopher Laws 설치:
+- Arduino IDE → 라이브러리 매니저 → BH1750 → 설치
+
+| BH1750 (GY-302) 핀 | i2r‑05 GPIO | 설명              |
+| ----------------- | ----------- | --------------- |
+| VCC               | 3.3V 또는 5V  | 전원 공급           |
+| GND               | GND         | 공통 접지           |
+| SDA               | IO18        | I2C 데이터         |
+| SCL               | IO17        | I2C 클럭          |
+| ADDR              | GND (or NC) | 주소 설정 (기본 0x23) |
+
+전체 코드
+```
+#include <Wire.h>
+#include <BH1750.h>
+
+BH1750 lightMeter;
+
+void setup() {
+  Serial.begin(115200);
+
+  // I2C 핀 설정 (SDA=18, SCL=17) — i2r-05 보드 전용
+  Wire.begin(18, 17);
+
+  // BH1750 초기화
+  if (lightMeter.begin(BH1750::CONTINUOUS_HIGH_RES_MODE)) {
+    Serial.println("✅ BH1750 시작 성공!");
+  } else {
+    Serial.println("❌ BH1750 초기화 실패. 연결 확인!");
+    while (1);
+  }
+}
+
+void loop() {
+  float lux = lightMeter.readLightLevel();
+  Serial.print("💡 조도: ");
+  Serial.print(lux);
+  Serial.println(" lux");
+
+  delay(1000);  // 1초 간격
+}
+```
+📌 참고 사항
+- 주소 변경: GY-302 센서에서 ADDR 핀을 GND에 연결하면 주소는 0x23, VCC에 연결하면 0x5C입니다. 대부분 GND 또는 미연결(기본 0x23)로 사용됩니다.
+- 조도 범위: 약 1~65535 lux까지 측정 가능.
 -----------------------------------------------------------------
 
 # ✅ 1. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
