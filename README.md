@@ -52,6 +52,13 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 
 <a name="핀정보"></a>
 ##### 주요 기능 핀
+# i2r-05 보드 핀맵
+I2C_SCL: GPIO17   // I2C 클럭
+I2C_SDA: GPIO18   // I2C 데이터
+USB_TX:  GPIO43   // USB TX
+USB_RX:  GPIO44   // USB RX
+RGB_LED: GPIO48   // 내장 RGB LED
+
 | 기능        | GPIO |  설명         |
 | --------- | ---- | ---------- |
 | TX\_USB   | IO43 | USB TX     |
