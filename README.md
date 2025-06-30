@@ -1,4 +1,4 @@
-# i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
+# ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
 아래 소스코드를 보드에 설치하면 자동으로 사이트에 보드가 등록되고 모니터링 할 수 있습니다. 이러한 프로그램을 실현 할 수 있게 AI를 활용해 프로그램 과정을 이 사이트에서 설명 하겠습니다.
 
@@ -13,44 +13,44 @@
 - 와이파이 : 와이파이를 이용해 mqtt 프로토콜 통신으로 보드를 모니터링하고 제어 한다. 콘트롤 사이트 접속해서 제어    
 
 
-# 개요
+🎯 개요
 GitHub의 i2r-05 레포지터리를 기반으로 학생들에게 IoT 및 임베디드 시스템을 교육합니다. 여기서는 i2r-05 보드를 활용하여 기본적인 하드웨어 이해부터 실습을 진행하고, On-Device AI(온디바이스 AI) 구현합니다. 그리고 스마트팜을 하시는 분들을 위해서 각종 센서와 액튜에이터를 자동으로 연결하여 스마트폰과 PC에서 모니터링/제어 할 수 있게 합니다.
 
-# 교육 목표
+🎯 교육 목표
 - i2r-05 보드를 활용하여 하드웨어 및 펌웨어 개발의 기초를 익힘
 - Wi-Fi 및 MQTT 기반의 IoT 통신을 실습하여 네트워크 프로그래밍 이해
 - 머신러닝 및 On-Device AI 개념을 학습하고 실제 보드에서 실행 가능하도록 구현
 - ESP32-S3의 강력한 연산 성능을 활용하여 실시간 데이터 분석 및 처리
 
-# 교육 과정 구성
-## (1) 기초 과정: i2r-05 보드 이해 및 환경 설정
+🎯 교육 과정 구성
+🟢 (1) 기초 과정: i2r-05 보드 이해 및 환경 설정
 - i2r-05 보드 개요 및 사양 분석
 - 개발 환경 구축(Arduino IDE, ESP-IDF, PlatformIO)
 - 기본적인 GPIO 제어 및 센서 연결 실습
 - 시리얼 통신 및 Wi-Fi 설정
-## (2) 중급 과정: IoT 및 네트워크 프로그래밍
+🟢 (2) 중급 과정: IoT 및 네트워크 프로그래밍
 - MQTT 프로토콜을 활용한 데이터 송수신
 - 클라우드 서버(AWS, Firebase, Node.js 서버)와의 연동
 - MongoDB와 연계하여 데이터 저장 및 분석
-## (3) 고급 과정: On-Device AI 구현
+🟢 (3) 고급 과정: On-Device AI 구현
 - ESP32-S3의 AI 가속 기능(TensorFlow Lite Micro, Edge Impulse) 소개
 - 간단한 머신러닝 모델(이미지 인식, 음성 인식) 학습 및 배포
 - 실시간 센서 데이터를 활용한 AI 모델 적용
 - 최적화 및 배터리 절약을 위한 저전력 설계
 
-# 기대 효과
+🎯 기대 효과
 - 학생들이 IoT 및 AI 시스템의 기본 개념을 이해하고 직접 구현할 수 있도록 지원
 - AI가 탑재된 임베디드 시스템을 직접 설계하고 응용할 수 있는 능력 배양
 - 실제 산업 현장에서 활용 가능한 IoT 및 AI 기술 습득
 
-# ESP32-S3-WROOM-1-N16R8 설명
+# ✅ ESP32-S3-WROOM-1-N16R8 설명
 ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
 ESP32 S3 16M Flash, AI IoT 개발용 보드
 ![i2r-05](https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2)
 ![i2r-05 회로도](https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d)
 
-## i2r-05 보드 핀맵
+## ✅ i2r-05 보드 핀맵
 
 | 기능        | GPIO |  설명         |
 | --------- | ---- | ---------- |
@@ -64,42 +64,42 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 | LED\_RGB  | IO48 | 내장 RGB LED |
 
 
-### 1. 주요 특징
-#### (1) CPU 및 성능
+## ✅ 1. 주요 특징
+🟢 (1) CPU 및 성능
 - 듀얼코어 Xtensa® LX7 32비트 프로세서
 - 최대 240MHz 클럭 속도
 - AI 및 DSP 기능 향상 (벡터 연산 가속 지원)
-#### (2) 메모리
+🟢 (2) 메모리
 - 16MB 플래시 메모리 (N16)
 - 8MB PSRAM (R8) → AI, 이미지 처리, 데이터 버퍼링에 유용
-#### (3)무선 기능
+🟢 (3)무선 기능
 - Wi-Fi 802.11 b/g/n (2.4GHz)
 - Bluetooth 5.0 LE (Low Energy)
 - WPA3 보안 지원
-#### (4) USB 기능
+🟢 (4) USB 기능
 - Full-Speed USB OTG (USB 1.1)
 - USB CDC/JTAG 디버깅 지원
 - USB-Serial 통신 가능 (UART 필요 없음)
-#### (5) GPIO 및 확장성
+🟢 (5) GPIO 및 확장성
 - 최대 45개의 GPIO 핀 제공
 - SPI, I2C, UART, PWM, ADC, DAC 지원
 - JTAG 디버깅 지원
-#### (6) 저전력 설계
+🟢 (6) 저전력 설계
 - Deep Sleep 모드에서 μA 단위의 전력 소모
 - ULP (Ultra-Low Power) 코프로세서 내장
-#### (7) AI 및 머신러닝
+🟢 (7) AI 및 머신러닝
 - Vector Extension (AI 가속기) 포함
 - TensorFlow Lite, ESP-DSP 최적화 지원
 
 
-### 2. ESP32-S3-WROOM-1-N16R8의 장점
+## ✅ 2. ESP32-S3-WROOM-1-N16R8의 장점
 - 대용량 PSRAM (8MB) 탑재 : 이미지 처리, AI 모델, 오디오 스트리밍 등에 적합
 - Wi-Fi + Bluetooth 동시 지원 : BLE를 활용한 IoT 기기 및 스마트 디바이스 개발 가능
 - USB OTG 지원 : 직접 USB 장치와 통신 가능 (키보드, 마우스, 스토리지 연결)
 - 보안 기능 강화 : Secure Boot, Flash Encryption, AES-XTS 암호화 지원
 - ESP-IDF 및 Arduino 지원 : ESP-IDF, Arduino, MicroPython 등 다양한 개발 환경 제공
 
-### 3. ESP32-S3-WROOM-1-N16R8의 활용 사례
+## ✅ 3. ESP32-S3-WROOM-1-N16R8의 활용 사례
 - AI 및 머신러닝
 - 온디바이스 AI (On-Device AI)
 - 얼굴 인식, 음성 인식, AIoT (AI + IoT)
@@ -113,7 +113,7 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 - MQTT 및 WebSocket을 활용한 실시간 데이터 전송
 - 센서 데이터를 클라우드로 전송하여 모니터링
 
-### 4. ESP32-S3-WROOM-1-N16R8 개발 환경
+## ✅ 4. ESP32-S3-WROOM-1-N16R8 개발 환경
 - ESP-IDF (Espressif 공식 SDK)
 - Arduino IDE
 - Visual Code
@@ -126,7 +126,7 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
 -----------------------------------------------------------------
-# 조도센서 (GY302)
+# ✅ 조도센서 (GY302)
 i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH1750) 조도 센서용 아두이노 프로그램 입니다.
 
 - GY-320은 GY-302의 오기일 가능성이 높으며, 실제 센서는 BH1750을 사용합니다.
@@ -218,7 +218,7 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 이 한선으로 칼라를 제어 합니다. 빨강 파랑 녹색 불들어오게 프로그램 해줘
 ```
-아두이노 프로그램
+💻 아두이노 프로그램
 ```
 #include <Adafruit_NeoPixel.h>
 
