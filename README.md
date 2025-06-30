@@ -64,7 +64,7 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 | LED\_RGB  | IO48 | 내장 RGB LED |
 
 
-## ✅ 1. 주요 특징
+✅ 1. 주요 특징
 🟢 (1) CPU 및 성능
 - 듀얼코어 Xtensa® LX7 32비트 프로세서
 - 최대 240MHz 클럭 속도
@@ -92,14 +92,14 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 - TensorFlow Lite, ESP-DSP 최적화 지원
 
 
-## ✅ 2. ESP32-S3-WROOM-1-N16R8의 장점
+✅ 2. ESP32-S3-WROOM-1-N16R8의 장점
 - 대용량 PSRAM (8MB) 탑재 : 이미지 처리, AI 모델, 오디오 스트리밍 등에 적합
 - Wi-Fi + Bluetooth 동시 지원 : BLE를 활용한 IoT 기기 및 스마트 디바이스 개발 가능
 - USB OTG 지원 : 직접 USB 장치와 통신 가능 (키보드, 마우스, 스토리지 연결)
 - 보안 기능 강화 : Secure Boot, Flash Encryption, AES-XTS 암호화 지원
 - ESP-IDF 및 Arduino 지원 : ESP-IDF, Arduino, MicroPython 등 다양한 개발 환경 제공
 
-## ✅ 3. ESP32-S3-WROOM-1-N16R8의 활용 사례
+✅ 3. ESP32-S3-WROOM-1-N16R8의 활용 사례
 - AI 및 머신러닝
 - 온디바이스 AI (On-Device AI)
 - 얼굴 인식, 음성 인식, AIoT (AI + IoT)
@@ -113,7 +113,7 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 - MQTT 및 WebSocket을 활용한 실시간 데이터 전송
 - 센서 데이터를 클라우드로 전송하여 모니터링
 
-## ✅ 4. ESP32-S3-WROOM-1-N16R8 개발 환경
+✅ 4. ESP32-S3-WROOM-1-N16R8 개발 환경
 - ESP-IDF (Espressif 공식 SDK)
 - Arduino IDE
 - Visual Code
