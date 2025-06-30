@@ -126,6 +126,8 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
 -----------------------------------------------------------------
+# 조도센서 (GY302)
+-----------------------------------------------------------------
 
 # ✅ 1. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
 ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 강력한 무선 모듈입니다.
