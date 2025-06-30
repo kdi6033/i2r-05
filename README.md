@@ -50,6 +50,19 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 ![i2r-05](https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2)
 ![i2r-05 회로도](https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d)
 
+🔷 주요 기능 핀
+| 기능        | GPIO | 핀 번호  | 설명         |
+| --------- | ---- | ----- | ---------- |
+| TX\_USB   | IO43 | 37    | USB TX     |
+| RX\_USB   | IO44 | 36    | USB RX     |
+| SCL (I2C) | IO17 | 10    | I2C 클럭     |
+| SDA (I2C) | IO18 | 11    | I2C 데이터    |
+| USB\_DN   | IO19 | 13    | USB D-     |
+| USB\_DP   | IO20 | 14    | USB D+     |
+| FR\_SW    | IO45 | 26,35 | 기능 스위치     |
+| LED\_RGB  | IO48 | 25    | 내장 RGB LED |
+
+
 ### 1. 주요 특징
 #### (1) CPU 및 성능
 - 듀얼코어 Xtensa® LX7 32비트 프로세서
