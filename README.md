@@ -43,12 +43,12 @@ GitHub의 i2r-05 레포지터리를 기반으로 학생들에게 IoT 및 임베�
 - AI가 탑재된 임베디드 시스템을 직접 설계하고 응용할 수 있는 능력 배양
 - 실제 산업 현장에서 활용 가능한 IoT 및 AI 기술 습득
 
+# ESP32-S3-WROOM-1-N16R8 설명
+ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
+
 ESP32 S3 16M Flash, AI IoT 개발용 보드
 ![i2r-05](https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2)
 ![i2r-05 회로도](https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d)
-
-# ESP32-S3-WROOM-1-N16R8 설명
-ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
 ### 1. 주요 특징
 #### (1) CPU 및 성능
