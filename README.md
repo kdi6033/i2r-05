@@ -31,12 +31,12 @@ GitHub의 i2r-05 레포지터리를 기반으로 학생들에게 IoT 및 임베�
 - 개발 환경 구축(Arduino IDE, ESP-IDF, PlatformIO)
 - 기본적인 GPIO 제어 및 센서 연결 실습
 - 시리얼 통신 및 Wi-Fi 설정
-- 
+  
 🟢 (2) 중급 과정: IoT 및 네트워크 프로그래밍    
 - MQTT 프로토콜을 활용한 데이터 송수신
 - 클라우드 서버(AWS, Firebase, Node.js 서버)와의 연동
 - MongoDB와 연계하여 데이터 저장 및 분석
-- 
+  
 🟢 (3) 고급 과정: On-Device AI 구현    
 - ESP32-S3의 AI 가속 기능(TensorFlow Lite Micro, Edge Impulse) 소개
 - 간단한 머신러닝 모델(이미지 인식, 음성 인식) 학습 및 배포
@@ -69,42 +69,43 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 | LED\_RGB  | IO48 | 내장 RGB LED |
 
 
-✅ 1. 주요 특징
-🟢 (1) CPU 및 성능
+✅ 1. 주요 특징    
+
+🟢 (1) CPU 및 성능    
 - 듀얼코어 Xtensa® LX7 32비트 프로세서
 - 최대 240MHz 클럭 속도
 - AI 및 DSP 기능 향상 (벡터 연산 가속 지원)
-🟢 (2) 메모리
+🟢 (2) 메모리    
 - 16MB 플래시 메모리 (N16)
 - 8MB PSRAM (R8) → AI, 이미지 처리, 데이터 버퍼링에 유용
-🟢 (3)무선 기능
+🟢 (3)무선 기능     
 - Wi-Fi 802.11 b/g/n (2.4GHz)
 - Bluetooth 5.0 LE (Low Energy)
 - WPA3 보안 지원
-🟢 (4) USB 기능
+🟢 (4) USB 기능    
 - Full-Speed USB OTG (USB 1.1)
 - USB CDC/JTAG 디버깅 지원
 - USB-Serial 통신 가능 (UART 필요 없음)
-🟢 (5) GPIO 및 확장성
+🟢 (5) GPIO 및 확장성    
 - 최대 45개의 GPIO 핀 제공
 - SPI, I2C, UART, PWM, ADC, DAC 지원
 - JTAG 디버깅 지원
-🟢 (6) 저전력 설계
+🟢 (6) 저전력 설계    
 - Deep Sleep 모드에서 μA 단위의 전력 소모
 - ULP (Ultra-Low Power) 코프로세서 내장
-🟢 (7) AI 및 머신러닝
+🟢 (7) AI 및 머신러닝    
 - Vector Extension (AI 가속기) 포함
 - TensorFlow Lite, ESP-DSP 최적화 지원
 
 
-✅ 2. ESP32-S3-WROOM-1-N16R8의 장점
+✅ 2. ESP32-S3-WROOM-1-N16R8의 장점    
 - 대용량 PSRAM (8MB) 탑재 : 이미지 처리, AI 모델, 오디오 스트리밍 등에 적합
 - Wi-Fi + Bluetooth 동시 지원 : BLE를 활용한 IoT 기기 및 스마트 디바이스 개발 가능
 - USB OTG 지원 : 직접 USB 장치와 통신 가능 (키보드, 마우스, 스토리지 연결)
 - 보안 기능 강화 : Secure Boot, Flash Encryption, AES-XTS 암호화 지원
 - ESP-IDF 및 Arduino 지원 : ESP-IDF, Arduino, MicroPython 등 다양한 개발 환경 제공
 
-✅ 3. ESP32-S3-WROOM-1-N16R8의 활용 사례
+✅ 3. ESP32-S3-WROOM-1-N16R8의 활용 사례    
 - AI 및 머신러닝
 - 온디바이스 AI (On-Device AI)
 - 얼굴 인식, 음성 인식, AIoT (AI + IoT)
@@ -118,7 +119,7 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 - MQTT 및 WebSocket을 활용한 실시간 데이터 전송
 - 센서 데이터를 클라우드로 전송하여 모니터링
 
-✅ 4. ESP32-S3-WROOM-1-N16R8 개발 환경
+✅ 4. ESP32-S3-WROOM-1-N16R8 개발 환경    
 - ESP-IDF (Espressif 공식 SDK)
 - Arduino IDE
 - Visual Code
@@ -181,7 +182,8 @@ void loop() {
   delay(1000);  // 1초 간격
 }
 ```
-📌 참고 사항
+
+📌 참고 사항    
 - 주소 변경: GY-302 센서에서 ADDR 핀을 GND에 연결하면 주소는 0x23, VCC에 연결하면 0x5C입니다. 대부분 GND 또는 미연결(기본 0x23)로 사용됩니다.
 - 조도 범위: 약 1~65535 lux까지 측정 가능.
 -----------------------------------------------------------------
