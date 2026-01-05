@@ -151,7 +151,7 @@ i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH175
 | SCL               | IO17        | I2C 클럭          |
 | ADDR              | GND (or NC) | 주소 설정 (기본 0x23) |
 
-##### 💻 조도센서 GY-302 프로그램램
+##### 💻 조도센서 GY-302 프로그램
 ```
 #include <Wire.h>
 #include <BH1750.h>
@@ -331,6 +331,7 @@ void flowingEffect() {
 
 # ✅ 2. i2r-05 Shield V1 보드
 <img width="482" alt="i2r Shield V1" src="https://github.com/user-attachments/assets/fcc54b19-4a71-4e17-8461-90e9ae864907" />    
+<img width="482" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/i2r-shield-01-3.png?raw=true" />    
 
  Arduino 기반의 다목적 학습 보드로, 추가적인 납땜이나 복잡한 배선 없이 다양한 실험을 수행할 수 있습니다. 보드에 내장된 다양한 모듈을 활용하여, 코드를 다운로드하는 것만으로 실험을 완료할 수 있도록 설계되었습니다.
  
