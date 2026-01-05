@@ -345,9 +345,9 @@ void flowingEffect() {
 | 2 | Light A1 | 조도 센서를 이용한 빛 감지 실험 가능 |
 | 10 | DHT11 D4 | 	온도 측정 실험 가능 |
 | 4  | LM35 A2 | 	온도 측정 실험 가능 |
-| 15 | RGB LED red | 빨간색 Led 입력 핀 |
-| 21 | RGB LED green | 녹색 Led 입력 핀 |
-| 16 | RGB LED blue | 파란색 Led 입력 핀 |
+| 15 | RGB LED red D9 | 빨간색 Led 입력 핀 |
+| 21 | RGB LED green D10 | 녹색 Led 입력 핀 |
+| 16 | RGB LED blue D11 | 파란색 Led 입력 핀 |
 | 12 | IR Receiver D6 | 	적외선 리모컨을 이용한 제어 가능 |
 | 14 | D8           | 디지털핀 |
 | 13 | D7           | 디지털핀 |
