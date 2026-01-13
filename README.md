@@ -1,11 +1,6 @@
 <div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=220&section=header&text=i2r%20AI%20IoT%20Platform&fontSize=50&animation=fadeIn&fontAlignY=38&desc=IoT%20·%20피지컬%20AI%20·%20온디바이스%20AI%20기반의%20스마트%20공장%20자동화%20솔루션&descAlignY=55&descAlign=50" />
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=220&section=header&text=Arduino%20Board%20i2r-05&fontSize=50&animation=fadeIn&fontAlignY=38&desc=IoT%20%C2%B7%20%ED%94%BC%EC%A7%80%EC%BB%AC%20AI%20%C2%B7%20%EC%98%A8%EB%94%94%EB%B0%94%EC%9D%B4%EC%8A%A4%20AI%20%EA%B8%B0%EB%B0%98%EC%9D%98%20%EC%8A%A4%EB%A7%88%ED%8A%B8%20%EA%B3%B5%EC%9E%A5%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%86%94%EB%A3%A8%EC%85%98&descAlignY=55&descAlign=50" />
 </div>
-
-<div align="center">
-  <img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=220&section=header&text=Arduino%20ESP32-S3%20AI%20IoT%20Edge%20%EC%BB%A8%ED%8A%B8%EB%A1%A4%EB%9F%AC%20%5Bi2r-05%5D&fontSize=50&animation=fadeIn&fontAlignY=38&desc=IoT%20%C2%B7%20%ED%94%BC%EC%A7%80%EC%BB%AC%20AI%20%C2%B7%20%EC%98%A8%EB%94%94%EB%B0%94%EC%9D%B4%EC%8A%A4%20AI%20%EA%B8%B0%EB%B0%98%EC%9D%98%20%EC%8A%A4%EB%A7%88%ED%8A%B8%20%EA%B3%B5%EC%9E%A5%20%EC%9E%90%EB%8F%99%ED%99%94%20%EC%86%94%EB%A3%A8%EC%85%98&descAlignY=55&descAlign=50" />
-</div>
-
 
 <div align="center">
   <a href="https://i2r.link">🌐 공식 홈페이지</a> &nbsp;&nbsp; | &nbsp;&nbsp;
