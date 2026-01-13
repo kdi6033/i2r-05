@@ -1,3 +1,14 @@
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=auto&height=220&section=header&text=i2r%20AI%20IoT%20Platform&fontSize=50&animation=fadeIn&fontAlignY=38&desc=IoT%20·%20피지컬%20AI%20·%20온디바이스%20AI%20기반의%20스마트%20공장%20자동화%20솔루션&descAlignY=55&descAlign=50" />
+</div>
+
+<div align="center">
+  <a href="https://i2r.link">🌐 공식 홈페이지</a> &nbsp;&nbsp; | &nbsp;&nbsp;
+  <a href="https://i2r.link/products">🛒 i2r 제품구매</a> &nbsp;&nbsp; | &nbsp;&nbsp;
+  <a href="https://www.youtube.com/@i2r-link">▶️ YouTube</a>
+</div>
+
+---
 # ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
 아래 소스코드를 보드에 설치하면 자동으로 사이트에 보드가 등록되고 모니터링 할 수 있습니다. 이러한 프로그램을 실현 할 수 있게 AI를 활용해 프로그램 과정을 이 사이트에서 설명 하겠습니다.
