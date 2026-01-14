@@ -9,7 +9,7 @@
 </div>
 
 ---
-# ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
+## ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
 🎯 개요   
 
@@ -22,7 +22,7 @@ i2r-05 보드를 활용하여 기본적인 하드웨어 이해부터 실습을 �
 - 머신러닝 및 On-Device AI 개념을 학습하고 실제 보드에서 실행 가능하도록 구현
 - ESP32-S3의 강력한 연산 성능을 활용하여 실시간 데이터 분석 및 처리
 
-# ✅ ESP32-S3-WROOM-1-N16R8 설명
+## ✅ ESP32-S3-WROOM-1-N16R8 설명
 ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
 ESP32 S3 16M Flash, AI IoT 개발용 보드
@@ -113,8 +113,8 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 
 [![26-1 ESP32-S3 아두이노 실습보드 전파인증](https://img.youtube.com/vi/buiv6945OOA/0.jpg)](https://youtu.be/buiv6945OOA) 
 -----------
-# ✅ 조도센서 (GY302)
-## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
+## ✅ 조도센서 (GY302)
+### 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
 
 i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH1750) 조도 센서용 아두이노 프로그램 입니다.
 - GY-320은 GY-302의 오기일 가능성이 높으며, 실제 센서는 BH1750을 사용합니다.
