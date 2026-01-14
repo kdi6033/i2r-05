@@ -11,10 +11,6 @@
 ---
 # ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
-[아두이노 소스프로그램 링크](https://github.com/kdi6033/i2r-05/blob/main/file/board-i2r-05.ino)  
-
-[![26-1 ESP32-S3 아두이노 실습보드 전파인증](https://img.youtube.com/vi/buiv6945OOA/0.jpg)](https://youtu.be/buiv6945OOA) 
-
 🎯 개요   
 
 i2r-05 보드를 활용하여 기본적인 하드웨어 이해부터 실습을 진행하고, Physical AI On-Device AI(온디바이스 AI) 구현합니다. 그리고 스마트팜을 하시는 분들을 위해서 각종 센서와 액튜에이터를 자동으로 연결하여 스마트폰과 PC에서 모니터링/제어 할 수 있게 합니다.
@@ -110,6 +106,11 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 <img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
 -----------------------------------------------------------------
+
+[아두이노 소스프로그램 링크](https://github.com/kdi6033/i2r-05/blob/main/file/board-i2r-05.ino)  
+
+[![26-1 ESP32-S3 아두이노 실습보드 전파인증](https://img.youtube.com/vi/buiv6945OOA/0.jpg)](https://youtu.be/buiv6945OOA) 
+-----------
 # ✅ 조도센서 (GY302)
 ## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
 
