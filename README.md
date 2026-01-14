@@ -105,7 +105,7 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 
 arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아래와 같습니다.    
 
-<img width="300" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
+<img width="150" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
 -----------------------------------------------------------------
 
