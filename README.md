@@ -26,11 +26,10 @@ i2r-05 보드를 활용하여 기본적인 하드웨어 이해부터 실습을 �
 ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
 ESP32 S3 16M Flash, AI IoT 개발용 보드
-![i2r-05](https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2)
-![i2r-05 회로도](https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d)
 
-<img src="https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2?raw=true" height="150">
-<img src="https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d?raw=true" height="150">
+<img src="https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2?raw=true" height="300">    
+
+<img src="https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d?raw=true" height="300">    
 
 ## 📌 i2r-05 보드 핀맵
 
