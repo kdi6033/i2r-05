@@ -29,6 +29,9 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 ![i2r-05](https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2)
 ![i2r-05 회로도](https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d)
 
+<img src="https://github.com/user-attachments/assets/4ba415d9-08e6-4b2c-9396-1d3f35ffdfe2?raw=true" height="150">
+<img src="https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d?raw=true" height="150">
+
 ## 📌 i2r-05 보드 핀맵
 
 | 기능        | GPIO |  설명         |
