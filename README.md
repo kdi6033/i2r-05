@@ -51,24 +51,30 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 - 듀얼코어 Xtensa® LX7 32비트 프로세서
 - 최대 240MHz 클럭 속도
 - AI 및 DSP 기능 향상 (벡터 연산 가속 지원)
+  
 🟢 (2) 메모리    
 - 16MB 플래시 메모리 (N16)
 - 8MB PSRAM (R8) → AI, 이미지 처리, 데이터 버퍼링에 유용
+  
 🟢 (3)무선 기능     
 - Wi-Fi 802.11 b/g/n (2.4GHz)
 - Bluetooth 5.0 LE (Low Energy)
 - WPA3 보안 지원
+  
 🟢 (4) USB 기능    
 - Full-Speed USB OTG (USB 1.1)
 - USB CDC/JTAG 디버깅 지원
 - USB-Serial 통신 가능 (UART 필요 없음)
+  
 🟢 (5) GPIO 및 확장성    
 - 최대 45개의 GPIO 핀 제공
 - SPI, I2C, UART, PWM, ADC, DAC 지원
 - JTAG 디버깅 지원
+  
 🟢 (6) 저전력 설계    
 - Deep Sleep 모드에서 μA 단위의 전력 소모
 - ULP (Ultra-Low Power) 코프로세서 내장
+  
 🟢 (7) AI 및 머신러닝    
 - Vector Extension (AI 가속기) 포함
 - TensorFlow Lite, ESP-DSP 최적화 지원
