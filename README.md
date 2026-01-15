@@ -107,6 +107,21 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 
 <img width="250" src="https://github.com/user-attachments/assets/786d4d17-e62d-4c16-bae7-ef9bf459cffe" />    
 
+
+<br>     
+<details>
+    <summary>💻 partitions.csv 16M Flash 설계</summary>
+
+```c
+# Name,   Type, SubType, Offset,   Size,       Flags
+nvs,      data, nvs,     0x9000,   0x5000,
+otadata,  data, ota,     0xe000,   0x2000,
+app0,     app,  ota_0,   0x10000,  0x600000,
+app1,     app,  ota_1,   0x610000, 0x600000,
+coredump, data, coredump,0xC10000, 0x10000,
+spiffs,   data, spiffs,  0xC20000, 0x3D0000,
+```
+</details>
 -----
 
 ## 📌 보드의 RGB Led 제어 (48번핀)
