@@ -128,7 +128,7 @@ spiffs,   data, spiffs,  0xC20000, 0x3D0000,
 ## 📌 보드의 RGB Led 제어 (48번핀)
 보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
 
-### 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
+### 🔗 [▶️ 유튜브 보기 - ** ChatGPT AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
 
  [▶️ 유튜브 보기 - **Antigravity AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/Z3YIdUVMx4M)
 
