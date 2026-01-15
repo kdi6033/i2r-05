@@ -137,8 +137,12 @@ spiffs,   data, spiffs,  0xC20000, 0x3D0000,
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 이 한선으로 칼라를 제어 합니다. 빨강 파랑 녹색 불들어오게 프로그램 해줘
 ```
-##### 💻 아두이노 프로그램
-```
+
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
+
+```c
 #include <Adafruit_NeoPixel.h>
 
 #define LED_PIN 48      // RGB LED가 연결된 핀 번호
@@ -166,6 +170,8 @@ void setColor(uint8_t red, uint8_t green, uint8_t blue) {
   strip.show();                                         // 설정한 색상을 출력
 }
 ```
+</details>
+
 
 Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 일어 나서 제어용 프로그램과 함깨 구성하면 에러가 자주 발생하여 FastLED.h 를 사용해서 Led를 제어 합니다.   
 이는 I2C와 충돌이 일어 날 수 있으나 앞에 프로그램 보다는 효율적 입니다.    
