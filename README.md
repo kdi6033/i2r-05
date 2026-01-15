@@ -292,8 +292,13 @@ ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 
 ```
 esp32 s3 보드 47, 38번 핀에 led가 연결되어 있습니다. 1초 간격으로 교차로 점등하게 프록램 해줘요
 ```
-아두이노 프로그램
-```
+
+
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
+
+```c
 #define LED1_PIN 47 // 첫 번째 LED 핀 번호
 #define LED2_PIN 38 // 두 번째 LED 핀 번호
 
@@ -315,6 +320,7 @@ void loop() {
   delay(1000);                 // 1초 대기
 }
 ```
+</details>
 
 ##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 와이파이 연결과 Led    
 ```
