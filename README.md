@@ -109,6 +109,7 @@ arduino IDE를 사용하여 컴파일 하려면 tool 에서 보드설정은 아�
 
 
 <br>     
+custom 으로 설정하면 partition.csv 를 참조합니다. 다음은 chatgpt 또는 gemini 에게 부탁해 작성한 파일입니다. 참조하세요
 <details>
     <summary>💻 partitions.csv 16M Flash 설계</summary>
 
