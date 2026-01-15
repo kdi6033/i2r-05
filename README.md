@@ -122,6 +122,7 @@ coredump, data, coredump,0xC10000, 0x10000,
 spiffs,   data, spiffs,  0xC20000, 0x3D0000,
 ```
 </details>
+
 -----
 
 ## 📌 보드의 RGB Led 제어 (48번핀)
