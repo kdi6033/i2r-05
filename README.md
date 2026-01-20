@@ -443,7 +443,7 @@ void loop() {
 ESP32-S3 보드의 1번 핀에 아날로그 입력이 연결하여 해당 값을 읽어서 시리얼 포트로 출력하는 Arduino 프로그램입니다.
 ##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 1번 아나로그 입력    
 ```
-esp32 s3 보드 1 번핀에 아나로그 입력이 연결되어 있습니다. 입력 값을 시리얼포트로 알려줘
+https://github.com/kdi6033 i2r-05 보드 1 번핀에 아나로그 입력이 연결되어 있습니다. 입력 값을 시리얼포트로 알려줘
 ```
 - ANALOG_PIN은 1번 핀으로 설정하여 ADC1 채널을 사용합니다.
 - analogReadResolution(12)를 사용하여 아날로그 입력 값을 **12비트 해상도(0 ~ 4095)**로 읽습니다. 기본값은 12비트입니다.
