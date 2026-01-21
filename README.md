@@ -776,7 +776,7 @@ void loop() {
 
 이 프로그램은 DHT 라이브러리를 사용하여 온도와 습도를 읽고 시리얼 모니터에 출력합니다.   
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  DHT11 온습도 센서
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  DHT11 온습도 센서
 ```
 sp32 s3 보드 10 번핀에  DHT11 온습도 센서가 연결되어 있습니다. 온습도를 출력하는 프로그램해
 ```
@@ -829,7 +829,7 @@ void loop() {
 
 LM35 온도 센서는 아날로그 출력 타입의 온도 센서입니다. 온도를 섭씨(°C)로 측정하며, 출력 전압은 섭씨 1도당 10mV입니다. 이를 ESP32-S3의 4번 핀에 연결하여 값을 읽고 온도를 출력하는 프로그램은 다음과 같이 작성할 수 있습니다.
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  LM35 온도 센서
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  LM35 온도 센서
 ```
 LM35 센서가 4번핀에 연결되어 있어요 프로그램 해주세요
 ```
@@ -864,7 +864,7 @@ void loop() {
 
 이 프로그램은 RGB LED의 각 핀에 대해 LED의 밝기를 제어합니다. 빨강, 초록, 파랑, 흰색의 조합을 통해 다양한 색상을 순차적으로 출력합니다.
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  RGB Led 센서
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  RGB Led 센서
 ```
 15,21,16 이 차례로 red, green, blue 가 연결되어 있습니다. led 프로그램 해줘
 ```
@@ -909,7 +909,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 }
 ```
 
-# 3. Otto Ninja 로봇
+## ✅ 3. Otto Ninja 로봇
 배선연결 요약
 |이름 | 핀번호 | 모터이름 |
 |-----|-------|-------|
