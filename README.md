@@ -135,14 +135,14 @@ spiffs,   data, spiffs,  0xC20000, 0x3D0000,
 ## 📌 보드의 RGB Led 제어 (48번핀)
 보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
 
-### 🔗 [▶️ 유튜브 보기 - ** ChatGPT AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
+🔗 [▶️ 유튜브 보기 - ** ChatGPT AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
 
  [▶️ 유튜브 보기 - **Antigravity AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/Z3YIdUVMx4M)
 
 > 보드에는 RGB Led가 48번으로 장착되었습니다.  이 Led의 색상을 제어하는 프로그램 입니다.
 > 무지게, 점멸,흐름 효과 프로그램
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  💻 48번 RGB Led 제어    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  💻 48번 RGB Led 제어    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. 이 한선으로 칼라를 제어 합니다. 빨강 파랑 녹색 불들어오게 프로그램 해줘
 ```
@@ -186,7 +186,7 @@ Adafruit_NeoPixel 는 내부에 인터럽트를 사용하여 I2c와 충돌이 �
 이는 I2C와 충돌이 일어 날 수 있으나 앞에 프로그램 보다는 효율적 입니다.    
 다음은 무지개 효과, 점멸, 밝기를 조절하는 프로그램 입니다.    
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 무지게, 점멸,흐름 효과 프로그램    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 무지게, 점멸,흐름 효과 프로그램    
 ```
 esp32 s3 를 사용하고 48번핀에 RGB Led  가 연결되 있습니다. FastLED.h를 이용해서 무지게, 점멸,흐름 효과 프로그램 해줘
 ```
@@ -292,9 +292,9 @@ void flowingEffect() {
 ## 📌 2.1 Led 제어 (47, 38 번핀)
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
 
-## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
+🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻  47, 38번 Led 제어    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻  47, 38번 Led 제어    
 ```
 esp32 s3 보드 47, 38번 핀에 led가 연결되어 있습니다. 1초 간격으로 교차로 점등하게 프록램 해줘요
 ```
@@ -328,7 +328,7 @@ void loop() {
 ```
 </details>
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 와이파이 연결과 Led    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 와이파이 연결과 Led    
 ```
 와이파이 연결프로그램 만들어줘 ssid:i2r pw:00000000
 처음에 빨간색 led, 연결되면 파란색 led 불들어오게 프로그램 해줘
