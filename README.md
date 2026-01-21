@@ -455,17 +455,21 @@ void loop() {
 -------------------------------------------------------------------------
 
 ## 📌 2.3 아나로그 입력 (1 번핀)
+🔗 [▶️ 유튜브 보기 - **Antigravity IoT 아두이노 보드 아나로그 입력**](https://youtu.be/o4VF_i8oHuc)
 ESP32-S3 보드의 1번 핀에 아날로그 입력이 연결하여 해당 값을 읽어서 시리얼 포트로 출력하는 Arduino 프로그램입니다.
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 1번 아나로그 입력    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 1번 아나로그 입력    
 ```
 https://github.com/kdi6033 i2r-05 보드 1 번핀에 아나로그 입력이 연결되어 있습니다. 입력 값을 시리얼포트로 알려줘
 ```
 - ANALOG_PIN은 1번 핀으로 설정하여 ADC1 채널을 사용합니다.
 - analogReadResolution(12)를 사용하여 아날로그 입력 값을 **12비트 해상도(0 ~ 4095)**로 읽습니다. 기본값은 12비트입니다.
 - analogRead(ANALOG_PIN) 함수로 아날로그 값을 읽습니다. 읽은 값은 0에서 4095 범위의 정수로 반환됩니다.
-- 
-아두이노 프로그램
-```
+
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램 </summary>
+
+```c
 #define ANALOG_PIN 1  // 아날로그 입력 핀 번호
 
 void setup() {
@@ -480,12 +484,13 @@ void loop() {
   delay(500);                               // 500ms 대기
 }
 ```
+</details>
 
 ## 📌 2.4 Buzzer 출력 (11 번핀)
 
 ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 코드를 작성했습니다. 부저는 PWM 신호를 통해 제어되며, 이를 통해 다양한 음을 생성할 수 있습니다.    
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  11번 Buzzer 출력    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  11번 Buzzer 출력    
 ```
 esp32 s3 보드 11 번핀에 Buzzer가 연결되어 있습니다. 출력이 나오게 프로그램해줘
 ```
@@ -505,7 +510,7 @@ void loop() {
   delay(500);                               // 500ms 대기
 }
 ```
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  음악연주   
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  음악연주   
 ```
 부져로 음악연주하는 프로그램 만들어줘
 ```
