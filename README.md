@@ -293,6 +293,7 @@ void flowingEffect() {
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
 
 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
+🔗 [▶️ 유튜브 보기 - **Antigravity 와 LED**](https://youtu.be/2vXIVVjECGM)
 
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻  47, 38번 Led 제어    
 ```
