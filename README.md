@@ -7,7 +7,7 @@
   <a href="https://i2r.link/products">🛒 i2r 제품구매</a> &nbsp;&nbsp; | &nbsp;&nbsp;
   <a href="https://www.youtube.com/@i2r-link">▶️ YouTube</a>
 </div>
-
+스위치 입력
 ---
 ## ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
@@ -399,8 +399,13 @@ ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 
 ```
 esp32 s3 보드 8, 9 번핀에 스위치가 연결되어 있습니다. 스위치를 누르면 시리얼포트로 이를 알려줘
 ```
-아두이노 프로그램
-```
+
+
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램 </summary>
+
+```c
 #define SWITCH1_PIN 8  // 첫 번째 스위치 핀 번호
 #define SWITCH2_PIN 9  // 두 번째 스위치 핀 번호
 
@@ -420,7 +425,9 @@ void loop() {
     delay(200); // debounce 방지를 위한 딜레이
   }
 }
+
 ```
+</details>
 
 💡  왜 Pull-up / Pull-down 이 필요한가?
 디지털 입력 핀(GPIO)이 **떠 있는 상태(floating)**이면 전압이 불안정해서
