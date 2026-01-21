@@ -488,34 +488,26 @@ void loop() {
 
 ## 📌 2.4 Buzzer 출력 (11 번핀)
 
+🔗 [▶️ 유튜브 보기 - **Antigravity IoT 아두이노 보드 Buzzer 출력**](https://youtube.com/shorts/og0Jyk87y6g)
+
 ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 코드를 작성했습니다. 부저는 PWM 신호를 통해 제어되며, 이를 통해 다양한 음을 생성할 수 있습니다.    
 
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  11번 Buzzer 출력    
 ```
 esp32 s3 보드 11 번핀에 Buzzer가 연결되어 있습니다. 출력이 나오게 프로그램해줘
 ```
-아두이노 프로그램
-```
-#define ANALOG_PIN 1  // 아날로그 입력 핀 번호
 
-void setup() {
-  Serial.begin(115200);       // 시리얼 통신 초기화
-  analogReadResolution(12);   // 12비트 해상도 설정 (0 ~ 4095)
-}
-
-void loop() {
-  int analogValue = analogRead(ANALOG_PIN);  // 아날로그 값 읽기
-  Serial.print("Analog Value: ");
-  Serial.println(analogValue);              // 값을 시리얼로 출력
-  delay(500);                               // 500ms 대기
-}
-```
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  음악연주   
 ```
 부져로 음악연주하는 프로그램 만들어줘
 ```
 ESP32-S3의 부저를 사용해 간단한 음악을 연주하는 프로그램을 작성할 수 있습니다. 아래는 아두이노의 tone() 함수를 사용하여 **"Twinkle Twinkle Little Star"**를 연주하는 예제입니다. 
-```
+
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램 </summary>
+
+```c
 #define BUZZER_PIN 11  // 부저가 연결된 핀 번호
 
 // 음계의 주파수 정의 (도, 레, 미, 파, 솔, 라, 시)
@@ -555,7 +547,11 @@ void loop() {
 
   delay(2000); // 전체 멜로디 끝난 후 2초 대기
 }
+
 ```
+</details>
+
+
 
 ## 📌 2.5 Light 센서 (2 번핀)
 
