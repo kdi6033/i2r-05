@@ -394,14 +394,13 @@ void loop() {
 
 ## 📌 2.2 스위치 입력 (8, 9 번핀)
 ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 스위치를 누를 때마다 시리얼 포트로 해당 상태를 출력하는 Arduino 프로그램입니다.  
-## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 스위치 입력**](https://youtu.be/KBWlxocToo8)
+🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 스위치 입력**](https://youtu.be/KBWlxocToo8)
+🔗 [▶️ 유튜브 보기 - **Antigravity IoT 아두이노 보드 스위치 입력**](https://youtu.be/rGXK1YXbcC0)
 
-##### <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 8, 9번 스위치 입력    
+<img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 8, 9번 스위치 입력    
 ```
 esp32 s3 보드 8, 9 번핀에 스위치가 연결되어 있습니다. 스위치를 누르면 시리얼포트로 이를 알려줘
 ```
-
-
 <br>     
 <details>
     <summary>💻 아두이노 프로그램 </summary>
@@ -450,7 +449,7 @@ void loop() {
 | 스위치를 GND에 연결 | `INPUT_PULLUP` 사용   | 노이즈에 강하고 안전한 방식   |
 | 스위치를 Vcc에 연결 | `INPUT_PULLDOWN` 사용 | 드뭄, 일부 상황에서 사용 가능 |
 
-## 🔗 [▶️ 유튜브 보기 - **IoT 스위치 만들기**](https://youtu.be/7TIiey674zA)
+🔗 [▶️ 유튜브 보기 - **IoT 스위치 만들기**](https://youtu.be/7TIiey674zA)
 -------------------------------------------------------------------------
 
 ## 📌 2.3 아나로그 입력 (1 번핀)
