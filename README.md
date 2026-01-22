@@ -828,6 +828,8 @@ void loop() {
 }
 ```
 
+🔗 [Buzzer 음악 만들기 참조 사이트](https://github.com/robsoncouto/arduino-songs/tree/master)
+
 ## 📌 2.7 LM35 온도 센서 (4 번핀)
 
 LM35 온도 센서는 아날로그 출력 타입의 온도 센서입니다. 온도를 섭씨(°C)로 측정하며, 출력 전압은 섭씨 1도당 10mV입니다. 이를 ESP32-S3의 4번 핀에 연결하여 값을 읽고 온도를 출력하는 프로그램은 다음과 같이 작성할 수 있습니다.
