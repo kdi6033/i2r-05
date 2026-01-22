@@ -772,6 +772,9 @@ void loop() {
 }
 ```
 
+[Buzzer 참조할 만한 추천 사이트](https://github.com/robsoncouto/arduino-songs/tree/master) 
+
+
 ## 📌 2.6 DHT11 온습도 센서 (10 번핀)
 
 이 프로그램은 DHT 라이브러리를 사용하여 온도와 습도를 읽고 시리얼 모니터에 출력합니다.   
