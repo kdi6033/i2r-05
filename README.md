@@ -736,6 +736,7 @@ void loop() {
 
 [Buzzer 음악 제작 참조사이트](https://github.com/robsoncouto/arduino-songs/tree/master)
 
+🔗 [▶️ 유튜브 보기 - **🤖🎶 Gemini Antigravity: AI와 함께하는 아두이노 음악 연주 AI 프로그램**](https://youtube.com/shorts/t_A86b2qr3I)
 
 ## 📌 2.5 Light 센서 (2 번핀)
 
