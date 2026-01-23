@@ -752,7 +752,7 @@ https://github.com/kdi6033 i2r-05 보드 2 번핀에 Light 센서가 연결되�
 - analogReadResolution(12): ESP32-S3의 ADC는 최대 12비트 해상도를 지원합니다. 이를 설정해 ADC 값이 0~4095 범위로 출력되도록 합니다.
 - Serial 출력: 읽은 ADC 값과 전압 값을 시리얼 모니터에 출력합니다
 
-br>     
+<br>     
 <details>
     <summary>💻 아두이노 프로그램</summary>
 
