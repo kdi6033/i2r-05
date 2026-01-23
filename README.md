@@ -750,33 +750,30 @@ https://github.com/kdi6033 i2r-05 보드 2 번핀에 Light 센서가 연결되�
 ```
 - LIGHT_SENSOR_PIN 설정: 센서가 연결된 핀 번호를 #define으로 정의합니다.
 - analogReadResolution(12): ESP32-S3의 ADC는 최대 12비트 해상도를 지원합니다. 이를 설정해 ADC 값이 0~4095 범위로 출력되도록 합니다.
-- ADC 값을 전압으로 변환: 조도 센서에서 출력된 값은 ADC를 통해 읽은 뒤, 전압 값으로 변환됩니다.
-계산 공식: 전압 = (ADC 값 / 최대 ADC 값) * 기준 전압
 - Serial 출력: 읽은 ADC 값과 전압 값을 시리얼 모니터에 출력합니다
-  
-아두이노 프로그램
-```
-#define LIGHT_SENSOR_PIN 2  // Light 센서가 연결된 핀
+
+br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
+
+```c
+const int lightSensorPin = 2; // 조도 센서 핀 (Pin 2)
 
 void setup() {
-  Serial.begin(115200);           // 시리얼 통신 초기화
-  pinMode(LIGHT_SENSOR_PIN, INPUT);  // Light 센서 핀을 입력으로 설정
-  analogReadResolution(12);       // 12비트 ADC 해상도 설정 (0~4095)
+  Serial.begin(115200); // 시리얼 통신 초기화
+  pinMode(lightSensorPin, INPUT); // 핀 모드 설정
 }
 
 void loop() {
-  int lightValue = analogRead(LIGHT_SENSOR_PIN);  // Light 센서 값 읽기
-  float voltage = (lightValue / 4095.0) * 3.3;    // ADC 값을 전압으로 변환 (ESP32-S3의 기본 전압 기준은 3.3V)
-
-  Serial.print("Light Sensor Value: ");
-  Serial.print(lightValue);                       // ADC 값 출력
-  Serial.print(" | Voltage: ");
-  Serial.print(voltage, 2);                       // 전압 값 출력
-  Serial.println(" V");
-
-  delay(500);  // 500ms 대기
+  int sensorValue = analogRead(lightSensorPin); // 조도 센서 값 읽기 (0 ~ 4095)
+  
+  Serial.print("Illuminance Value: ");
+  Serial.println(sensorValue); // 시리얼 모니터에 출력
+  
+  delay(500); // 0.5초 대기
 }
 ```
+</details>
 
 
 ## 📌 2.6 DHT11 온습도 센서 (10 번핀)
