@@ -746,7 +746,7 @@ ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 
 
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  Light 센서
 ```
-https://github.com/kdi6033 i2r-05 보드 11 번핀에 Light 센서가 연결되어 있습니다. 조도를 출력하는 프로그램해줘
+https://github.com/kdi6033 i2r-05 보드 2 번핀에 Light 센서가 연결되어 있습니다. 조도를 출력하는 프로그램해줘
 ```
 - LIGHT_SENSOR_PIN 설정: 센서가 연결된 핀 번호를 #define으로 정의합니다.
 - analogReadResolution(12): ESP32-S3의 ADC는 최대 12비트 해상도를 지원합니다. 이를 설정해 ADC 값이 0~4095 범위로 출력되도록 합니다.
