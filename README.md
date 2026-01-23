@@ -738,6 +738,8 @@ void loop() {
 
 🔗 [▶️ 유튜브 보기 - **🤖🎶 Gemini Antigravity: AI와 함께하는 아두이노 음악 연주 AI 프로그램**](https://youtube.com/shorts/t_A86b2qr3I)
 
+[Buzzer 참조할 만한 추천 사이트](https://github.com/robsoncouto/arduino-songs/tree/master) 
+
 ## 📌 2.5 Light 센서 (2 번핀)
 
 ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 코드를 작성했습니다. 부저는 PWM 신호를 통해 제어되며, 이를 통해 다양한 음을 생성할 수 있습니다.    
@@ -775,8 +777,6 @@ void loop() {
   delay(500);  // 500ms 대기
 }
 ```
-
-[Buzzer 참조할 만한 추천 사이트](https://github.com/robsoncouto/arduino-songs/tree/master) 
 
 
 ## 📌 2.6 DHT11 온습도 센서 (10 번핀)
