@@ -837,7 +837,7 @@ LM35 온도 센서는 아날로그 출력 타입의 온도 센서입니다. 온�
 
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  LM35 온도 센서
 ```
-LM35 센서가 4번핀에 연결되어 있어요 프로그램 해주세요
+https://github.com/kdi6033 i2r-05 보드 LM35 센서가 4번핀에 연결되어 있어요 프로그램 해주세요
 ```
 아두이노 프로그램
 ```
