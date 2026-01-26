@@ -736,7 +736,7 @@ void loop() {
 
 [Buzzer 음악 제작 참조사이트](https://github.com/robsoncouto/arduino-songs/tree/master)
 
-🔗 [▶️ 유튜브 보기 - **🤖🎶 Gemini Antigravity: AI와 함께하는 아두이노 음악 연주 AI 프로그램**](https://youtube.com/shorts/t_A86b2qr3I)
+🔗 [▶️ 유튜브 보기 - **🤖🎶 Gemini Antigravity: AI와 함께하는 아두이노 음악 연주 프로그램**](https://youtube.com/shorts/t_A86b2qr3I)
 
 [Buzzer 참조할 만한 추천 사이트](https://github.com/robsoncouto/arduino-songs/tree/master) 
 
@@ -792,8 +792,11 @@ readTemperature(): 온도를 읽습니다
 - 출력 형식: 온도는 °C, 습도는 % 단위로 출력됩니다.
 - 지연 시간: 센서의 데이터 갱신 주기(최대 2초)에 맞춰 delay(2000)을 사용하여 2초마다 값을 읽습니다.
 
-아두이노 프로그램
-```
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
+
+```c
 #include "DHT.h"  //DHT sensor library by Adafruit
 
 #define DHTPIN 10       // DHT 센서가 연결된 핀 번호
@@ -828,6 +831,7 @@ void loop() {
   delay(2000); // 2초마다 측정
 }
 ```
+</details>
 
 🔗 [Buzzer 음악 만들기 참조 사이트](https://github.com/robsoncouto/arduino-songs/tree/master)
 
@@ -835,13 +839,20 @@ void loop() {
 
 LM35 온도 센서는 아날로그 출력 타입의 온도 센서입니다. 온도를 섭씨(°C)로 측정하며, 출력 전압은 섭씨 1도당 10mV입니다. 이를 ESP32-S3의 4번 핀에 연결하여 값을 읽고 온도를 출력하는 프로그램은 다음과 같이 작성할 수 있습니다.
 
+
+🔗 [▶️ 유튜브 보기 - **🤖🎶 Gemini Antigravity: AI와 함께하는 LM35 온도 센서 프로그램**](https://youtube.com/shorts/PyqmXhaykfk)
+
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  LM35 온도 센서
 ```
 https://github.com/kdi6033 i2r-05 보드 LM35 센서가 4번핀에 연결되어 있어요 프로그램 해주세요
 ```
-아두이노 프로그램
-```
-#define LM35_PIN 4  // LM35 센서의 출력 핀이 연결된 ESP32-S3의 핀 번호
+
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
+
+```c
+  #define LM35_PIN 4  // LM35 센서의 출력 핀이 연결된 ESP32-S3의 핀 번호
 
 void setup() {
   Serial.begin(115200);           // 시리얼 통신 초기화
@@ -865,6 +876,7 @@ void loop() {
   delay(1000);  // 1초 대기
 }
 ```
+</details>
 
 ## 📌 2.8 RGB Led 센서 (15,21,16 번핀 red,green,blue)
 
@@ -872,7 +884,7 @@ void loop() {
 
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100">  RGB Led 센서
 ```
-15,21,16 이 차례로 red, green, blue 가 연결되어 있습니다. led 프로그램 해줘
+https://github.com/kdi6033 i2r-05 보드 15,21,16 이 차례로 red, green, blue 가 연결되어 있습니다. led 프로그램 해줘
 ```
 아두이노 프로그램
 ```
@@ -2240,7 +2252,14 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 
 > 크라우드에 접속하여 스위치, 온도, 습도, 아나로그 센서, 조도센서 등을 원격으로 모니터링 제어 하는 방법을 소개한다.
 
-  
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
+
+```c
+  ✅ 프로그램
+```
+</details>
 
 --------------------
 
