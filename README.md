@@ -959,7 +959,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 | :--- | :--- | :--- | :--- |
 | **LCD_RD** | **01** | Read | 읽기 신호 |
 | **LCD_WR** | **02** | Write | 쓰기 신호 |
-| **LCD_RS** | **04** | C/D | 명령(Command) / 데이터(Data) 선택 |
+| **LCD_DC** | **04** | C/D | 명령(Command) / 데이터(Data) 선택 |
 | **LCD_CS** | **05** | CS | 칩 선택 (Chip Select) |
 | **LCD_RST** | **06** | Reset | 리셋 신호 |
 
@@ -968,14 +968,14 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 | 쉴드 핀 라벨 | 아두이노 핀 | 역할 | 설명 |
 | :--- | :--- | :--- | :--- |
+| **LCD_D0** | **14** | Data 0 | 데이터 비트 0 (LSB) |
+| **LCD_D1** | **15** | Data 1 | 데이터 비트 1 |
 | **LCD_D2** | **08** | Data 2 | 데이터 비트 2 |
 | **LCD_D3** | **09** | Data 3 | 데이터 비트 3 |
 | **LCD_D4** | **10** | Data 4 | 데이터 비트 4 |
 | **LCD_D5** | **11** | Data 5 | 데이터 비트 5 |
 | **LCD_D6** | **12** | Data 6 | 데이터 비트 6 |
 | **LCD_D7** | **13** | Data 7 | 데이터 비트 7 |
-| **LCD_D0** | **14** | Data 0 | 데이터 비트 0 (LSB) |
-| **LCD_D1** | **15** | Data 1 | 데이터 비트 1 |
 
 ### 3. SD 카드 인터페이스 (SPI)
 SD 카드 슬롯은 아두이노의 하드웨어 SPI 핀을 사용합니다.
