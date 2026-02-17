@@ -929,6 +929,9 @@ void setColor(int redValue, int greenValue, int blueValue) {
 ```
 
 ## ✅ 3. Arduino 2.4인치 TFT LCD 터치 쉴드
+
+<img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/lcd24.png?raw=true" />    
+
 # Arduino Uno용 2.4인치 TFT LCD 터치 쉴드 (Pinout & Setup)
 
 이 리포지토리는 아두이노 우노(Arduino Uno) 폼팩터와 호환되는 **2.4인치 TFT LCD 터치 쉴드**의 핀 맵(Pinout)과 설정 정보를 담고 있습니다.
