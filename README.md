@@ -1004,7 +1004,9 @@ SD 카드 슬롯은 아두이노의 하드웨어 SPI 핀을 사용합니다.
     * `Adafruit TouchScreen` (터치 기능용)
     * `Adafruit GFX Library` (그래픽 코어)
 
-## ✅ 4. Otto Ninja 로봇
+## ✅ 4. 온도  습도 샌서  (Shield-03)
+
+## ✅ 5. Otto Ninja 로봇
 배선연결 요약
 |이름 | 핀번호 | 모터이름 |
 |-----|-------|-------|
