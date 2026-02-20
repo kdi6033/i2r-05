@@ -930,11 +930,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ## ✅ 3. Arduino 1.3인치 OLED LCD 쉴드 (shield-03)
 
-<img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/lcd24.png?raw=true" />    
-
 **i2r-05 보드 ESP32-S3** 보드를 사용하여 **1.3인치 I2C OLED 디스플레이 (SH1106 드라이버)** 를 제어하는 방법을 설명합니다.
-
----
 
 🎯  하드웨어 사양 (Hardware Specifications)
 
