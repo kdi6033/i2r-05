@@ -1053,7 +1053,86 @@ ESP32, 아두이노 기반 **IoT PLC 및 환경 모니터링 시스템**에 적�
 
 - ESP32 기반 IoT PLC 온습도 측정  
 - MQTT 클라우드 환경 모니터링  
-- 스마트팜 / 공장 환경 센싱  
+- 스마트팜 / 공장 환경 센싱
+
+
+다음은 온도와 습도를 측정해서 시리얼모니터로 표시하는 프로그램 입니다. 시리얼모니터 통신속도 115200
+
+<br>     
+<details>
+    <summary>💻 아두이노 온도 습도 측정 프로그램</summary>
+
+```c
+#include <Wire.h>
+
+// SHT30 I2C 주소 (기본값: 0x44, 설정에 따라 0x45일 수 있음)
+#define SHT30_ADDRESS 0x44
+
+// i2r-05 핀 설정
+#define SDA_PIN 18
+#define SCL_PIN 17
+
+void setup() {
+  Serial.begin(115200);
+  while (!Serial); // 시리얼 모니터 연결 대기
+
+  // I2C 초기화 (SDA, SCL)
+  Wire.begin(SDA_PIN, SCL_PIN);
+  
+  Serial.println("SHT30 온습도 센서 테스트 시작...");
+}
+
+void loop() {
+  // 측정 명령 전송 (High repeatability, Clock stretching disabled: 0x2C06)
+  Wire.beginTransmission(SHT30_ADDRESS);
+  Wire.write(0x2C);
+  Wire.write(0x06);
+  byte error = Wire.endTransmission();
+
+  if (error != 0) {
+    Serial.println("SHT30 센서를 찾을 수 없습니다. 연결을 확인하세요.");
+    delay(2000);
+    return;
+  }
+
+  // 측정 시간 대기 (0x2C06 모드는 변환 시간이 필요함)
+  delay(50); 
+
+  // 데이터 요청 (6바이트: 온도 MSB, LSB, CRC, 습도 MSB, LSB, CRC)
+  Wire.requestFrom(SHT30_ADDRESS, 6);
+
+  if (Wire.available() == 6) {
+    // 온도 데이터 읽기
+    uint16_t tempRaw = (Wire.read() << 8) | Wire.read();
+    uint8_t tempCrc = Wire.read(); // CRC 무시
+
+    // 습도 데이터 읽기
+    uint16_t humiRaw = (Wire.read() << 8) | Wire.read();
+    uint8_t humiCrc = Wire.read(); // CRC 무시
+
+    // 온도 계산 공식: -45 + 175 * (S_T / 2^16 - 1)
+    float temperature = -45 + (175 * ((float)tempRaw / 65535.0));
+
+    // 습도 계산 공식: 100 * (S_RH / 2^16 - 1)
+    float humidity = 100 * ((float)humiRaw / 65535.0);
+
+    // 결과 출력
+    Serial.print("온도: ");
+    Serial.print(temperature, 1);
+    Serial.print(" °C \t");
+    Serial.print("습도: ");
+    Serial.print(humidity, 1);
+    Serial.println(" %RH");
+  } else {
+    Serial.println("데이터 수신 실패");
+  }
+
+  delay(2000); // 2초마다 측정
+}
+
+```
+</details>
+
 
 ---
 
