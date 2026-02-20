@@ -932,13 +932,11 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 <img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/lcd24.png?raw=true" />    
 
-# 1.3인치 I2C OLED 디스플레이 (SH1106) - ESP32-S3 예제
-
-이 프로젝트는 **ESP32-S3** 보드를 사용하여 **1.3인치 I2C OLED 디스플레이 (SH1106 드라이버)** 를 제어하는 방법을 설명합니다.
+**i2r-05 보드 ESP32-S3** 보드를 사용하여 **1.3인치 I2C OLED 디스플레이 (SH1106 드라이버)** 를 제어하는 방법을 설명합니다.
 
 ---
 
-## 🖥 하드웨어 사양 (Hardware Specifications)
+🎯  하드웨어 사양 (Hardware Specifications)
 
 | 항목 | 설명 |
 | :--- | :--- |
@@ -951,7 +949,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 | **동작 전압** | 3.3V ~ 5V |
 | **시야각** | > 160° |
 
-### 핀 연결 (ESP32-S3 기준)
+🎯 핀 연결 (ESP32-S3 기준)
 | OLED 핀 | ESP32-S3 핀 | 비고 |
 | :--- | :--- | :--- |
 | **GND** | GND | 접지 |
@@ -963,7 +961,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ---
 
-## 🛠 필요한 라이브러리 (Software Dependencies)
+🎯 필요한 라이브러리 (Software Dependencies)
 
 이 프로젝트는 단색 디스플레이를 위한 강력한 그래픽 라이브러리인 **U8g2**를 사용합니다.
 
@@ -975,39 +973,42 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ---
 
-## 💻 소스 코드 설명
 
-주요 코드는 `lcd1-3.ino` 파일에 있습니다.
+<br>     
+<details>
+    <summary>💻 아두이노 프로그램</summary>
 
-### 1. 라이브러리 포함 및 생성자 설정
-SH1106 드라이버를 위한 하드웨어 I2C 생성자를 사용합니다.
-
-```cpp
+```c
+#include <Arduino.h>
 #include <U8g2lib.h>
 #include <Wire.h>
 
-// SH1106 128x64 I2C 디스플레이 생성자
-// 파라미터 순서: (회전, 리셋핀, SCL핀, SDA핀)
-// ESP32-S3 보드 설정에 맞춰 핀 번호를 직접 지정합니다.
+// 1.3인치 SH1106 I2C OLED 예제 (SDA=18, SCL=17)
+// 아두이노 라이브러리 매니저에서 "U8g2" 라이브러리를 설치해야 합니다.
+
+// SDA = 18, SCL = 17 핀 설정
+// 생성자 파라미터: (Rotation, Reset, Clock/SCL, Data/SDA)
+// ESP32-S3의 경우 HW I2C 생성자에 핀 번호를 직접 전달하면 내부적으로 Wire.begin(sda, scl)을 호출합니다.
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, 17, 18);
+
+void setup(void) {
+  u8g2.begin();  // 디스플레이 초기화
+}
+
+void loop(void) {
+  u8g2.clearBuffer();          // 내부 메모리 지우기
+  
+  u8g2.setFont(u8g2_font_ncenB08_tr); // 폰트 설정
+  u8g2.drawStr(0, 10, "Hello World!"); // (x, y)
+  
+  u8g2.drawStr(0, 30, "ESP32-S3");
+  u8g2.drawStr(0, 45, "SDA: 18, SCL: 17");
+  
+  u8g2.sendBuffer();          // 디스플레이 전송
+  delay(1000);  
+}
 ```
-
-*   `U8G2_SH1106_128X64_NONAME_F_HW_I2C`:
-    *   **SH1106**: 1.3인치 OLED에 주로 사용되는 드라이버 칩
-    *   **F**: Full Buffer 모드 (화면 전체를 메모리에 그린 뒤 한 번에 전송, 처리 속도가 빠르고 코딩이 편리함)
-    *   **HW_I2C**: 하드웨어 I2C 통신 사용
-*   `U8G2_R0`: 화면 회전 없음 (기본 가로 모드).
-*   `17`, `18`: **SCL(17번)**, **SDA(18번)** 핀을 명시적으로 설정.
-
-### 2. 주요 함수 (Setup & Loop)
-*   **`setup()`**: `u8g2.begin()`을 호출하여 디스플레이와 통신을 시작합니다.
-*   **`loop()`**:
-    1.  `u8g2.clearBuffer()`: 내부 그래픽 메모리를 깨끗이 지웁니다.
-    2.  `u8g2.setFont(...)`: 폰트를 설정합니다 (예: `u8g2_font_ncenB08_tr`).
-    3.  `u8g2.drawStr(x, y, "text")`: 지정한 (x, y) 좌표에 문자열을 그립니다.
-    4.  `u8g2.sendBuffer()`: 메모리에 그려진 내용을 실제 디스플레이로 전송하여 화면을 갱신합니다.
-
----
+</details>
 
 ## 🚀 실행 방법
 
