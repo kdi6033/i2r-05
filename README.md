@@ -932,159 +932,90 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 <img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/lcd24.png?raw=true" />    
 
+# 1.3인치 I2C OLED 디스플레이 (SH1106) - ESP32-S3 예제
 
-# 1.3" I2C OLED Display (SH1106) with ESP32-S3
+이 프로젝트는 **ESP32-S3** 보드를 사용하여 **1.3인치 I2C OLED 디스플레이 (SH1106 드라이버)** 를 제어하는 방법을 설명합니다.
 
-This project demonstrates how to control a **1.3-inch I2C OLED display (SH1106 driver)** using an **ESP32-S3** board.
+---
 
-## 🖥 Hardware Specifications
+## 🖥 하드웨어 사양 (Hardware Specifications)
 
-| Feature | Description |
+| 항목 | 설명 |
 | :--- | :--- |
-| **Display Type** | OLED (Organic Light-Emitting Diode) |
-| **Size** | 1.3 inch (Diagonal) |
-| **Resolution** | 128 x 64 pixels |
-| **Driver IC** | **SH1106** |
-| **Interface** | I2C (IIC) |
-| **I2C Address** | 0x3C (common) or 0x3D |
-| **Operating Voltage** | 3.3V ~ 5V |
-| **View Angle** | > 160° |
+| **디스플레이 타입** | OLED (Organic Light-Emitting Diode) |
+| **화면 크기** | 1.3 인치 (대각선) |
+| **해상도** | 128 x 64 픽셀 |
+| **드라이버 IC** | **SH1106** |
+| **통신 방식** | I2C (IIC) |
+| **I2C 주소** | 0x3C (일반적) 또는 0x3D |
+| **동작 전압** | 3.3V ~ 5V |
+| **시야각** | > 160° |
 
-### Pin Configuration (ESP32-S3)
-| OLED Pin | ESP32-S3 Pin | Note |
+### 핀 연결 (ESP32-S3 기준)
+| OLED 핀 | ESP32-S3 핀 | 비고 |
 | :--- | :--- | :--- |
-| **GND** | GND | Ground |
-| **VCC** | 3.3V / 5V | Power Supply |
+| **GND** | GND | 접지 |
+| **VCC** | 3.3V / 5V | 전원 |
 | **SCL** | **GPIO 17** | Serial Clock |
 | **SDA** | **GPIO 18** | Serial Data |
 
-> **Note**: The I2C pins (SDA/SCL) on ESP32-S3 can be mapped to any GPIO, but this example uses **SDA=18** and **SCL=17**.
+> **참고**: ESP32-S3의 I2C 핀(SDA/SCL)은 맵핑이 가능하지만, 이 예제에서는 **SDA=18, SCL=17**번 핀을 사용하도록 코드가 작성되어 있습니다.
 
 ---
 
-## 🛠 Software Dependencies
+## 🛠 필요한 라이브러리 (Software Dependencies)
 
-This project uses the **U8g2** library, which is a powerful graphics library for monochrome displays.
+이 프로젝트는 단색 디스플레이를 위한 강력한 그래픽 라이브러리인 **U8g2**를 사용합니다.
 
-1.  **Install Library**:
-    *   Open Arduino IDE.
-    *   Go to **Sketch** -> **Include Library** -> **Manage Libraries...**
-    *   Search for `U8g2` by **olikraus**.
-    *   Click **Install**.
+1.  **라이브러리 설치 방법**:
+    1.  아두이노 IDE를 실행합니다.
+    2.  메뉴에서 **스케치 (Sketch)** -> **라이브러리 포함하기 (Include Library)** -> **라이브러리 관리 (Manage Libraries...)** 로 이동합니다.
+    3.  검색창에 `U8g2` (작성자: **olikraus**)를 입력하여 검색합니다.
+    4.  **설치 (Install)** 버튼을 클릭합니다.
 
 ---
 
-## 💻 Source Code Overview
+## 💻 소스 코드 설명
 
-The main code is located in `lcd1-3.ino`.
+주요 코드는 `lcd1-3.ino` 파일에 있습니다.
 
-### 1. Library Include & Constructor
-We use the hardware I2C constructor for SH1106.
+### 1. 라이브러리 포함 및 생성자 설정
+SH1106 드라이버를 위한 하드웨어 I2C 생성자를 사용합니다.
 
 ```cpp
 #include <U8g2lib.h>
 #include <Wire.h>
 
-// U8g2 Constructor for SH1106 128x64 I2C
-// Parameters: Rotation, Reset Pin, SCL Pin, SDA Pin
+// SH1106 128x64 I2C 디스플레이 생성자
+// 파라미터 순서: (회전, 리셋핀, SCL핀, SDA핀)
+// ESP32-S3 보드 설정에 맞춰 핀 번호를 직접 지정합니다.
 U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, 17, 18);
 ```
 
-*   `U8G2_SH1106_128X64_NONAME_F_HW_I2C`: Uses the SH1106 driver with full frame buffer (faster rendering, uses more RAM).
-*   `U8G2_R0`: No rotation (standard landscape).
-*   `SCL = 17`, `SDA = 18`: Custom I2C pins for this board setup.
+*   `U8G2_SH1106_128X64_NONAME_F_HW_I2C`:
+    *   **SH1106**: 1.3인치 OLED에 주로 사용되는 드라이버 칩
+    *   **F**: Full Buffer 모드 (화면 전체를 메모리에 그린 뒤 한 번에 전송, 처리 속도가 빠르고 코딩이 편리함)
+    *   **HW_I2C**: 하드웨어 I2C 통신 사용
+*   `U8G2_R0`: 화면 회전 없음 (기본 가로 모드).
+*   `17`, `18`: **SCL(17번)**, **SDA(18번)** 핀을 명시적으로 설정.
 
-### 2. Setup & Loop
-*   **`setup()`**: Initializes the display communication (`u8g2.begin()`).
+### 2. 주요 함수 (Setup & Loop)
+*   **`setup()`**: `u8g2.begin()`을 호출하여 디스플레이와 통신을 시작합니다.
 *   **`loop()`**:
-    1.  `u8g2.clearBuffer()`: Clears the internal graphics buffer.
-    2.  `u8g2.setFont(...)`: Sets the font (e.g., `u8g2_font_ncenB08_tr`).
-    3.  `u8g2.drawStr(x, y, "text")`: Draws text at coordinates (x, y).
-    4.  `u8g2.sendBuffer()`: Sends the buffer data to the display to update the screen.
+    1.  `u8g2.clearBuffer()`: 내부 그래픽 메모리를 깨끗이 지웁니다.
+    2.  `u8g2.setFont(...)`: 폰트를 설정합니다 (예: `u8g2_font_ncenB08_tr`).
+    3.  `u8g2.drawStr(x, y, "text")`: 지정한 (x, y) 좌표에 문자열을 그립니다.
+    4.  `u8g2.sendBuffer()`: 메모리에 그려진 내용을 실제 디스플레이로 전송하여 화면을 갱신합니다.
 
 ---
 
-## 🚀 How to Run
+## 🚀 실행 방법
 
-1.  Connect the 1.3" OLED to your ESP32-S3 board wiring diagram above (SDA->18, SCL->17).
-2.  Open `lcd1-3.ino` in Arduino IDE.
-3.  Select your Board (e.g., `ESP32S3 Dev Module`) and Port.
-4.  **Upload** the sketch.
-5.  Verification: You should see "Hello World!" and pin info on the OLED.
-
-
-
-# Arduino Uno용 2.4인치 TFT LCD 터치 쉴드 (Pinout & Setup)
-
-이 리포지토리는 아두이노 우노(Arduino Uno) 폼팩터와 호환되는 **2.4인치 TFT LCD 터치 쉴드**의 핀 맵(Pinout)과 설정 정보를 담고 있습니다.
-
-이 쉴드는 **8비트 병렬(8-bit Parallel) 인터페이스**를 통해 LCD를 제어하며, SD 카드 슬롯은 표준 **SPI** 인터페이스를 사용합니다.
-
-## 📱 하드웨어 사양 (Specs)
-
-* **화면 크기:** 2.4 인치 (대각선)
-* **해상도:** 240 x 320 픽셀
-* **인터페이스:**
-    * LCD: 8-bit Parallel (8080)
-    * SD Card: SPI
-* **터치 스크린:** 저항막 방식 (Resistive Touch)
-* **호환 보드:** Arduino Uno, Mega2560, Leonardo 등
-* **컨트롤러 칩:** ILI9341
-
----
-
-## 🔌 핀 연결 (Pin Mapping)
-
-이 쉴드는 아두이노 우노 헤더에 맞춰 제작되었으므로 별도의 점퍼선 없이 **바로 꽂아서(Plug-and-Play)** 사용할 수 있습니다.
-
-### 1. LCD 제어 핀 (Control Pins)
-아두이노의 **Analog 핀(A0~A4)**을 제어 신호로 사용합니다.
-
-| 쉴드 핀 라벨 | 아두이노 핀 | 역할 | 설명 |
-| :--- | :--- | :--- | :--- |
-| **LCD_RD** | **01** | Read | 읽기 신호 |
-| **LCD_WR** | **02** | Write | 쓰기 신호 |
-| **LCD_DC** | **04** | C/D | 명령(Command) / 데이터(Data) 선택 |
-| **LCD_CS** | **05** | CS | 칩 선택 (Chip Select) |
-| **LCD_RST** | **06** | Reset | 리셋 신호 |
-
-### 2. LCD 데이터 핀 (Data Pins)
-데이터 버스는 디지털 핀 2~7번과 8~9번으로 나뉘어 연결됩니다.
-
-| 쉴드 핀 라벨 | 아두이노 핀 | 역할 | 설명 |
-| :--- | :--- | :--- | :--- |
-| **LCD_D0** | **14** | Data 0 | 데이터 비트 0 (LSB) |
-| **LCD_D1** | **15** | Data 1 | 데이터 비트 1 |
-| **LCD_D2** | **08** | Data 2 | 데이터 비트 2 |
-| **LCD_D3** | **09** | Data 3 | 데이터 비트 3 |
-| **LCD_D4** | **10** | Data 4 | 데이터 비트 4 |
-| **LCD_D5** | **11** | Data 5 | 데이터 비트 5 |
-| **LCD_D6** | **12** | Data 6 | 데이터 비트 6 |
-| **LCD_D7** | **13** | Data 7 | 데이터 비트 7 |
-
-### 3. SD 카드 인터페이스 (SPI)
-SD 카드 슬롯은 아두이노의 하드웨어 SPI 핀을 사용합니다.
-
-| 쉴드 핀 라벨 | 아두이노 핀 | 역할 | 설명 |
-| :--- | :--- | :--- | :--- |
-| **SD_SS** | **16** | CS | SD 카드 칩 선택 |
-| **SD_DI** | **21** | MOSI | Master Out Slave In |
-| **SD_DO** | **38** | MISO | Master In Slave Out |
-| **SD_SCK** | **47** | SCK | 시리얼 클럭 |
-
----
-
-## 💻 소프트웨어 및 라이브러리
-
-### 추천 라이브러리 (Recommended Library)
-이 쉴드는 컨트롤러 칩(ILI9341, ST7789 등)을 자동으로 감지해주는 **MCUFRIEND_kbv** 라이브러리 사용을 권장합니다.
-
-1.  아두이노 IDE 실행
-2.  메뉴: **스케치** -> **라이브러리 포함하기** -> **라이브러리 관리...**
-3.  다음 라이브러리 검색 및 설치:
-    * `MCUFRIEND_kbv` (by David Prentice)
-    * `Adafruit TouchScreen` (터치 기능용)
-    * `Adafruit GFX Library` (그래픽 코어)
+1.  위의 **핀 연결 표**를 참고하여 1.3" OLED를 ESP32-S3 보드에 연결합니다 (SDA: 18, SCL: 17).
+2.  아두이노 IDE에서 `lcd1-3.ino` 파일을 엽니다.
+3.  **툴 (Tools)** -> **보드 (Board)** 메뉴에서 사용 중인 ESP32-S3 보드를 선택합니다. (예: `ESP32S3 Dev Module`)
+4.  포트를 선택하고 **업로드 (Upload)** 버튼을 누릅니다.
+5.  업로드가 완료되면 OLED 화면에 "Hello World!" 문구와 핀 정보가 출력되는지 확인합니다.
 
 ## ✅ 4. 온도  습도 샌서  (Shield-03)
 # SHT30 온습도 센서 사양
