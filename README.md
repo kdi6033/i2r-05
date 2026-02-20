@@ -1133,6 +1133,144 @@ void loop() {
 ```
 </details>
 
+🎯 온도 습도를 Oled에 표시하는 프로그램
+
+
+<br>     
+<details>
+    <summary>💻 아두이노 온도 습도 Oled에 모니터링 프로그램</summary>
+
+```c
+#include <Arduino.h>
+#include <U8g2lib.h>
+#include <Wire.h>
+
+// 1. SHT30 설정
+#define SHT30_ADDRESS 0x44
+
+// 2. LCD 설정 (1.3인치 SH1106 I2C OLED, SCL=17, SDA=18)
+// U8g2 하드웨어 I2C 생성자 (회전, 리셋, SCL, SDA)
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, 17, 18);
+
+// 3. 아이콘 비트맵 데이터
+// Bluetooth 아이콘 (9x13)
+const unsigned char bt_icon[] U8X8_PROGMEM = {
+  0x08, 0x00, 0x18, 0x00, 0x28, 0x00, 0x48, 0x00,
+  0x88, 0x00, 0x50, 0x00, 0x20, 0x00, 0x50, 0x00,
+  0x88, 0x00, 0x48, 0x00, 0x28, 0x00, 0x18, 0x00, 0x08, 0x00
+};
+
+// Rounder Wifi Icon (16x13)
+const unsigned char wifi_rounder[] U8X8_PROGMEM = {
+  0x00, 0x00, 
+  0xF0, 0x0F, // ....########....
+  0x0C, 0x30, // ..##........##..
+  0x02, 0x40, // .#............#.
+  0x00, 0x00, // ................
+  0xE0, 0x07, // .....######.....
+  0x18, 0x18, // ...##......##...
+  0x00, 0x00, // ................
+  0xC0, 0x03, // ......####......
+  0x20, 0x04, // .....#....#.....
+  0x00, 0x00, // ................
+  0x80, 0x01, // .......##.......
+  0x80, 0x01, // .......##.......
+};
+
+// 전역 변수
+float temperature = 0.0;
+float humidity = 0.0;
+unsigned long lastMeasureTime = 0;
+const long interval = 2000; // 2초 간격 측정
+
+void setup(void) {
+  Serial.begin(115200);
+  
+  // U8g2 초기화 (내부적으로 Wire.begin(18, 17)을 처리함)
+  u8g2.begin();
+  u8g2.enableUTF8Print(); 
+  
+  Serial.println("System Initialized");
+}
+
+void loop(void) {
+  unsigned long currentMillis = millis();
+
+  // 2초마다 센서 데이터 갱신
+  if (currentMillis - lastMeasureTime >= interval) {
+    lastMeasureTime = currentMillis;
+    readSHT30();
+  }
+
+  u8g2.clearBuffer();
+
+  // 1. 텍스트 출력 (한글)
+  // '온' 글자가 korean1에 누락될 수 있으므로 korean2 사용
+  u8g2.setFont(u8g2_font_unifont_t_korean2); 
+  
+  // 온도 표시 (화면 잘림 방지 여백 추가)
+  u8g2.setCursor(5, 20);
+  u8g2.print("온도 : ");
+  u8g2.print(temperature, 1);
+  u8g2.print(" °C");
+
+  // 습도 표시
+  u8g2.setCursor(5, 40);
+  u8g2.print("습도 : ");
+  u8g2.print(humidity, 1);
+  u8g2.print(" %");
+
+  // 2. 하단 아이콘 (WiFi, BT) - 하단 배치 (Y ~ 64)
+  // 화면 높이 64, 아이콘 높이 13 -> y = 64-13 = 51 (여유있게 50)
+  
+  // WiFi 아이콘 (우측 하단 끝 쯤)
+  // X = 128 - 16(width) - 10(margin) = 102
+  u8g2.drawXBM(102, 50, 16, 13, wifi_rounder);
+  
+  // Bluetooth 아이콘 (Wifi 옆)
+  // X = 102 - 9(width) - 10(margin) = 83
+  u8g2.drawXBM(83, 51, 9, 13, bt_icon); 
+
+  // 하단 상태 텍스트 (옵션)
+  u8g2.setFont(u8g2_font_t0_11_tf); // 작은 영문 폰트
+  u8g2.setCursor(0, 60);
+  u8g2.print("Monitor");
+
+  u8g2.sendBuffer();
+}
+
+void readSHT30() {
+  // 측정 명령 전송
+  Wire.beginTransmission(SHT30_ADDRESS);
+  Wire.write(0x2C);
+  Wire.write(0x06);
+  if (Wire.endTransmission() != 0) {
+    Serial.println("SHT30 Error");
+    return;
+  }
+
+  // 데이터 시트상 측정 대기 시간 필요
+  delay(50); 
+
+  Wire.requestFrom(SHT30_ADDRESS, 6);
+
+  if (Wire.available() == 6) {
+    uint16_t tempRaw = (Wire.read() << 8) | Wire.read();
+    Wire.read(); // CRC
+    uint16_t humiRaw = (Wire.read() << 8) | Wire.read();
+    Wire.read(); // CRC
+
+    temperature = -45 + (175 * ((float)tempRaw / 65535.0));
+    humidity = 100 * ((float)humiRaw / 65535.0);
+    
+    Serial.print("T: "); Serial.print(temperature);
+    Serial.print(" H: "); Serial.println(humidity);
+  }
+}
+
+```
+</details>
+
 
 ---
 
