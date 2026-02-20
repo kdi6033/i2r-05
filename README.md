@@ -928,9 +928,91 @@ void setColor(int redValue, int greenValue, int blueValue) {
 }
 ```
 
-## ✅ 3. Arduino 2.4인치 TFT LCD 터치 쉴드
+## ✅ 3. Arduino 1.3인치 OLED LCD 쉴드 (shield-03)
 
 <img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/lcd24.png?raw=true" />    
+
+
+# 1.3" I2C OLED Display (SH1106) with ESP32-S3
+
+This project demonstrates how to control a **1.3-inch I2C OLED display (SH1106 driver)** using an **ESP32-S3** board.
+
+## 🖥 Hardware Specifications
+
+| Feature | Description |
+| :--- | :--- |
+| **Display Type** | OLED (Organic Light-Emitting Diode) |
+| **Size** | 1.3 inch (Diagonal) |
+| **Resolution** | 128 x 64 pixels |
+| **Driver IC** | **SH1106** |
+| **Interface** | I2C (IIC) |
+| **I2C Address** | 0x3C (common) or 0x3D |
+| **Operating Voltage** | 3.3V ~ 5V |
+| **View Angle** | > 160° |
+
+### Pin Configuration (ESP32-S3)
+| OLED Pin | ESP32-S3 Pin | Note |
+| :--- | :--- | :--- |
+| **GND** | GND | Ground |
+| **VCC** | 3.3V / 5V | Power Supply |
+| **SCL** | **GPIO 17** | Serial Clock |
+| **SDA** | **GPIO 18** | Serial Data |
+
+> **Note**: The I2C pins (SDA/SCL) on ESP32-S3 can be mapped to any GPIO, but this example uses **SDA=18** and **SCL=17**.
+
+---
+
+## 🛠 Software Dependencies
+
+This project uses the **U8g2** library, which is a powerful graphics library for monochrome displays.
+
+1.  **Install Library**:
+    *   Open Arduino IDE.
+    *   Go to **Sketch** -> **Include Library** -> **Manage Libraries...**
+    *   Search for `U8g2` by **olikraus**.
+    *   Click **Install**.
+
+---
+
+## 💻 Source Code Overview
+
+The main code is located in `lcd1-3.ino`.
+
+### 1. Library Include & Constructor
+We use the hardware I2C constructor for SH1106.
+
+```cpp
+#include <U8g2lib.h>
+#include <Wire.h>
+
+// U8g2 Constructor for SH1106 128x64 I2C
+// Parameters: Rotation, Reset Pin, SCL Pin, SDA Pin
+U8G2_SH1106_128X64_NONAME_F_HW_I2C u8g2(U8G2_R0, U8X8_PIN_NONE, 17, 18);
+```
+
+*   `U8G2_SH1106_128X64_NONAME_F_HW_I2C`: Uses the SH1106 driver with full frame buffer (faster rendering, uses more RAM).
+*   `U8G2_R0`: No rotation (standard landscape).
+*   `SCL = 17`, `SDA = 18`: Custom I2C pins for this board setup.
+
+### 2. Setup & Loop
+*   **`setup()`**: Initializes the display communication (`u8g2.begin()`).
+*   **`loop()`**:
+    1.  `u8g2.clearBuffer()`: Clears the internal graphics buffer.
+    2.  `u8g2.setFont(...)`: Sets the font (e.g., `u8g2_font_ncenB08_tr`).
+    3.  `u8g2.drawStr(x, y, "text")`: Draws text at coordinates (x, y).
+    4.  `u8g2.sendBuffer()`: Sends the buffer data to the display to update the screen.
+
+---
+
+## 🚀 How to Run
+
+1.  Connect the 1.3" OLED to your ESP32-S3 board wiring diagram above (SDA->18, SCL->17).
+2.  Open `lcd1-3.ino` in Arduino IDE.
+3.  Select your Board (e.g., `ESP32S3 Dev Module`) and Port.
+4.  **Upload** the sketch.
+5.  Verification: You should see "Hello World!" and pin info on the OLED.
+
+
 
 # Arduino Uno용 2.4인치 TFT LCD 터치 쉴드 (Pinout & Setup)
 
