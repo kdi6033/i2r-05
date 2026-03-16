@@ -7,7 +7,7 @@
   <a href="https://i2r.link/products">🛒 i2r 제품구매</a> &nbsp;&nbsp; | &nbsp;&nbsp;
   <a href="https://www.youtube.com/@i2r-link">▶️ YouTube</a>
 </div>
-스위치 입력
+
 ---
 ## ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
