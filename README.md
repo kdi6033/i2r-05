@@ -34,6 +34,7 @@ https://raw.githubusercontent.com/kdi6033/i2r-05/main/CLAUDE.md
 ```
 
 **예시:**
+- `DHT11로 습도 측정하고 40% 넘으면 부져 울려줘`
 - `온도 30도 넘으면 부저 울려줘`
 - `스위치 누르면 LED 켜줘`  
 - `WiFi 연결하고 MQTT로 센서 데이터 보내줘`
