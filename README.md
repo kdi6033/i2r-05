@@ -22,6 +22,24 @@ i2r-05 보드를 활용하여 기본적인 하드웨어 이해부터 실습을 �
 - 머신러닝 및 On-Device AI 개념을 학습하고 실제 보드에서 실행 가능하도록 구현
 - ESP32-S3의 강력한 연산 성능을 활용하여 실시간 데이터 분석 및 처리
 
+## ✅ 🤖 AI로 코드 자동 생성
+
+**코딩 경험 없어도 됩니다!**
+
+1. [claude.ai](https://claude.ai) 접속
+2. 채팅창에 아래 붙여넣기:
+```
+https://raw.githubusercontent.com/kdi6033/i2r-05/main/CLAUDE.md
+읽고 [원하는 동작을 한국어로 설명]
+```
+
+**예시:**
+- `온도 30도 넘으면 부저 울려줘`
+- `스위치 누르면 LED 켜줘`  
+- `WiFi 연결하고 MQTT로 센서 데이터 보내줘`
+
+→ 완성 코드 복사 → Arduino IDE 붙여넣기 → 업로드
+
 ## ✅ ESP32-S3-WROOM-1-N16R8 설명
 ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
