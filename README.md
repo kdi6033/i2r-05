@@ -9,7 +9,7 @@
 </div>
 
 ---
-## ✅ i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
+## ✅ 1. i2r-05 AI IoT 아두이노 보드 (KC 전파인증)
 
 🎯 개요   
 
@@ -41,7 +41,7 @@ https://raw.githubusercontent.com/kdi6033/i2r-05/main/CLAUDE.md
 
 → 완성 코드 복사 → Arduino IDE 붙여넣기 → 업로드
 
-## ✅ ESP32-S3-WROOM-1-N16R8 설명
+## 📌 ESP32-S3-WROOM-1-N16R8 설명
 ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
 ESP32 S3 16M Flash, AI IoT 개발용 보드
