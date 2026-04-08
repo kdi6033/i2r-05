@@ -6,6 +6,7 @@
 | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r05-4.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r05-5.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r05-6.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/esp32.png?raw=true" height="140"> 
 | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/esp32-cpu.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r-shield-01-1.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r-shield-01-2.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r-shield-01-3.png?raw=true" height="140"> |
 | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r-05-case-kc.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/lcd24.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/temp_humi01.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/temp_humi02.png?raw=true" height="140"> |
-
+| <img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r-06-circut.png?raw=true" height="140"> | <img src="https://github.com/kdi6033/i2r-05/blob/main/images/sth30.png?raw=true" height="140"> | | |
+ 
 
 
