@@ -1073,6 +1073,10 @@ ESP32, 아두이노 기반 **IoT PLC 및 환경 모니터링 시스템**에 적�
 - MQTT 클라우드 환경 모니터링  
 - 스마트팜 / 공장 환경 센싱
 
+-----
+
+<img src="https://github.com/kdi6033/i2r-05/blob/main/images/i2r-06-circut.png?raw=true" height="240">
+
 <br>     
 <details>
     <summary>💻 아두이노 온도 습도 측정 프로그램</summary>
