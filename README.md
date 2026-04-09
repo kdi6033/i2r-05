@@ -1042,6 +1042,12 @@ SHT30은 Sensirion의 **SHT3X 시리즈 디지털 온습도 센서**로,
 **I²C 통신**을 사용하여 온도와 습도를 정밀하게 측정할 수 있습니다.  
 ESP32, 아두이노 기반 **IoT PLC 및 환경 모니터링 시스템**에 적합합니다.
 
+🤖 Claude Code 사용 Physical AI i2r-06 자동 프로그램
+```
+https://github.com/kdi6033/i2r-05/blob/main/CLAUDE.md
+읽고 [원하는 동작을 한국어로 설명]
+```
+
 ---
 
 🎯 주요 사양
