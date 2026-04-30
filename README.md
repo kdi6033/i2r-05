@@ -298,7 +298,7 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 
 ---
 
-📌 2. LCD 핀 연결 (상업용 PCB 권장 배선)
+📌 2. LCD 핀 연결 
 
 상업용 PCB 설계 시 ESP32-S3의 **8~16번 핀(연속된 9개 핀)**을 활용하여 가장 효율적이고 안정적으로 설계하는 핀맵입니다.
 
@@ -317,21 +317,12 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 | **GPIO 15** | 13 | TDO | **MISO**: 터치 데이터 출력 |
 | **GPIO 16** | 14 | PEN (IRQ) | 터치 인터럽트 |
 
-> **⚠️ 설계 시 핵심 주의사항**
-> * 8~16번 핀을 LCD 3~11번에 1:1로 곧바로 연결하면 터치 데이터 핀(12, 13번)이 누락되어 **터치가 완전히 먹통**이 됩니다.
-> * 또한 9번 핀(SDO)을 연결하면 화면 하드웨어 결함으로 전체 통신이 다운되므로, 위 표와 같이 **클럭과 데이터를 공유(쇼트)**시키고 터치 MISO(13번)를 MCU로 가져오는 방식이 필수입니다.
-
 ---
 
-📌 3. 핵심 기술: 하이브리드 드라이버
 
-이 LCD 모듈은 하드웨어 SPI 사용 시 터치 인식률이 낮아지는 특성이 있습니다.  
-이를 해결하기 위해 **비트뱅 터치 읽기 + 하드웨어 SPI 화면 출력**을 혼합한 방식을 사용합니다.
 
-```
-터치 읽기  : GPIO 직접 제어(비트뱅) → XPT2046 좌표 100% 신뢰성 추출
-화면 출력  : gpio_set_function()으로 핀을 SPI 모드 복구 → TFT_eSPI 고속 렌더링
-```
+
+
 
 <br>     
 <details>
@@ -384,6 +375,69 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 #define LOAD_FONT8  // Font 8
 #define LOAD_GFXFF  // FreeFonts
 #define SMOOTH_FONT
+```
+</details>
+
+
+
+<br>     
+<details>
+    <summary>💻 2초마다 배경색을 빨강→초록→파랑으로 순환하며 화면 중앙에 "Hello world"를 흰색으로 표시합니다. </summary>
+
+```c
+// i2r-06 (ESP32-S3) + 3.5" IPS ILI9488 LCD "Hello world" 테스트
+// 핀: SCK=15, MOSI=16, MISO=12, CS=10, DC=21, RST=9, BL=14
+// 터치: TCS=13, TIRQ=11
+
+#include <TFT_eSPI.h>
+
+#define PIN_BL 14
+
+TFT_eSPI tft = TFT_eSPI();
+
+void setup() {
+  Serial.begin(115200);
+
+  // 백라이트 켜기
+  pinMode(PIN_BL, OUTPUT);
+  digitalWrite(PIN_BL, HIGH);
+
+  // TFT 초기화
+  tft.init();
+  tft.setRotation(1); // 가로 모드
+  tft.fillScreen(TFT_BLACK);
+
+  // 텍스트 설정 (흰색, 배경 투명)
+  tft.setTextColor(TFT_WHITE);
+  
+  // 화면 정중앙에 "Hello world" 출력 (폰트 크기 4)
+  tft.drawCentreString("Hello world", 240, 160, 4);
+
+  Serial.println("Hello world Displayed!");
+}
+
+int color_state = 0;
+
+void loop() {
+  delay(2000); // 2초 대기
+  
+  // 색상 변경 테스트
+  if (color_state == 0) {
+    tft.fillScreen(TFT_RED);
+    color_state = 1;
+  } else if (color_state == 1) {
+    tft.fillScreen(TFT_GREEN);
+    color_state = 2;
+  } else {
+    tft.fillScreen(TFT_BLUE);
+    color_state = 0;
+  }
+  
+  // 배경이 바뀔 때마다 글자를 다시 그려줍니다
+  tft.setTextColor(TFT_WHITE);
+  tft.drawCentreString("Hello world", 240, 160, 4);
+}
+
 ```
 </details>
 
