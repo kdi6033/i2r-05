@@ -574,7 +574,7 @@ void loop() {
 
 ------------------------------------------------------
 
-## 📌 2.1 Led 제어 (47, 38 번핀)
+## 📌 5.1 Led 제어 (47, 38 번핀)
 ESP32-S3 보드의 47번 핀과 38번 핀에 연결된 LED를 1초 간격으로 교차로 점등하는 Arduino 프로그램입니다.    
 
 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 와이파이 연결과 LED**](https://youtu.be/pZmccYi0Sho)
@@ -678,7 +678,7 @@ void loop() {
 
 -------------------------------------------------------------------------
 
-## 📌 2.2 스위치 입력 (8, 9 번핀)
+## 📌 5.2 스위치 입력 (8, 9 번핀)
 ESP32-S3 보드의 8번 핀과 9번 핀에 연결된 스위치를 감지하고, 스위치를 누를 때마다 시리얼 포트로 해당 상태를 출력하는 Arduino 프로그램입니다.  
 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 스위치 입력**](https://youtu.be/KBWlxocToo8)    
 🔗 [▶️ 유튜브 보기 - **Antigravity IoT 아두이노 보드 스위치 입력**](https://youtu.be/rGXK1YXbcC0)
@@ -740,7 +740,7 @@ void loop() {
 
 -------------------------------------------------------------------------
 
-## 📌 2.3 아나로그 입력 (1 번핀)
+## 📌 5.3 아나로그 입력 (1 번핀)
 🔗 [▶️ 유튜브 보기 - **Antigravity IoT 아두이노 보드 아나로그 입력**](https://youtu.be/o4VF_i8oHuc)
 ESP32-S3 보드의 1번 핀에 아날로그 입력이 연결하여 해당 값을 읽어서 시리얼 포트로 출력하는 Arduino 프로그램입니다.
 <img src="https://github.com/user-attachments/assets/8d3ef6cc-9df4-47de-a5eb-6bd3402c9eb4" alt="chatGPT" width="100"> 💻 1번 아나로그 입력    
@@ -772,7 +772,7 @@ void loop() {
 ```
 </details>
 
-## 📌 2.4 Buzzer 출력 (11 번핀)
+## 📌 5.4 Buzzer 출력 (11 번핀)
 
 🔗 [▶️ 유튜브 보기 - **Antigravity IoT 아두이노 보드 Buzzer 출력**](https://youtube.com/shorts/og0Jyk87y6g)
 
@@ -1026,7 +1026,7 @@ void loop() {
 
 [Buzzer 참조할 만한 추천 사이트](https://github.com/robsoncouto/arduino-songs/tree/master) 
 
-## 📌 2.5 Light 센서 (2 번핀)
+## 📌 5.5 Light 센서 (2 번핀)
 
 ESP32-S3 보드의 11번 핀에 연결된 부저를 제어하기 위해 Arduino 코드를 작성했습니다. 부저는 PWM 신호를 통해 제어되며, 이를 통해 다양한 음을 생성할 수 있습니다.    
 
@@ -1062,7 +1062,7 @@ void loop() {
 </details>
 
 
-## 📌 2.6 DHT11 온습도 센서 (10 번핀)
+## 📌 5.6 DHT11 온습도 센서 (10 번핀)
 
 이 프로그램은 DHT 라이브러리를 사용하여 온도와 습도를 읽고 시리얼 모니터에 출력합니다.   
 
@@ -1121,7 +1121,7 @@ void loop() {
 
 🔗 [Buzzer 음악 만들기 참조 사이트](https://github.com/robsoncouto/arduino-songs/tree/master)
 
-## 📌 2.7 LM35 온도 센서 (4 번핀)
+## 📌 5.7 LM35 온도 센서 (4 번핀)
 
 LM35 온도 센서는 아날로그 출력 타입의 온도 센서입니다. 온도를 섭씨(°C)로 측정하며, 출력 전압은 섭씨 1도당 10mV입니다. 이를 ESP32-S3의 4번 핀에 연결하여 값을 읽고 온도를 출력하는 프로그램은 다음과 같이 작성할 수 있습니다.
 
@@ -1164,7 +1164,7 @@ void loop() {
 ```
 </details>
 
-## 📌 2.8 RGB Led 센서 (15,21,16 번핀 red,green,blue)
+## 📌 5.8 RGB Led 센서 (15,21,16 번핀 red,green,blue)
 
 이 프로그램은 RGB LED의 각 핀에 대해 LED의 밝기를 제어합니다. 빨강, 초록, 파랑, 흰색의 조합을 통해 다양한 색상을 순차적으로 출력합니다.
 
@@ -1214,7 +1214,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ----
 
-## ✅ 4. 온도  습도 센서  (i2r-06)
+## ✅ 6. 온도  습도 센서  (i2r-06)
 
 🎯 개요
 SHT30은 Sensirion의 **SHT3X 시리즈 디지털 온습도 센서**로,  
@@ -1479,7 +1479,7 @@ void readSHT30() {
 ---
 
 
-## ✅ 5. Otto Ninja 로봇
+## ✅ 7. Otto Ninja 로봇
 배선연결 요약
 |이름 | 핀번호 | 모터이름 |
 |-----|-------|-------|
