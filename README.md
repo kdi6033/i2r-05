@@ -283,6 +283,326 @@ void flowingEffect() {
 ## ✅ 2. 3.5" IPS LCD HMI — i2r-02 IoT PLC 연동 가이드
 
 
+RP2040-Zero와 3.5인치 IPS LCD를 이용해 **i2r-02 IoT PLC**용 HMI(Human Machine Interface)를 만드는 방법을 설명합니다.
+
+> 참고 소스: [`hmi-i2r02/hmi-i2r02.ino`](hmi-i2r02/hmi-i2r02.ino)
+
+---
+
+## 목차
+1. [부품 목록](#1-부품-목록)
+2. [LCD 핀 연결](#2-lcd-핀-연결)
+3. [i2r-06 ↔ i2r-02 PLC 연결](#3-i2r-06--i2r-02-plc-연결)
+4. [핵심 기술: 하이브리드 드라이버](#4-핵심-기술-하이브리드-드라이버)
+5. [터치 비트뱅 코드](#5-터치-비트뱅-코드)
+6. [i2r-02 통신 프로토콜](#6-i2r-02-통신-프로토콜)
+7. [UI 구조](#7-ui-구조)
+8. [터치 캘리브레이션](#8-터치-캘리브레이션)
+9. [설정 파일 저장](#9-설정-파일-저장-littlefs)
+10. [필요 라이브러리](#10-필요-라이브러리)
+
+---
+
+## 1. 부품 목록
+
+| 부품 | 사양 |
+|------|------|
+| MCU | i2r-06 (ESP32-S3 기반) |
+| LCD | 3.5인치 IPS SPI LCD (320×480) |
+| 디스플레이 IC | ILI9488 |
+| 터치 IC | XPT2046 (저항막 방식) |
+| PLC | i2r-02 (ESP32 기반, 4채널 입출력) |
+| 통신 | UART Serial, 9600 bps |
+
+---
+
+## 2. LCD 핀 연결 (상업용 PCB 권장 배선)
+
+상업용 PCB 설계 시 ESP32-S3의 **8~16번 핀(연속된 9개 핀)**을 활용하여 가장 효율적이고 안정적으로 설계하는 핀맵입니다.
+
+| i2r-06 (ESP32-S3) | LCD 핀 번호 | LCD 핀 이름 | 역할 및 배선 가이드 (PCB 설계 시 주의점) |
+|:------:|:-----------:|:-----------:|:------|
+| **5V** | 1 | VDD | **반드시 5V** (3.3V 시 터치 오작동) |
+| GND | 2 | GND | 공통 접지 |
+| **GPIO 8** | 3 | CS | LCD Chip Select |
+| **GPIO 9** | 4 | RST | LCD 리셋 |
+| **GPIO 10** | 5 | DC | 데이터/커맨드 선택 |
+| **GPIO 11** | 6 & 12 | SDI & TDI | **MOSI 공유**: PCB에서 LCD 6번과 12번을 묶어서 ESP 11번에 연결 |
+| **GPIO 12** | 7 & 10 | SCK & TCK | **SCK 공유**: PCB에서 LCD 7번과 10번을 묶어서 ESP 12번에 연결 |
+| **GPIO 13** | 8 | BL | 백라이트 제어 |
+| ❌ **연결 금지** | **9** | **SDO** | **절대 연결 금지 (N.C)**: ILI9488 하드웨어 버그로 버스 충돌 유발 |
+| **GPIO 14** | 11 | TCS | 터치 Chip Select |
+| **GPIO 15** | 13 | TDO | **MISO**: 터치 데이터 출력 |
+| **GPIO 16** | 14 | PEN (IRQ) | 터치 인터럽트 |
+
+> **⚠️ 설계 시 핵심 주의사항**
+> * 8~16번 핀을 LCD 3~11번에 1:1로 곧바로 연결하면 터치 데이터 핀(12, 13번)이 누락되어 **터치가 완전히 먹통**이 됩니다.
+> * 또한 9번 핀(SDO)을 연결하면 화면 하드웨어 결함으로 전체 통신이 다운되므로, 위 표와 같이 **클럭과 데이터를 공유(쇼트)**시키고 터치 MISO(13번)를 MCU로 가져오는 방식이 필수입니다.
+
+---
+
+## 3. i2r-06 ↔ i2r-02 PLC 연결
+
+| i2r-06 | i2r-02 (ESP32) | 설명 |
+|:------:|:--------------:|------|
+| TX 핀 | RX | HMI → PLC 데이터 전송 |
+| RX 핀 | TX | PLC → HMI 데이터 수신 |
+| GND | GND | 공통 접지 (필수) |
+
+---
+
+## 4. 핵심 기술: 하이브리드 드라이버
+
+이 LCD 모듈은 하드웨어 SPI 사용 시 터치 인식률이 낮아지는 특성이 있습니다.  
+이를 해결하기 위해 **비트뱅 터치 읽기 + 하드웨어 SPI 화면 출력**을 혼합한 방식을 사용합니다.
+
+```
+터치 읽기  : GPIO 직접 제어(비트뱅) → XPT2046 좌표 100% 신뢰성 추출
+화면 출력  : gpio_set_function()으로 핀을 SPI 모드 복구 → TFT_eSPI 고속 렌더링
+```
+
+---
+
+## 5. 터치 비트뱅 코드
+
+```cpp
+#define TP_SCK  15
+#define TP_MOSI 16
+#define TP_MISO 12
+#define TP_CS   13
+
+uint8_t bb_transfer(uint8_t data) {
+  uint8_t result = 0;
+  for (int i = 7; i >= 0; i--) {
+    digitalWrite(TP_MOSI, (data >> i) & 1);
+    digitalWrite(TP_SCK, LOW);  delayMicroseconds(2);
+    result = (result << 1) | digitalRead(TP_MISO);
+    digitalWrite(TP_SCK, HIGH); delayMicroseconds(2);
+  }
+  return result;
+}
+
+uint16_t bb_read(uint8_t cmd) {
+  digitalWrite(TP_CS, LOW); delayMicroseconds(5);
+  bb_transfer(cmd);
+  delayMicroseconds(5);
+  uint16_t res = (uint16_t)bb_transfer(0x00) << 8;
+  res |= bb_transfer(0x00);
+  digitalWrite(TP_CS, HIGH);
+  return res >> 3;
+}
+
+// LVGL 터치 콜백
+void my_touchpad_read(lv_indev_t *indev, lv_indev_data_t *data) {
+  pinMode(TP_SCK,  OUTPUT);
+  pinMode(TP_MOSI, OUTPUT);
+  pinMode(TP_MISO, INPUT);
+
+  uint16_t rx = bb_read(0xD0); // → 화면 Y 방향
+  uint16_t ry = bb_read(0x90); // → 화면 X 방향
+
+  gpio_set_function(TP_SCK,  GPIO_FUNC_SPI); // SPI 복구
+  gpio_set_function(TP_MOSI, GPIO_FUNC_SPI);
+
+  if (rx > 100 && rx < 4000 && ry > 100 && ry < 4000) {
+    data->state   = LV_INDEV_STATE_PRESSED;
+    int16_t px = (int16_t)map(ry,  204, 3781,   0, 480); // ry → screenX
+    int16_t py = (int16_t)map(rx, 3808,  311,   0, 320); // rx → screenY (역방향)
+    data->point.x = (lv_coord_t)constrain(px, 0, 479);
+    data->point.y = (lv_coord_t)constrain(py, 0, 319);
+  } else {
+    data->state = LV_INDEV_STATE_RELEASED;
+  }
+}
+```
+
+---
+
+## 6. i2r-02 통신 프로토콜
+
+HMI(i2r-06)와 PLC(ESP32)는 **Serial UART 9600 bps**로 JSON을 교환합니다.  
+메시지는 줄바꿈(`\n`)으로 구분합니다.
+
+### PLC → HMI: 상태 브로드캐스트
+
+```json
+{
+  "c": "ti",
+  "in":  [false, true, false, false],
+  "out": [true, false, false, false],
+  "wifi": true,
+  "mqtt": true,
+  "time": "14:30",
+  "mac": "AA:BB:CC:DD:EE:FF"
+}
+```
+
+| 키 | 타입 | 설명 |
+|----|------|------|
+| `c` | string | `"ti"` = Telemetry Info |
+| `in` | bool[4] | 디지털 입력 채널 0~3 상태 |
+| `out` | bool[4] | 디지털 출력 채널 0~3 상태 |
+| `wifi` | bool | WiFi 연결 여부 |
+| `mqtt` | bool | MQTT 브로커 연결 여부 |
+| `time` | string | 현재 시간 (`"HH:MM"`) |
+| `mac` | string | ESP32 MAC 주소 |
+
+### PLC → HMI: 설정값 전달
+
+```json
+{
+  "c": "cfg",
+  "ssid": "MyWifi",
+  "password": "MyPassword",
+  "e": "user@example.com",
+  "mqttBroker": "mqtt.i2r.link"
+}
+```
+
+### PLC → HMI: 펌웨어 다운로드 상태
+
+```json
+{ "c": "df_start" }
+{ "c": "df_result", "ok": 1 }
+```
+
+### HMI → PLC: 출력 채널 제어
+
+```json
+{ "c": "so", "n": 0, "v": 1 }
+```
+
+| 키 | 설명 |
+|----|------|
+| `c` | `"so"` = Set Output |
+| `n` | 채널 번호 (0~3) |
+| `v` | `1` = ON, `0` = OFF |
+
+### HMI → PLC: WiFi/MQTT 설정 저장
+
+```json
+{
+  "c": "si",
+  "e": "user@example.com",
+  "ssid": "MyWifi",
+  "password": "MyPassword",
+  "mqttBroker": "mqtt.i2r.link"
+}
+```
+
+### HMI → PLC: 기타 커맨드
+
+| JSON | 설명 |
+|------|------|
+| `{"c":"ti","req":"config"}` | PLC에 저장된 설정값 요청 (부팅 시 자동 전송) |
+| `{"c":"ti","bleboot":1}` | 블루투스 설정 모드 요청 |
+| `{"c":"df","f":"board-i2r-02-hmi.ino.bin"}` | OTA 펌웨어 업데이트 요청 |
+
+---
+
+## 7. UI 구조
+
+3개 탭으로 구성됩니다 (화면 해상도 480×320, 탭바 48px).
+
+### 탭 1: 제어판
+
+```
+┌──────────────────── 480px ────────────────────┐
+│ INPUT                                  (탭바)  │
+│ ┌──────── panel 476×86px ─────────┐           │
+│ │  ●1   ●2   ●3   ●4             │  ← LED     │
+│ └─────────────────────────────────┘           │
+│ OUTPUT                                        │
+│ ┌──────── panel 476×86px ─────────┐           │
+│ │ [1] [2] [3] [4]                │  ← 버튼    │
+│ └─────────────────────────────────┘           │
+│ ┌──── 상태바 476×26px ────────────┐           │
+│ │ WiFi  MQTT       14:30         │           │
+│ └─────────────────────────────────┘           │
+└───────────────────────────────────────────────┘
+```
+
+- **INPUT LED** (원형 60×60): PLC 입력 상태 반영, 틸 컬러 ON(`#00B080`)
+- **OUTPUT 버튼** (88×68): 터치 시 `so` 커맨드 전송, 앰버 컬러 ON(`#FF8C00`)
+- **상태바**: WiFi/MQTT 연결 아이콘, 현재 시간
+
+### 탭 2: 설정
+
+- WiFi SSID / 비밀번호 / 이메일 / MQTT 브로커 주소 입력
+- 가상 키보드 — 입력란 포커스 시 자동 표시
+- **연결** 버튼: PLC에 설정 전송 + LittleFS 저장
+- **블루투스** 버튼: BLE 설정 모드 요청
+- **펌웨어** 버튼: OTA 업데이트 요청
+- **사용법** 버튼: YouTube QR 코드 팝업
+
+### 탭 3: 메뉴얼
+
+- 주요 YouTube/GitHub 링크를 버튼으로 나열
+- 터치 시 QR 코드 팝업 표시 (전체화면 오버레이)
+
+---
+
+## 8. 터치 캘리브레이션
+
+이 패널은 **XY 축이 스왑**되어 있어 실측 기반 보정이 필요합니다.
+
+| 코너 | raw rx (0xD0) | raw ry (0x90) | 화면 좌표 |
+|------|:-------------:|:-------------:|:--------:|
+| 좌상단 | 3814 | 214 | (0, 0) |
+| 우상단 | 3801 | 3797 | (480, 0) |
+| 우하단 | 351 | 3764 | (480, 320) |
+| 좌하단 | 271 | 194 | (0, 320) |
+
+재캘리브레이션이 필요하면 `hmi-i2r02.ino`의 `TOUCH_DEBUG` 매크로 주석을 해제한 뒤 4 코너를 눌러 raw 값을 확인하고, `map()` 인자를 교체하세요.
+
+---
+
+## 9. 설정 파일 저장 (LittleFS)
+
+HMI 보드는 `/config.json`에 설정을 저장합니다.
+
+```json
+{
+  "ssid":  "MyWifi",
+  "pw":    "MyPassword",
+  "email": "user@example.com",
+  "mqtt":  "mqtt.i2r.link"
+}
+```
+
+- 부팅 시 자동 로드 → 설정 탭 입력란에 표시
+- PLC에서 `cfg` 커맨드 수신 시에도 자동 저장
+
+---
+
+## 10. 필요 라이브러리
+
+| 라이브러리 | 용도 |
+|-----------|------|
+| [LVGL](https://github.com/lvgl/lvgl) v9.x | UI 프레임워크 |
+| [TFT_eSPI](https://github.com/Bodmer/TFT_eSPI) | ILI9488 디스플레이 드라이버 |
+| [ArduinoJson](https://arduinojson.org/) v7.x | JSON 직렬화/역직렬화 |
+| LittleFS (내장) | 플래시 파일 시스템 |
+
+### lv_conf.h 설정
+
+```c
+#define LV_COLOR_DEPTH  16
+#define LV_USE_TFT_ESPI  0   // 수동 드라이버 사용 (중요)
+```
+
+---
+
+## 관련 파일
+
+| 파일 | 설명 |
+|------|------|
+| [`hmi-i2r02/hmi-i2r02.ino`](hmi-i2r02/hmi-i2r02.ino) | HMI 메인 펌웨어 |
+| [`lcd_ips_35.md`](lcd_ips_35.md) | 3.5" IPS LCD 기술 레퍼런스 (프로그래밍용) |
+| [`lcd.md`](lcd.md) | 2.4" LCD 배선 참고 |
+| `NotoSansKR_20.h` | 한글 폰트 헤더 |
+| `lv_qrcode.hpp` / `qrcodegen.hpp` | QR 코드 생성 라이브러리 |
+
 -----------------
 RP2040-Zero와 3.5인치 IPS LCD를 이용해 **i2r-02 IoT PLC**용 HMI(Human Machine Interface)를 만드는 방법을 설명합니다.
 
