@@ -318,11 +318,9 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 | **GPIO 16** | 14 | PEN (IRQ) | 터치 인터럽트 |
 
 ---
-
-
-
-
-
+TFT_eSPI 라이브러리를 설치하고 \Arduino\libraries\TFT_eSPI\
+이 폴더 안에 있는 기존 User_Setup.h를 프로젝트의 User_Setup.h로 덮어쓰기:
+TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라고 알려주는 필수 설정 파일입니다.
 
 <br>     
 <details>
@@ -382,7 +380,7 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 
 <br>     
 <details>
-    <summary>💻 2초마다 배경색을 빨강→초록→파랑으로 순환하며 화면 중앙에 "Hello world"를 흰색으로 표시합니다. </summary>
+    <summary>💻 예제1: 2초마다 배경색을 빨강→초록→파랑으로 순환하며 화면 중앙에 "Hello world"를 흰색으로 표시합니다. </summary>
 
 ```c
 // i2r-06 (ESP32-S3) + 3.5" IPS ILI9488 LCD "Hello world" 테스트
@@ -441,6 +439,105 @@ void loop() {
 ```
 </details>
 
+
+<br>     
+<details>
+    <summary>💻 에제2: 터치 버튼을 누를 때마다 버튼 색이 빨강(OFF)↔초록(ON)으로 토글되는 터치 UI 예제입니다. </summary>
+
+```c
+// i2r-06 (ESP32-S3) + 3.5" IPS LCD 상업용 핀맵 예제
+// 핀: SCK=12, MOSI=11, MISO=15, CS=8, DC=10, RST=9, BL=13
+// 터치: TCS=14, TIRQ=16
+
+#include <TFT_eSPI.h>
+
+#define PIN_BL   13
+#define PIN_TIRQ 16
+
+TFT_eSPI tft = TFT_eSPI();
+
+bool buttonState = false;
+bool lastTouchState = false;
+
+// 버튼 UI 영역 (화면 중앙, 480x320 기준)
+const int btnX = 140;
+const int btnY = 110;
+const int btnW = 200;
+const int btnH = 100;
+
+void drawButton() {
+  uint16_t btnColor = buttonState ? TFT_GREEN : TFT_RED;
+  String btnText = buttonState ? "ON" : "OFF";
+  
+  // 버튼 배경 그리기
+  tft.fillRoundRect(btnX, btnY, btnW, btnH, 15, btnColor);
+  
+  // 버튼 텍스트 그리기
+  tft.setTextColor(TFT_WHITE);
+  tft.drawCentreString(btnText, btnX + btnW / 2, btnY + btnH / 2 - 12, 4);
+}
+
+bool getTouchCoords(int16_t &x, int16_t &y) {
+  uint16_t rx = 0, ry = 0;
+  
+  // TIRQ 핀이 LOW이면 터치된 상태
+  if (digitalRead(PIN_TIRQ) == LOW) {
+    if (tft.getTouchRaw(&rx, &ry)) {
+      // lcd_github.md 캘리브레이션 실측값 기반 좌표 매핑
+      // rx: Y축 raw 값, ry: X축 raw 값
+      x = map(ry, 204, 3781, 0, 480);
+      y = map(rx, 3808, 311, 0, 320);
+      
+      // 화면 밖으로 나가는 값 잘라내기
+      x = constrain(x, 0, 479);
+      y = constrain(y, 0, 319);
+      return true;
+    }
+  }
+  return false;
+}
+
+void setup() {
+  Serial.begin(115200);
+
+  pinMode(PIN_BL, OUTPUT);
+  digitalWrite(PIN_BL, HIGH);
+  pinMode(PIN_TIRQ, INPUT_PULLUP); // 터치 인터럽트 핀 풀업
+
+  tft.init();
+  tft.setRotation(1); // 가로 모드 (480x320)
+  tft.fillScreen(TFT_BLACK);
+
+  // 상단 제목 출력
+  tft.setTextColor(TFT_WHITE);
+  tft.drawCentreString("Touch Button Test", 240, 40, 4);
+
+  // 첫 버튼 그리기
+  drawButton();
+}
+
+void loop() {
+  int16_t x, y;
+  bool isTouched = getTouchCoords(x, y);
+
+  // 터치가 시작된 순간(Edge)만 감지
+  if (isTouched && !lastTouchState) {
+    Serial.printf("Touch Detected at (X: %d, Y: %d)\n", x, y);
+    
+    // 터치된 좌표가 버튼 영역 안인지 확인
+    if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
+      buttonState = !buttonState; // 상태 반전 (ON/OFF)
+      drawButton();               // 버튼 화면 갱신
+      Serial.println(buttonState ? "Button Toggled: ON" : "Button Toggled: OFF");
+    }
+  }
+  
+  lastTouchState = isTouched;
+  delay(20); // 터치 디바운싱
+}
+
+```
+<details>
 
 
 
