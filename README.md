@@ -333,6 +333,63 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 화면 출력  : gpio_set_function()으로 핀을 SPI 모드 복구 → TFT_eSPI 고속 렌더링
 ```
 
+<br>     
+<details>
+    <summary>💻 User_Setup.h </summary>
+
+```c
+  
+#define USER_SETUP_INFO "IPS-ILI9488 3.5 i2r-06-ESP32S3"
+
+// ----- Section 1: Driver -----
+#define ILI9488_DRIVER
+
+// 3.5" 320x480 (portrait)
+#define TFT_WIDTH  320
+#define TFT_HEIGHT 480
+
+// IPS 패널 색 반전
+#define TFT_INVERSION_ON
+
+// ----- Section 2: Pins (Commercial PCB Layout) -----
+#define TFT_MISO  15   // 터치 TDO (LCD 13번)
+#define TFT_MOSI  11   // LCD SDI + 터치 TDI 공유 (LCD 6, 12번)
+#define TFT_SCLK  12   // LCD SCK + 터치 TCK 공유 (LCD 7, 10번)
+#define TFT_CS    8    // LCD CS (LCD 3번)
+#define TFT_DC    10   // LCD Data/Command (LCD 5번)
+#define TFT_RST   9    // LCD Reset (LCD 4번)
+#define TFT_BL    13   // 백라이트 (LCD 8번)
+#define TFT_BACKLIGHT_ON HIGH
+
+// 터치 (XPT2046)
+#define TOUCH_CS  14   // 터치 CS (LCD 11번)
+// TOUCH_IRQ: GPIO 16   // 터치 IRQ (LCD 14번)
+
+// ----- Section 3: ESP32-S3 SPI -----
+// ESP32-S3에서 Octal Flash/PSRAM 사용 시 SPI2(FSPI)가 시스템에 예약되므로,
+// 충돌을 피하기 위해 반드시 SPI3(HSPI)를 사용하도록 강제 지정합니다.
+#define USE_HSPI_PORT
+
+// ----- Section 4: SPI speed -----
+#define SPI_FREQUENCY       20000000
+#define SPI_READ_FREQUENCY  16000000
+#define SPI_TOUCH_FREQUENCY  2500000
+
+// ----- Section 5: Fonts -----
+#define LOAD_GLCD   // Font 1
+#define LOAD_FONT2  // Font 2
+#define LOAD_FONT4  // Font 4
+#define LOAD_FONT6  // Font 6
+#define LOAD_FONT7  // Font 7
+#define LOAD_FONT8  // Font 8
+#define LOAD_GFXFF  // FreeFonts
+#define SMOOTH_FONT
+```
+</details>
+
+
+
+
 
 --------------------------------------------------------------------
 
