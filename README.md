@@ -280,10 +280,10 @@ void flowingEffect() {
 
 -----------
 
-## ✅ 2. i2r-05 Shield V1 보드
+## ✅ 2. 3.5" IPS LCD HMI — i2r-02 IoT PLC 연동 가이드
 
-# 3.5" IPS LCD HMI — i2r-02 IoT PLC 연동 가이드
 
+-----------------
 RP2040-Zero와 3.5인치 IPS LCD를 이용해 **i2r-02 IoT PLC**용 HMI(Human Machine Interface)를 만드는 방법을 설명합니다.
 
 > 참고 소스: [`hmi-i2r02/hmi-i2r02.ino`](hmi-i2r02/hmi-i2r02.ino)
