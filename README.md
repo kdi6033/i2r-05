@@ -22,7 +22,7 @@ i2r-05 보드를 활용하여 기본적인 하드웨어 이해부터 실습을 �
 - 머신러닝 및 On-Device AI 개념을 학습하고 실제 보드에서 실행 가능하도록 구현
 - ESP32-S3의 강력한 연산 성능을 활용하여 실시간 데이터 분석 및 처리
 
-## ✅ 🤖 AI로 코드 자동 생성
+## ✅ 2. 🤖 AI로 코드 자동 생성
 
 **코딩 경험 없어도 됩니다!**
 
@@ -41,7 +41,9 @@ https://raw.githubusercontent.com/kdi6033/i2r-05/main/CLAUDE.md
 
 → 완성 코드 복사 → Arduino IDE 붙여넣기 → 업로드
 
-## 📌 ESP32-S3-WROOM-1-N16R8 설명
+## ✅ 3. i2r-05 보드 사양
+
+📌 ESP32-S3-WROOM-1-N16R8 설명
 ESP32-S3-WROOM-1-N16R8은 Espressif Systems에서 개발한 고성능 Wi-Fi 및 Bluetooth LE 모듈입니다. 이 모듈은 ESP32-S3 SoC를 기반으로 하며, **16MB의 플래시 메모리(N16)와 8MB의 PSRAM(R8)**을 탑재하고 있습니다.
 
 ESP32 S3 16M Flash, AI IoT 개발용 보드
@@ -50,7 +52,7 @@ ESP32 S3 16M Flash, AI IoT 개발용 보드
 
 <img src="https://github.com/user-attachments/assets/ed673ea3-f054-4370-ae92-979a29e72c4d?raw=true" height="300">    
 
-## 📌 i2r-05 보드 핀맵
+📌 i2r-05 보드 핀맵
 
 | 기능        | GPIO |  설명         |
 | --------- | ---- | ---------- |
@@ -151,7 +153,7 @@ spiffs,   data, spiffs,  0xC20000, 0x3D0000,
 
 -----
 
-## 📌 보드의 RGB Led 제어 (48번핀)
+📌 보드의 RGB Led 제어 (48번핀)
 보드에는 RGB Led가 48번으로 장착되었습니다. 다음은 색상을 제어하는 프로그램 입니다.    
 
 🔗 [▶️ 유튜브 보기 - ** ChatGPT AI IoT 아두이노 보드  RGB Led 제어 (48번핀)**](https://youtu.be/dB-iA1lIVrQ)
