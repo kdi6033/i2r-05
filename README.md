@@ -2099,7 +2099,7 @@ void loop() {
 }
 ```
 
-### ✅ 1.3" OLED LCD 128x64
+## ✅ 1.3" OLED LCD 128x64
 - Resolution: 128*64
 - Control chip: SSH1106
 - Display area: 29.42 x 14.7mm
@@ -2382,7 +2382,7 @@ void flowingEffect() {
 점멸 색상 랜덤화 → CHSV(random8(),255,255)    
 무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
-### 🔰 VL53L0X Time-of-Flight (ToF) 거리 센서
+## 🔰 VL53L0X Time-of-Flight (ToF) 거리 센서
 <img src="https://github.com/user-attachments/assets/1e3b3bde-cb82-42ad-af43-7e03a7ce1e27" alt="VL53L0X" width="300">
 
 🔍 개요
@@ -2472,7 +2472,7 @@ void loop() {
 }
 ```
 
-##### 💻 통합 프로그램: OLED 눈 + LED 효과 + 거리 측정 출력 (Serial)
+💻 통합 프로그램: OLED 눈 + LED 효과 + 거리 측정 출력 (Serial)
 센서 3개를 통합해서 동작하는 프로그램
 ```
 #include <FastLED.h>
@@ -2649,7 +2649,7 @@ void updateBreathingEffect() {
 
 -----------
 ## ✅ 조도센서 (GY302)
-### 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
+🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
 
 i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH1750) 조도 센서용 아두이노 프로그램 입니다.
 - GY-320은 GY-302의 오기일 가능성이 높으며, 실제 센서는 BH1750을 사용합니다.
@@ -2667,7 +2667,7 @@ i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH175
 | SCL               | IO17        | I2C 클럭          |
 | ADDR              | GND (or NC) | 주소 설정 (기본 0x23) |
 
-##### 💻 조도센서 GY-302 프로그램
+💻 조도센서 GY-302 프로그램
 ```
 #include <Wire.h>
 #include <BH1750.h>
@@ -2709,7 +2709,7 @@ ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 �
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
 블루투스는 스마트폰의 블루투스와 연결하여 와이파이 정보를 보드로 전송하여 통신 접속을 하게 합니다. 
 
-## 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 와이파이, 크라우드 연결**](https://youtu.be/R9wEoO4aQpU)
+🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 와이파이, 크라우드 연결**](https://youtu.be/R9wEoO4aQpU)
 
 > 🧠 이 영상에서는 **i2r-05 AI IoT 보드**를 Wi-Fi 및 클라우드에 연결하는 방법을 자세히 설명합니다.
 > - 📡 와이파이 설정 방법
@@ -2725,7 +2725,7 @@ BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) �
 
 
 
-## 🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 웹앱 사용법**](https://youtu.be/R9wEoO4aQpU)
+🔗 [▶️ 유튜브 보기 - **AI IoT 아두이노 보드 웹앱 사용법**](https://youtu.be/R9wEoO4aQpU)
 
 > 크라우드에 접속하여 스위치, 온도, 습도, 아나로그 센서, 조도센서 등을 원격으로 모니터링 제어 하는 방법을 소개한다.
 
