@@ -329,7 +329,10 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
     <summary>💻 User_Setup.h </summary>
 
 ```c
-  
+
+// TFT_eSPI User_Setup - AliExpress 3.5" IPS ILI9488 (i2r-06 ESP32-S3)
+// 핀 연결 가이드: lcd_github.md 참조
+
 #define USER_SETUP_INFO "IPS-ILI9488 3.5 i2r-06-ESP32S3"
 
 // ----- Section 1: Driver -----
@@ -343,18 +346,18 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
 #define TFT_INVERSION_ON
 
 // ----- Section 2: Pins (Commercial PCB Layout) -----
-#define TFT_MISO  15   // 터치 TDO (LCD 13번)
+#define TFT_CS    8    // LCD CS (LCD 3번)
+#define TFT_RST   9    // LCD Reset (LCD 4번)
+#define TFT_DC    10   // LCD Data/Command (LCD 5번)
 #define TFT_MOSI  11   // LCD SDI + 터치 TDI 공유 (LCD 6, 12번)
 #define TFT_SCLK  12   // LCD SCK + 터치 TCK 공유 (LCD 7, 10번)
-#define TFT_CS    8    // LCD CS (LCD 3번)
-#define TFT_DC    10   // LCD Data/Command (LCD 5번)
-#define TFT_RST   9    // LCD Reset (LCD 4번)
 #define TFT_BL    13   // 백라이트 (LCD 8번)
+#define TFT_MISO  15   // 터치 TDO (LCD 13번)
 #define TFT_BACKLIGHT_ON HIGH
 
 // 터치 (XPT2046)
 #define TOUCH_CS  14   // 터치 CS (LCD 11번)
-// TOUCH_IRQ: GPIO 16   // 터치 IRQ (LCD 14번)
+#define TOUCH_IRQ  16   // 터치 IRQ (LCD 14번)
 
 // ----- Section 3: ESP32-S3 SPI -----
 // ESP32-S3에서 Octal Flash/PSRAM 사용 시 SPI2(FSPI)가 시스템에 예약되므로,
@@ -375,6 +378,7 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
 #define LOAD_FONT8  // Font 8
 #define LOAD_GFXFF  // FreeFonts
 #define SMOOTH_FONT
+
 ```
 </details>
 
@@ -391,16 +395,14 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
 
 #include <TFT_eSPI.h>
 
-#define PIN_BL 14
-
 TFT_eSPI tft = TFT_eSPI();
 
 void setup() {
   Serial.begin(115200);
 
   // 백라이트 켜기
-  pinMode(PIN_BL, OUTPUT);
-  digitalWrite(PIN_BL, HIGH);
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, TFT_BACKLIGHT_ON);
 
   // TFT 초기화
   tft.init();
@@ -453,8 +455,6 @@ void loop() {
 
 #include <TFT_eSPI.h>
 
-#define PIN_BL   13
-#define PIN_TIRQ 16
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -483,7 +483,7 @@ bool getTouchCoords(int16_t &x, int16_t &y) {
   uint16_t rx = 0, ry = 0;
   
   // TIRQ 핀이 LOW이면 터치된 상태
-  if (digitalRead(PIN_TIRQ) == LOW) {
+  if (digitalRead(TOUCH_IRQ) == LOW) {
     if (tft.getTouchRaw(&rx, &ry)) {
       // lcd_github.md 캘리브레이션 실측값 기반 좌표 매핑
       // rx: Y축 raw 값, ry: X축 raw 값
@@ -502,9 +502,9 @@ bool getTouchCoords(int16_t &x, int16_t &y) {
 void setup() {
   Serial.begin(115200);
 
-  pinMode(PIN_BL, OUTPUT);
-  digitalWrite(PIN_BL, HIGH);
-  pinMode(PIN_TIRQ, INPUT_PULLUP); // 터치 인터럽트 핀 풀업
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, TFT_BACKLIGHT_ON);
+  pinMode(TOUCH_IRQ, INPUT_PULLUP); // 터치 인터럽트 핀 풀업
 
   tft.init();
   tft.setRotation(1); // 가로 모드 (480x320)
