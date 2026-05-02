@@ -446,12 +446,63 @@ void loop() {
 
 <br>     
 <details>
-    <summary>💻 에제2: 터치 버튼을 누를 때마다 버튼 색이 빨강(OFF)↔초록(ON)으로 토글되는 터치 UI 예제입니다. </summary>
+    <summary>💻 예제1: 2초마다 배경색을 빨강→초록→파랑으로 순환하며 화면 중앙에 "Hello world"를 흰색으로 표시합니다. </summary>
 
 ```c
+// i2r-06 (ESP32-S3) + 3.5" IPS ILI9488 LCD "Hello world" 테스트
+// 핀: SCK=15, MOSI=16, MISO=12, CS=10, DC=21, RST=9, BL=14
+// 터치: TCS=13, TIRQ=11
+
+#include <TFT_eSPI.h>
+
+TFT_eSPI tft = TFT_eSPI();
+
+void setup() {
+  Serial.begin(115200);
+
+  // 백라이트 켜기
+  pinMode(TFT_BL, OUTPUT);
+  digitalWrite(TFT_BL, TFT_BACKLIGHT_ON);
+
+  // TFT 초기화
+  tft.init();
+  tft.setRotation(1); // 가로 모드
+  tft.fillScreen(TFT_BLACK);
+
+  // 텍스트 설정 (흰색, 배경 투명)
+  tft.setTextColor(TFT_WHITE);
+  
+  // 화면 정중앙에 "Hello world" 출력 (폰트 크기 4)
+  tft.drawCentreString("Hello world", 240, 160, 4);
+
+  Serial.println("Hello world Displayed!");
+}
+
+int color_state = 0;
+
+void loop() {
+  delay(2000); // 2초 대기
+  
+  // 색상 변경 테스트
+  if (color_state == 0) {
+    tft.fillScreen(TFT_RED);
+    color_state = 1;
+  } else if (color_state == 1) {
+    tft.fillScreen(TFT_GREEN);
+    color_state = 2;
+  } else {
+    tft.fillScreen(TFT_BLUE);
+    color_state = 0;
+  }
+  
+  // 배경이 바뀔 때마다 글자를 다시 그려줍니다
+  tft.setTextColor(TFT_WHITE);
+  tft.drawCentreString("Hello world", 240, 160, 4);
+}
 
 ```
-<details>
+</details>
+
 
 
 
