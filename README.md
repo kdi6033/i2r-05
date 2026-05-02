@@ -543,8 +543,6 @@ void loop() {
 
 
 
---------------------------------------------------------------------
-
 ## ✅ 5. i2r-05 Shield V1 보드
 
 <img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/i2r-shield-01-3.png?raw=true" />    
