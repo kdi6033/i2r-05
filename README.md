@@ -319,7 +319,7 @@ i2r-05 보드로 3.5" IPS LCD를 제어하는 방법을 설명합니다.
 | **GPIO 15** | 13 | TDO | **MISO**: 터치 데이터 출력 |
 | **GPIO 16** | 14 | PEN (IRQ) | 터치 인터럽트 |
 
----
+----
 TFT_eSPI 라이브러리를 설치하고 \Arduino\libraries\TFT_eSPI\
 이 폴더 안에 있는 기존 User_Setup.h를 프로젝트의 User_Setup.h로 덮어쓰기:
 TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라고 알려주는 필수 설정 파일입니다.
@@ -329,7 +329,6 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
     <summary>💻 User_Setup.h </summary>
 
 ```c
-
 // TFT_eSPI User_Setup - AliExpress 3.5" IPS ILI9488 (i2r-06 ESP32-S3)
 // 핀 연결 가이드: lcd_github.md 참조
 
@@ -378,11 +377,8 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
 #define LOAD_FONT8  // Font 8
 #define LOAD_GFXFF  // FreeFonts
 #define SMOOTH_FONT
-
 ```
 </details>
-
-
 
 <br>     
 <details>
@@ -454,7 +450,6 @@ void loop() {
 // 터치: TCS=14, TIRQ=16
 
 #include <TFT_eSPI.h>
-
 
 TFT_eSPI tft = TFT_eSPI();
 
@@ -540,7 +535,7 @@ void loop() {
 
 ```
 <details>
-
+ssssssssssssssssssssss
 
 
 ## ✅ 5. i2r-05 Shield V1 보드
