@@ -323,11 +323,11 @@ void flowingEffect() {
 
 ---
 
-## 🛒 사용 부품
+📌  사용 부품
 
 | 부품 | 모델명 | 설명 |
 |------|--------|------|
-| **메인 보드** | ESP32-S3-WROOM-1-N16R8 | 16MB Flash + 8MB PSRAM, WiFi 내장 |
+| **메인 보드** | i2r-05보드 | ESP32-S3-WROOM-1-N16R8, 16MB Flash + 8MB PSRAM, WiFi 내장 |
 | **오디오 앰프** | MAX98357A | I2S 디지털 입력 → 스피커 출력 앰프 |
 | **스피커** | 4Ω 또는 8Ω, 3W 이상 | 소리를 출력하는 스피커 |
 | **마이크** | INMP441 | I2S MEMS 디지털 마이크 |
@@ -339,9 +339,9 @@ void flowingEffect() {
 
 ---
 
-## 🔌 핀 연결 - 스피커 (MAX98357A)
+📌  핀 연결 - 스피커 (MAX98357A)
 
-### I2S 신호선 (MAX98357A ↔ i2r-05 보드)
+**I2S 신호선 (MAX98357A ↔ i2r-05 보드)**
 
 | MAX98357A 핀 | i2r-05 핀 | 신호 이름 | 역할 |
 |-------------|----------|----------|------|
@@ -350,7 +350,7 @@ void flowingEffect() {
 | **LRCLK** | **GPIO 13** | LR Clock | 좌/우 채널 구분 |
 | **SD** | **GPIO 14** | Shutdown | HIGH = 앰프 ON, LOW = 음소거 |
 
-### 전원 및 공통선
+📌 전원 및 공통선
 
 | MAX98357A 핀 | i2r-05 핀 | 역할 |
 |-------------|----------|------|
@@ -358,7 +358,7 @@ void flowingEffect() {
 | **GND** | **GND** | 공통 접지 |
 | **GAIN** | **GND** | 이득 설정 (GND = 0dB, VCC = 6dB) |
 
-### 스피커 연결
+📌 스피커 연결
 
 | 스피커 선 | MAX98357A 단자 | 설명 |
 |---------|--------------|------|
@@ -367,9 +367,9 @@ void flowingEffect() {
 
 ---
 
-## 🎙️ 핀 연결 - 마이크 (INMP441)
+📌 핀 연결 - 마이크 (INMP441)
 
-### I2S 신호선 (INMP441 ↔ i2r-05 보드)
+**I2S 신호선 (INMP441 ↔ i2r-05 보드)**
 
 | INMP441 핀 | i2r-05 핀 | 역할 |
 |-----------|----------|------|
@@ -389,9 +389,9 @@ void flowingEffect() {
 
 ---
 
-## 📊 전체 연결 다이어그램
+📌  전체 연결 다이어그램
 
-### 스피커 연결
+📌 스피커 연결
 
 ```
 i2r-05 보드 (ESP32-S3-N16R8)         MAX98357A 오디오 앰프
@@ -411,7 +411,7 @@ i2r-05 보드 (ESP32-S3-N16R8)         MAX98357A 오디오 앰프
                                        └──────────────────────┘
 ```
 
-### 마이크 연결
+📌 마이크 연결
 
 ```
 i2r-05 보드 (ESP32-S3-N16R8)         INMP441 마이크
@@ -427,7 +427,7 @@ i2r-05 보드 (ESP32-S3-N16R8)         INMP441 마이크
 └──────────────────────────┘           └──────────────────────┘
 ```
 
-### 전체 핀 사용 요약
+📌 전체 핀 사용 요약
 
 ```
 i2r-05 보드
@@ -448,7 +448,7 @@ i2r-05 보드
 
 ---
 
-## 💡 동작 원리
+📌  동작 원리
 
 ```
 [텍스트 입력]
@@ -476,9 +476,9 @@ i2r-05 보드
 
 ---
 
-## 🔍 단어 입력 → 음성 출력 상세 과정
+📌  단어 입력 → 음성 출력 상세 과정
 
-### Step 1: 텍스트 입력 수신
+**Step 1: 텍스트 입력 수신**
 
 시리얼 모니터에서 "안녕하세요" 입력 후 Enter를 누르면
 `loop()` 함수가 이를 감지합니다.
@@ -490,7 +490,7 @@ String input = Serial.readStringUntil('\n');
 speakKorean(input);   // 다음 단계로 전달
 ```
 
-### Step 2: 한글 → URL 인코딩 변환
+**Step 2: 한글 → URL 인코딩 변환**
 
 한글은 인터넷 URL에 바로 사용할 수 없습니다.
 각 바이트를 `%XX` 형식으로 변환합니다.
@@ -506,7 +506,7 @@ speakKorean(input);   // 다음 단계로 전달
 결과: "%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94"
 ```
 
-### Step 3: Google TTS 서버에 HTTP 요청
+**Step 3: Google TTS 서버에 HTTP 요청**
 
 URL을 완성하여 WiFi로 Google 서버에 접속합니다.
 
@@ -529,7 +529,7 @@ http://translate.google.com/translate_tts
     재생!
 ```
 
-### Step 4: MP3 스트리밍 수신 + 디코딩
+**Step 4: MP3 스트리밍 수신 + 디코딩**
 
 > **"다운로드 후 재생"이 아닌 "받으면서 동시에 재생"입니다!**
 
@@ -550,7 +550,7 @@ ESP32-audioI2S 라이브러리
 | **다운로드** | 파일 전체를 받은 후 재생 | ❌ 사용 안 함 |
 | **스트리밍** | 받으면서 동시에 재생 | ✅ 사용 |
 
-### Step 5: I2S로 앰프에 전송
+**Step 5: I2S로 앰프에 전송**
 
 ```
 ESP32-S3 내부 I2S 하드웨어
@@ -561,7 +561,7 @@ ESP32-S3 내부 I2S 하드웨어
 MAX98357A 칩이 수신
 ```
 
-### Step 6: 디지털 → 아날로그 변환 + 증폭
+**Step 6: 디지털 → 아날로그 변환 + 증폭**
 
 ```
 MAX98357A 내부:
@@ -573,7 +573,7 @@ OUT+ / OUT- 단자 → 스피커 코일에 전류 흘림
   → 진동판 떨림 → 공기 진동 → 귀에 소리로 인식! 🔊
 ```
 
-### ⏱ 전체 타임라인
+**⏱ 전체 타임라인**
 
 ```
 0ms      Enter 누름
@@ -593,7 +593,7 @@ OUT+ / OUT- 단자 → 스피커 코일에 전류 흘림
 끝       audio_eof_mp3() 콜백 → "[Audio] 재생 완료" 출력
 ```
 
-### ❓ 자주 나오는 질문
+**❓ 자주 나오는 질문**
 
 **Q: MP3 파일을 ESP32에 저장하나요?**
 > **아니오!** 저장하지 않습니다. 받으면서 바로 재생(스트리밍)합니다.
@@ -616,7 +616,7 @@ OUT+ / OUT- 단자 → 스피커 코일에 전류 흘림
 > 이 프로젝트의 URL은 Google Translate 웹사이트가 내부적으로 사용하는
 > **비공식(undocumented) 무료 엔드포인트**입니다.
 
-### 🔑 비공식 vs 공식 Google TTS 비교
+📌 비공식 vs 공식 Google TTS 비교
 
 | 구분 | 이 프로젝트 (비공식) | Google Cloud TTS (공식) |
 |------|---------------------|------------------------|
@@ -635,24 +635,24 @@ OUT+ / OUT- 단자 → 스피커 코일에 전류 흘림
 
 ---
 
-## 🛠 개발 환경 설정
+📌 개발 환경 설정
 
-### 1단계: Arduino IDE 설치
+**1단계: Arduino IDE 설치**
 - [Arduino IDE 다운로드](https://www.arduino.cc/en/software)
 
-### 2단계: ESP32 보드 패키지 설치
+**2단계: ESP32 보드 패키지 설치**
 Arduino IDE → **File → Preferences → Additional boards manager URLs** 에 추가:
 ```
 https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
 ```
 그 다음 **Tools → Board Manager → "esp32"** 검색 → 설치
 
-### 3단계: ESP32-audioI2S 라이브러리 설치
+**3단계: ESP32-audioI2S 라이브러리 설치**
 **Tools → Manage Libraries → "ESP32-audioI2S" 검색 → Install**
 - 제작자: **schreibfaul1**
 - 버전: **3.4.5** 이상
 
-### 4단계: Arduino IDE 보드 설정
+**4단계: Arduino IDE 보드 설정**
 
 **Tools** 메뉴에서 아래와 같이 설정:
 
@@ -667,7 +667,7 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 > ⚠️ **PSRAM 설정이 가장 중요합니다!**  
 > 오디오 스트리밍에 720KB 버퍼가 필요한데, PSRAM을 활성화해야 사용 가능합니다.
 
-### 5단계: WiFi 설정 변경
+**5단계: WiFi 설정 변경**
 `speak.ino` 파일에서 본인 WiFi 정보로 수정:
 ```cpp
 #define WIFI_SSID      "본인_WiFi_이름"
@@ -676,9 +676,9 @@ https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32
 
 ---
 
-## 📖 코드 설명
+📌  코드 설명
 
-### 전체 구조 (`speak.ino`)
+**전체 구조 (`speak.ino`)**
 
 ```
 speak.ino
@@ -701,9 +701,9 @@ speak.ino
     └── audio_showstation() 스테이션 정보 출력
 ```
 
-### 핵심 코드 해설
+📌 핵심 코드 해설
 
-#### ① URL 인코딩 (`urlEncode`)
+**① URL 인코딩 (`urlEncode`)**
 한국어(UTF-8)는 인터넷 URL에 바로 사용할 수 없습니다.  
 각 바이트를 `%XX` 형식으로 변환합니다.
 
@@ -715,7 +715,7 @@ String urlEncode(const String& text) {
 }
 ```
 
-#### ② Google TTS 호출 (`speakKorean`)
+**② Google TTS 호출 (`speakKorean`)**
 ```cpp
 String url = "http://translate.google.com/translate_tts"
              "?ie=UTF-8&client=tw-ob&tl=ko&q=" + encoded;
@@ -725,7 +725,7 @@ String url = "http://translate.google.com/translate_tts"
 audio.connecttohost(url.c_str());  // MP3 스트리밍 시작
 ```
 
-#### ③ I2S 오디오 초기화 (`setup`)
+**③ I2S 오디오 초기화 (`setup`)**
 ```cpp
 audio.setPinout(PIN_I2S_BCLK,   // GPIO 12: 비트 클럭
                 PIN_I2S_LRC,    // GPIO 13: 채널 클럭
@@ -734,14 +734,14 @@ audio.setPinout(PIN_I2S_BCLK,   // GPIO 12: 비트 클럭
 audio.setVolume(18);  // 볼륨: 0(무음) ~ 21(최대)
 ```
 
-#### ④ 앰프 활성화
+**④ 앰프 활성화**
 ```cpp
 pinMode(PIN_I2S_SD, OUTPUT);    // GPIO 14를 출력으로 설정
 digitalWrite(PIN_I2S_SD, HIGH); // HIGH → MAX98357A 앰프 ON
 // LOW로 하면 음소거됩니다
 ```
 
-#### ⑤ 스트리밍 유지 (`loop`)
+**⑤ 스트리밍 유지 (`loop`)**
 ```cpp
 void loop() {
     audio.loop();  // ← 이 줄이 없으면 소리가 끊깁니다!
@@ -751,9 +751,9 @@ void loop() {
 
 ---
 
-## 🔬 주요 기술 개념
+📌 주요 기술 개념
 
-### I2S (Inter-IC Sound) 프로토콜
+**I2S (Inter-IC Sound) 프로토콜**
 디지털 오디오를 칩 간에 전송하는 표준 프로토콜입니다.
 
 ```
@@ -763,7 +763,7 @@ ESP32-S3                MAX98357A
   GPIO 11 (DIN)   ──→  실제 오디오 데이터 (0과 1)
 ```
 
-### TTS (Text-to-Speech)
+**TTS (Text-to-Speech)**
 텍스트를 음성으로 변환하는 기술입니다.  
 이 프로젝트에서는 **Google Translate의 무료 TTS API**를 사용합니다.
 
@@ -773,7 +773,7 @@ ESP32-S3                MAX98357A
 
 > 💡 인터넷 연결이 필요합니다. WiFi가 없으면 소리가 나지 않습니다.
 
-### PSRAM (Pseudo Static RAM)
+**PSRAM (Pseudo Static RAM)**
 ESP32-S3 칩 내부 RAM은 512KB로 제한됩니다.  
 오디오 스트리밍 버퍼(720KB)를 담기에 부족하므로,  
 외부에 붙어있는 PSRAM 8MB를 사용합니다.
@@ -784,7 +784,7 @@ PSRAM     8 MB   ← 오디오 버퍼용 (Arduino IDE에서 활성화 필요!)
 Flash     16 MB  ← 프로그램 저장소
 ```
 
-### MP3 스트리밍
+**MP3 스트리밍**
 전체 파일을 다운로드하지 않고, 받으면서 동시에 재생합니다.  
 `ESP32-audioI2S` 라이브러리가 이를 자동으로 처리합니다.
 
@@ -795,17 +795,17 @@ Google 서버 → [조금씩 수신] → [실시간 MP3 디코딩] → I2S → �
 
 ---
 
-## 🔧 문제 해결
+📌  문제 해결
 
-### 문제 1: `OOM: failed to allocate 720896 bytes`
+**문제 1: `OOM: failed to allocate 720896 bytes`**
 **원인**: PSRAM이 비활성화되어 있음  
 **해결**: Arduino IDE → **Tools → PSRAM → OPI PSRAM**
 
-### 문제 2: `'class Audio' has no member named 'setBufsize'`
+**문제 2: `'class Audio' has no member named 'setBufsize'`**
 **원인**: ESP32-audioI2S v3.x에서 해당 함수가 제거됨  
 **해결**: `setBufsize()` 호출 코드를 삭제
 
-### 문제 3: WiFi는 연결되는데 소리가 안 남
+**문제 3: WiFi는 연결되는데 소리가 안 남**
 **원인 및 확인 순서**:
 1. 시리얼 모니터에서 `[PSRAM] 감지됨` 메시지 확인
 2. `[Audio]` 메시지가 출력되는지 확인
@@ -813,11 +813,11 @@ Google 서버 → [조금씩 수신] → [실시간 MP3 디코딩] → I2S → �
 4. 스피커 연결 방향 확인 (빨강=OUT+, 검정=OUT-)
 5. 볼륨 설정 확인 (`audio.setVolume(18)`)
 
-### 문제 4: Google TTS URL 오류
+**문제 4: Google TTS URL 오류**
 **원인**: Google TTS는 비공식 API로 간헐적으로 차단될 수 있음  
 **해결**: 잠시 기다리거나, 유료 TTS API(OpenAI, ElevenLabs 등)로 교체
 
-### 시리얼 모니터 정상 출력 예시
+📌 시리얼 모니터 정상 출력 예시
 ```
 =================================
   ESP32-S3 한국어 TTS 스피커
@@ -838,7 +838,7 @@ Google 서버 → [조금씩 수신] → [실시간 MP3 디코딩] → I2S → �
 
 ---
 
-## 🚀 다음 단계: LLM 연결
+📌 다음 단계: LLM 연결
 
 이 프로젝트의 `speakKorean()` 함수를 활용하면 LLM(대형 언어 모델)의 응답을 바로 음성으로 출력할 수 있습니다:
 
@@ -863,7 +863,7 @@ INMP441       Whisper API       OpenAI/etc    Google TTS        MAX98357A
 
 ---
 
-## 📋 STT 프로젝트 목차
+📌  STT 프로젝트 목차
 
 1. [동작 흐름 한눈에 보기](#-동작-흐름-한눈에-보기)
 2. [Gemini API 키 발급 방법](#-gemini-api-키-발급-방법)
@@ -876,7 +876,7 @@ INMP441       Whisper API       OpenAI/etc    Google TTS        MAX98357A
 
 ---
 
-## 🔄 동작 흐름 한눈에 보기
+**🔄 동작 흐름 한눈에 보기**
 
 ```
 [학생이 Enter 누름]
@@ -906,9 +906,9 @@ INMP441       Whisper API       OpenAI/etc    Google TTS        MAX98357A
 
 ---
 
-## 🔑 Gemini API 키 발급 방법
+📌  Gemini API 키 발급 방법
 
-### 1단계: Google AI Studio 접속
+**1단계: Google AI Studio 접속**
 
 ```
 https://aistudio.google.com
@@ -916,7 +916,7 @@ https://aistudio.google.com
 
 - Google 계정으로 로그인
 
-### 2단계: API 키 발급
+**2단계: API 키 발급**
 
 ```
 왼쪽 사이드바 하단 → "Get API key" 클릭
@@ -933,7 +933,7 @@ AIzaSy... 로 시작하는 키 복사!
 
 > ⚠️ **API 키는 절대 다른 사람과 공유하지 마세요!**
 
-### 3단계: 무료 사용 한도
+**3단계: 무료 사용 한도**
 
 | 항목 | 무료 한도 |
 |------|---------|
@@ -945,14 +945,14 @@ AIzaSy... 로 시작하는 키 복사!
 
 ---
 
-## ☁️ Google Cloud 설정
+📌  Google Cloud 설정
 
-### 왜 Google Cloud 설정이 필요한가?
+**왜 Google Cloud 설정이 필요한가?**
 
 Gemini API는 Google Cloud 프로젝트와 연결되어 있습니다.  
 **무료로 사용해도** 결제 계정 연결이 필요합니다.
 
-### 1단계: 결제 계정 연결
+**1단계: 결제 계정 연결**
 
 ```
 https://console.cloud.google.com/billing
@@ -966,7 +966,7 @@ https://console.cloud.google.com/billing
 결제 계정 연결
 ```
 
-### 2단계: Gemini API 활성화 확인
+**2단계: Gemini API 활성화 확인**
 
 ```
 https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
@@ -976,7 +976,7 @@ https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
 "● API 사용 설정됨" 확인 (이미 활성화됨)
 ```
 
-### 3단계: API 키 제한 설정 확인
+**3단계: API 키 제한 설정 확인**
 
 ```
 https://console.cloud.google.com/apis/credentials
@@ -989,7 +989,7 @@ API 키 클릭
 
 ---
 
-## 💻 코드에 API 키 입력
+📌  코드에 API 키 입력
 
 `mike/mike.ino` 파일 38번째 줄:
 
@@ -1002,7 +1002,7 @@ API 키 클릭
 
 > 반드시 큰따옴표 `" "` 안에 키를 넣어야 합니다!
 
-### WiFi 설정도 변경
+📌 WiFi 설정도 변경
 
 ```cpp
 #define WIFI_SSID      "내_WiFi_이름"    // 예: "i2r"
@@ -1011,9 +1011,9 @@ API 키 클릭
 
 ---
 
-## 🔍 실행 과정 상세 설명
+📌 실행 과정 상세 설명
 
-### ① 부팅 및 초기화
+**① 부팅 및 초기화**
 
 ```
 [시리얼 모니터 출력]
@@ -1034,7 +1034,7 @@ API 키 클릭
 | `마이크 초기화 완료` | I2S 마이크 정상 연결 확인 |
 | `IP: 192.168.0.36` | WiFi 연결 성공 |
 
-### ② 녹음
+**② 녹음**
 
 ```
 [녹음] 🔴 말씀하세요! (2초)
@@ -1048,7 +1048,7 @@ API 키 클릭
 | `⬛ 완료!` | 2초 녹음 완료 |
 | `인코딩 완료: 83KB` | API 전송 준비 완료 |
 
-### ③ API 전송 및 결과
+**③ API 전송 및 결과**
 
 ```
 [STT] Gemini API 전송 중...
@@ -1066,9 +1066,9 @@ API 키 클릭
 
 ---
 
-## 📊 시리얼 모니터 출력 해석
+📌 시리얼 모니터 출력 해석
 
-### 정상 동작
+**정상 동작**
 
 ```
 [녹음] 🔴 말씀하세요! (2초)   ← 지금 말하세요!
@@ -1079,7 +1079,7 @@ API 키 클릭
 [인식 결과] 안녕하세요          ← 성공!
 ```
 
-### 오류 출력 해석
+**오류 출력 해석**
 
 | 출력 | 원인 | 해결 |
 |------|------|------|
@@ -1091,9 +1091,9 @@ API 키 클릭
 
 ---
 
-## 🧠 STT 기술 원리
+📌  STT 기술 원리
 
-### I2S 마이크 (INMP441)
+**I2S 마이크 (INMP441)**
 
 ```
 소리 (아날로그)
@@ -1105,7 +1105,7 @@ I2S 디지털 신호 (0과 1)
 ESP32-S3 수신
 ```
 
-### WAV 파일 구조
+**WAV 파일 구조**
 
 ```
 [44바이트 WAV 헤더]     ← 파일 형식 정보
@@ -1117,7 +1117,7 @@ ESP32-S3 수신
   = 16000Hz × 2초 × 2바이트
 ```
 
-### Base64 인코딩
+**Base64 인코딩**
 
 ```
 바이너리 데이터: 11110000 10110011 ...
@@ -1129,7 +1129,7 @@ HTTPS JSON에 포함 가능해짐
 
 > 바이너리 3바이트 → 텍스트 4글자로 변환되어 크기가 약 33% 증가합니다.
 
-### Gemini API 요청 구조
+**Gemini API 요청 구조**
 
 ```json
 {
@@ -1149,7 +1149,7 @@ HTTPS JSON에 포함 가능해짐
 }
 ```
 
-### Gemini API 응답 구조
+**Gemini API 응답 구조**
 
 ```json
 {
@@ -1165,9 +1165,9 @@ HTTPS JSON에 포함 가능해짐
 
 ---
 
-## 🔧 문제 해결 (STT)
+**🔧 문제 해결 (STT)**
 
-### PSRAM 오류
+**PSRAM 오류**
 
 ```
 [오류] PSRAM 없음! Tools → PSRAM → OPI PSRAM
@@ -1192,7 +1192,7 @@ Arduino IDE → Tools → PSRAM → "OPI PSRAM" 선택
 #define WIFI_PASSWORD  "정확한_비밀번호"
 ```
 
-### 인식률이 낮을 때
+**인식률이 낮을 때**
 
 | 원인 | 해결 |
 |------|------|
@@ -1201,7 +1201,7 @@ Arduino IDE → Tools → PSRAM → "OPI PSRAM" 선택
 | 말하는 속도가 빠름 | 천천히 또렷하게 발음 |
 | L/R 핀 미연결 | INMP441의 L/R 핀 → GND 연결 확인 |
 
-### 분당 요청 초과 (429 오류)
+**분당 요청 초과 (429 오류)**
 
 ```
 여러 번 연속 테스트하면 429 오류 발생
@@ -1210,7 +1210,7 @@ Arduino IDE → Tools → PSRAM → "OPI PSRAM" 선택
 
 ---
 
-## 🚀 다음 단계: TTS + STT 통합 챗봇
+📌  다음 단계: TTS + STT 통합 챗봇
 
 현재 구현된 두 프로그램을 연결하면:
 
@@ -1236,7 +1236,7 @@ void loop() {
 
 ---
 
-## 📚 참고 자료
+📌  참고 자료
 
 | 항목 | 링크 |
 |------|------|
