@@ -308,7 +308,7 @@ void flowingEffect() {
 
 ---
 
-## 📋 목차
+📌  목차
 
 1. [사용 부품](#-사용-부품)
 2. [핀 연결 - 스피커 (MAX98357A)](#-핀-연결---스피커-max98357a)
@@ -856,7 +856,7 @@ INMP441       Whisper API       OpenAI/etc    Google TTS        MAX98357A
 
 ---
 
-# 🎙️ ESP32-S3 한국어 음성인식(STT) 프로젝트
+📌 ESP32-S3 한국어 음성인식(STT) 프로젝트
 
 > **INMP441 마이크**로 음성을 녹음하고 **Gemini 2.5 Flash API**로 한국어 텍스트를 인식하는 프로젝트입니다.  
 > 파일: `mike/mike.ino`
