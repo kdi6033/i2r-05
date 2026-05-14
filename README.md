@@ -1178,7 +1178,7 @@ HTTPS JSON에 포함 가능해짐
 Arduino IDE → Tools → PSRAM → "OPI PSRAM" 선택
 ```
 
-### WiFi 연결 실패
+📌  WiFi 연결 실패
 
 ```
 [WiFi] i2r 연결 중...
