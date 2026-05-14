@@ -848,7 +848,7 @@ String llmResponse = "오늘 날씨는 맑고 기온은 25도입니다.";
 speakKorean(llmResponse);  // 바로 음성 출력!
 ```
 
-### 전체 AI 챗봇 구조 (목표)
+📌 전체 AI 챗봇 구조 (목표)
 ```
 [마이크] → [음성 인식(STT)] → [LLM 서버] → [TTS(speak.ino)] → [스피커]
 INMP441       Whisper API       OpenAI/etc    Google TTS        MAX98357A
