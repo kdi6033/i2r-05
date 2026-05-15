@@ -639,6 +639,716 @@ API 키 클릭
 * **현상:** 마이크 인식이 잘 안 되고 엉뚱한 글자가 나옴
   * **해결:** 마이크(INMP441)의 `L/R` 핀이 보드의 `GND` 핀에 잘 연결되었는지 확인하고, 마이크 가까이(5~10cm)서 또렷하게 말해보세요.
 
+
+<br>     
+<details>
+    <summary>💻 step1.ino </summary>
+
+```c
+// ============================================================
+// step1.ino - 음성인식(STT) 교육용 데모
+// 보드    : i2r-05 (ESP32-S3-WROOM-1-N16R8)
+// STT     : Google Gemini 1.5 Flash API
+//           (무료 API 키 - https://aistudio.google.com)
+//
+// 동작 원리:
+//   ① 마이크로 3초 녹음 (PCM → WAV)
+//   ② Base64 인코딩
+//   ③ Gemini API로 전송 → "이 내용을 텍스트로 변환해줘"
+//   ④ 한국어 텍스트 출력
+//
+// API 키 발급:
+//   1. https://aistudio.google.com 접속
+//   2. Google 계정 로그인
+//   3. "Get API Key" 클릭 → 복사 (무료, 신용카드 불필요)
+//   4. 아래 GEMINI_API_KEY에 붙여넣기
+//
+// 핀 연결:
+//   GPIO  8 → INMP441 SD  (데이터)
+//   GPIO  9 → INMP441 SCK (클럭)
+//   GPIO 10 → INMP441 WS  (채널)
+//   3.3V    → INMP441 VDD
+//   GND     → INMP441 GND + L/R
+// ============================================================
+
+#include "NetworkClientSecure.h"
+#include "WiFi.h"
+#include "driver/i2s.h"
+#include "mbedtls/base64.h"
+
+// ── WiFi 설정 ──────────────────────────────────────────────
+#define WIFI_SSID "i2r"
+#define WIFI_PASSWORD "00000000"
+
+// ── Gemini API 키 (aistudio.google.com 에서 무료 발급) ────
+// #define GEMINI_API_KEY "여기에_API_키_입력
+// AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"
+#define GEMINI_API_KEY "AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"
+
+// ── 마이크 핀 ──────────────────────────────────────────────
+#define MIC_SD 8
+#define MIC_SCK 9
+#define MIC_WS 10
+
+// ── 녹음 설정 ──────────────────────────────────────────────
+#define SAMPLE_RATE 16000
+#define REC_SECONDS 2                            // 2초 (할당량 절약)
+#define PCM_SIZE (SAMPLE_RATE * REC_SECONDS * 2) // 64,000 bytes
+#define WAV_SIZE (PCM_SIZE + 44)                 // + WAV 헤더
+#define B64_SIZE (WAV_SIZE * 4 / 3 + 8)          // Base64 크기
+
+uint8_t *wavBuf = nullptr; // WAV 오디오 버퍼 (PSRAM)
+char *b64Buf = nullptr;    // Base64 버퍼 (PSRAM)
+
+// ============================================================
+// WAV 헤더 쓰기 (PCM → WAV 변환)
+// WAV = 44바이트 헤더 + PCM 데이터
+// ============================================================
+void writeWavHeader(uint8_t *buf, uint32_t pcmSize) {
+  uint32_t fileSize = pcmSize + 36;
+  uint32_t byteRate = SAMPLE_RATE * 2;
+  uint16_t blockAlign = 2, bitsPerSample = 16, numChannels = 1;
+  uint16_t audioFormat = 1; // PCM
+  uint32_t fmtSize = 16, sampleRate = SAMPLE_RATE;
+
+  memcpy(buf, "RIFF", 4);
+  memcpy(buf + 4, &fileSize, 4);
+  memcpy(buf + 8, "WAVE", 4);
+  memcpy(buf + 12, "fmt ", 4);
+  memcpy(buf + 16, &fmtSize, 4);
+  memcpy(buf + 20, &audioFormat, 2);
+  memcpy(buf + 22, &numChannels, 2);
+  memcpy(buf + 24, &sampleRate, 4);
+  memcpy(buf + 28, &byteRate, 4);
+  memcpy(buf + 32, &blockAlign, 2);
+  memcpy(buf + 34, &bitsPerSample, 2);
+  memcpy(buf + 36, "data", 4);
+  memcpy(buf + 40, &pcmSize, 4);
+}
+
+// ============================================================
+// 마이크 초기화
+// ============================================================
+void setupMic() {
+  i2s_config_t cfg = {.mode = (i2s_mode_t)(I2S_MODE_MASTER | I2S_MODE_RX),
+                      .sample_rate = SAMPLE_RATE,
+                      .bits_per_sample = I2S_BITS_PER_SAMPLE_32BIT,
+                      .channel_format = I2S_CHANNEL_FMT_ONLY_LEFT,
+                      .communication_format = I2S_COMM_FORMAT_STAND_I2S,
+                      .intr_alloc_flags = ESP_INTR_FLAG_LEVEL1,
+                      .dma_buf_count = 4,
+                      .dma_buf_len = 512,
+                      .use_apll = false};
+  i2s_driver_install(I2S_NUM_1, &cfg, 0, NULL);
+
+  i2s_pin_config_t pins = {.bck_io_num = MIC_SCK,
+                           .ws_io_num = MIC_WS,
+                           .data_out_num = I2S_PIN_NO_CHANGE,
+                           .data_in_num = MIC_SD};
+  i2s_set_pin(I2S_NUM_1, &pins);
+  Serial.println("[OK] 마이크 초기화 완료");
+}
+
+// ============================================================
+// ① 녹음: INMP441 → WAV 버퍼
+// ============================================================
+void recordAudio() {
+  Serial.println("[녹음] 🔴 말씀하세요! (2초)");
+  writeWavHeader(wavBuf, PCM_SIZE); // WAV 헤더 먼저 기록
+
+  int32_t raw[128];
+  uint32_t written = 0;
+  uint8_t *pcmPtr = wavBuf + 44; // 헤더 다음부터 PCM 기록
+
+  while (written < PCM_SIZE) {
+    size_t bytesRead = 0;
+    i2s_read(I2S_NUM_1, raw, sizeof(raw), &bytesRead, portMAX_DELAY);
+    for (int i = 0; i < (int)(bytesRead / 4) && written < PCM_SIZE; i++) {
+      int16_t sample = (int16_t)(raw[i] >> 14); // 32bit → 16bit
+      memcpy(pcmPtr + written, &sample, 2);
+      written += 2;
+    }
+  }
+  Serial.println("[녹음] ⬛ 완료!");
+}
+
+// ============================================================
+// ② Base64 인코딩: WAV → 텍스트 형식으로 변환
+// (인터넷으로 이진 데이터를 전송하기 위한 변환)
+// ============================================================
+size_t encodeBase64() {
+  size_t outLen = 0;
+  mbedtls_base64_encode((unsigned char *)b64Buf, B64_SIZE, &outLen, wavBuf,
+                        WAV_SIZE);
+  b64Buf[outLen] = '\0';
+  Serial.printf("[Base64] 인코딩 완료: %d KB\n", outLen / 1024);
+  return outLen;
+}
+
+// ============================================================
+// ③ Gemini API로 전송 → 텍스트 받기
+//
+// 요청 구조:
+//   오디오 파일(Base64) + "이 내용을 한국어 텍스트로 변환해줘"
+//   → Gemini가 음성을 이해해서 텍스트로 반환
+// ============================================================
+// ★ 사용 가능한 모델 목록 조회 (한 번만 실행, 모델명 확인용)
+// ============================================================
+void listModels() {
+  Serial.println("[모델 조회] Gemini 모델 목록 조회 중...");
+  NetworkClientSecure client;
+  client.setInsecure();
+  if (!client.connect("generativelanguage.googleapis.com", 443)) {
+    Serial.println("[오류] 연결 실패");
+    return;
+  }
+  String path = String("/v1/models?key=") + GEMINI_API_KEY;
+  client.printf("GET %s HTTP/1.0\r\n", path.c_str());
+  client.println("Host: generativelanguage.googleapis.com");
+  client.println();
+
+  // 헤더 건너뛰기
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    if (line == "\r" || line.length() <= 1)
+      break;
+  }
+
+  // 응답 전체 수신
+  String response = "";
+  unsigned long t = millis();
+  while (millis() - t < 8000) {
+    while (client.available())
+      response += (char)client.read();
+    if (!client.connected() && !client.available())
+      break;
+  }
+  client.stop();
+
+  // models/xxx 형태로 모델명만 추출 출력
+  Serial.println("=== 사용 가능 모델 ===");
+  int pos = 0;
+  while ((pos = response.indexOf("models/", pos)) >= 0) {
+    int end = response.indexOf('"', pos);
+    if (end > pos)
+      Serial.println("  " + response.substring(pos, end));
+    pos = end;
+  }
+  Serial.println("=====================");
+}
+
+// ============================================================
+String geminiSTT(size_t b64Len) {
+  Serial.println("[STT] Gemini API 전송 중...");
+
+  NetworkClientSecure client;
+  client.setInsecure();
+
+  if (!client.connect("generativelanguage.googleapis.com", 443)) {
+    return "[오류] Gemini 서버 연결 실패";
+  }
+
+  // JSON body 구성 (오디오 + 텍스트 프롬프트)
+  String jsonHead = "{\"contents\":[{\"parts\":["
+                    "{\"inline_data\":{\"mime_type\":\"audio/wav\",\"data\":\"";
+
+  String jsonTail = "\"}},"
+                    "{\"text\":\"이 오디오의 한국어 내용을 텍스트로만 "
+                    "출력해줘. 설명 없이 말한 내용만.\"}]"
+                    "}]}";
+
+  uint32_t bodyLen = jsonHead.length() + b64Len + jsonTail.length();
+
+  // HTTP 헤더 전송
+  // gemini-2.5-flash: ListModels로 확인된 사용 가능 모델!
+  String path = String("/v1beta/models/gemini-2.5-flash:generateContent?key=") +
+                GEMINI_API_KEY;
+  client.printf("POST %s HTTP/1.0\r\n", path.c_str());
+  client.println("Host: generativelanguage.googleapis.com");
+  client.println("Content-Type: application/json");
+  client.printf("Content-Length: %d\r\n\r\n", bodyLen);
+
+  // JSON body 전송 (청크 단위)
+  client.print(jsonHead);
+  for (size_t i = 0; i < b64Len; i += 1024) {
+    size_t chunk = min((size_t)1024, b64Len - i);
+    client.write((uint8_t *)b64Buf + i, chunk);
+  }
+  client.print(jsonTail);
+
+  // 전체 응답 수신 (헤더 + 본문 모두)
+  String response = "";
+  unsigned long t = millis();
+  while (millis() - t < 15000) {
+    while (client.available())
+      response += (char)client.read();
+    if (!client.connected() && !client.available())
+      break;
+  }
+  client.stop();
+
+  Serial.println("[DEBUG] 응답길이: " + String(response.length()));
+
+  // HTTP 헤더와 본문 분리: \r\n\r\n 이후가 JSON 본문
+  int bodyStart = response.indexOf("\r\n\r\n");
+  String body = (bodyStart >= 0) ? response.substring(bodyStart + 4) : response;
+
+  Serial.println("[DEBUG] 바디: " + body.substring(0, 400)); // 바디 내용 확인
+
+  // JSON 파싱: Gemini 2.5는 "text": "값" (공백 포함) 형식
+  // "text":"값" 또는 "text": "값" 모두 처리
+  int idx = body.indexOf("\"text\":");
+  if (idx < 0) {
+    return "[인식 실패]";
+  }
+  // 콜론 이후 첫 번째 " 찾기 (공백 무시)
+  int quoteStart = body.indexOf("\"", idx + 7);
+  if (quoteStart < 0)
+    return "[인식 실패]";
+  quoteStart++; // " 다음부터 시작
+  int quoteEnd = body.indexOf("\"", quoteStart);
+  if (quoteEnd < 0)
+    return "[인식 실패]";
+  return body.substring(quoteStart, quoteEnd);
+}
+
+// ============================================================
+// WiFi 연결
+// ============================================================
+bool connectWiFi() {
+  Serial.printf("[WiFi] %s 연결 중...\n", WIFI_SSID);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  int retry = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+    if (++retry > 30)
+      return false;
+  }
+  Serial.printf("\n[WiFi] 연결됨! IP: %s\n", WiFi.localIP().toString().c_str());
+  return true;
+}
+
+// ============================================================
+// setup()
+// ============================================================
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  Serial.println("==============================");
+  Serial.println("  음성인식 데모 (Gemini STT)  ");
+  Serial.println("==============================");
+
+  // PSRAM에 버퍼 할당
+  if (!psramFound()) {
+    Serial.println("[오류] PSRAM 없음! Tools → PSRAM → OPI PSRAM");
+    while (1)
+      ;
+  }
+  wavBuf = (uint8_t *)ps_malloc(WAV_SIZE);
+  b64Buf = (char *)ps_malloc(B64_SIZE);
+  Serial.printf("[PSRAM] WAV: %dKB, Base64: %dKB 할당 완료\n", WAV_SIZE / 1024,
+                B64_SIZE / 1024);
+
+  setupMic();
+  connectWiFi();
+  // listModels();  // 모델 확인 완료: gemini-2.5-flash
+
+  Serial.println();
+  Serial.println("──────────────────────────────");
+  Serial.println("Enter → 2초 녹음 → 텍스트 출력");
+  Serial.println("예) \"안녕하세요\" 라고 말해보세요");
+  Serial.println("──────────────────────────────");
+}
+
+// ============================================================
+// loop()
+// ============================================================
+void loop() {
+  if (Serial.available()) {
+    while (Serial.available())
+      Serial.read();
+
+    recordAudio();                   // ① 녹음
+    size_t b64Len = encodeBase64();  // ② Base64 변환
+    String text = geminiSTT(b64Len); // ③ Gemini STT
+
+    Serial.println("──────────────────────────────");
+    Serial.print("[인식 결과] ");
+    Serial.println(text);
+    Serial.println("──────────────────────────────");
+    Serial.println("Enter 키를 누르면 다시 녹음합니다...");
+  }
+}
+
+```
+</details>
+
+<br>     
+<details>
+    <summary>💻 step2.ino </summary>
+
+```c
+// ============================================================
+// step2.ino - 구글 AI(Gemini) 텍스트 대화 기초 예제
+//
+// 목적: 구글 AI에게 "문자"로 질문을 보내고 "문자"로 답변을 받습니다.
+// 학생들이 원리를 쉽게 이해할 수 있도록 가장 단순하게 작성되었습니다.
+// 예상질문
+// 넌 지금부터 똑똑한 강아지야. 멍멍체로 아두이노가 뭔지 한 문장으로 설명해 줄래
+// 바구니에 사과가 3개 있었어. 내가 1개를 먹고, 친구가 2개를 더 줬어. 지금
+// 사과는 몇 개일까? 우주에 대해 아무것도 모르는 10살 꼬마에게 '블랙홀'이 뭔지
+// 딱 한 문장으로 아주 쉽게 설명해 줘.
+// ============================================================
+
+#include <NetworkClientSecure.h>
+#include <WiFi.h>
+
+// ── 1. 와이파이 및 API 설정 (학생들이 수정할 부분) ─────────
+const char *ssid = "i2r";
+const char *password = "00000000";
+const char *gemini_api_key =
+    "AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"; // 무료 발급받은 키
+
+// ── 2. 초기 설정 (보드를 켜면 한 번만 실행됨) ────────────────
+void setup() {
+  Serial.begin(115200);
+  delay(1000); // 시리얼 모니터 켜질 시간 기다림
+
+  // 와이파이 연결 시작
+  Serial.println("\n[1단계] 와이파이 연결 중...");
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("\n✅ 와이파이 연결 성공!");
+
+  Serial.println("\n=======================================================");
+  Serial.println("  채팅 준비 완료! 질문을 입력하고 [엔터]를 치세요.");
+  Serial.println("=======================================================\n");
+}
+
+void loop() {
+  // 시리얼 모니터에서 문자가 들어왔는지 확인합니다.
+  if (Serial.available()) {
+    // 엔터(줄바꿈)가 들어올 때까지 글자를 모두 읽습니다.
+    String input = Serial.readStringUntil('\n');
+    input.trim(); // 앞뒤 공백이나 불필요한 엔터 기호 제거
+
+    // 내용이 1글자 이상이면 구글 AI에게 전송합니다.
+    if (input.length() > 0) {
+      askGoogleAI(input); // 질문 전송!
+
+      Serial.println(
+          "\n=======================================================");
+      Serial.println(
+          "  질문이 더 있나요? 언제든 다시 입력하고 [엔터]를 치세요!");
+      Serial.println(
+          "=======================================================\n");
+    }
+  }
+}
+
+// ── 3. 구글 AI에게 질문하고 답변 받는 함수 ──────────────────
+void askGoogleAI(String question) {
+  Serial.println("\n[2단계] 구글 AI에게 질문 전송 중...");
+  Serial.println("나의 질문: " + question);
+
+  // 보안 통신(HTTPS)을 위한 클라이언트 생성
+  NetworkClientSecure client;
+  client.setInsecure(); // 인증서 검사 생략 (가장 간단하고 빠른 방법)
+
+  // 구글 서버에 접속 (포트 443은 HTTPS 기본 포트입니다)
+  if (!client.connect("generativelanguage.googleapis.com", 443)) {
+    Serial.println("❌ 구글 서버 접속 실패!");
+    return;
+  }
+
+  // JSON 오류 방지를 위해 입력된 질문 안의 따옴표(")를 작은따옴표(')로
+  // 바꿔줍니다.
+  question.replace("\"", "'");
+
+  // 구글 서버에 보낼 데이터(JSON) 만들기 (규칙에 맞게 포장하는 과정)
+  String payload =
+      "{\"contents\": [{\"parts\": [{\"text\": \"" + question + "\"}]}]}";
+
+  // HTTP POST 요청 보내기 (편지봉투에 주소 적어서 보내기)
+  String url = String("/v1beta/models/gemini-2.5-flash:generateContent?key=") +
+               gemini_api_key;
+
+  client.println("POST " + url + " HTTP/1.1");
+  client.println("Host: generativelanguage.googleapis.com");
+  client.println("Content-Type: application/json");
+  client.print("Content-Length: ");
+  client.println(payload.length());
+  client.println();      // 빈 줄 하나 넣기 (통신 규칙입니다)
+  client.print(payload); // 진짜 데이터(우리가 만든 질문) 보내기
+
+  // 구글 서버의 답변 기다리기
+  Serial.println("\n[3단계] 구글 AI가 생각하는 중...");
+
+  // 서버가 보내주는 헤더(우편물 겉표지)는 그냥 읽어서 버립니다.
+  while (client.connected()) {
+    String line = client.readStringUntil('\n');
+    if (line == "\r")
+      break; // 빈 줄이 나오면 헤더 끝, 본문 시작!
+  }
+
+  // 진짜 답변(본문) 읽기
+  String response = "";
+  while (client.available()) {
+    response += (char)client.read();
+  }
+
+  // 통신 끝! 전화 끊기
+  client.stop();
+
+  // ── 4. 받은 답변에서 필요한 '글자'만 쏙 뽑아내기 (파싱) ──────
+  // 구글은 복잡한 괄호 형태(JSON)로 답변을 줍니다. 우리는 거기서 "text": 옆에
+  // 있는 글자만 찾습니다.
+  int textStartIndex = response.indexOf("\"text\": \"");
+
+  if (textStartIndex > 0) {
+    textStartIndex += 9; // "\"text\": \"" 글자 수만큼 뒤로 점프
+    int textEndIndex = response.indexOf("\"", textStartIndex);
+
+    // 시작점부터 끝점까지 글자만 잘라내기
+    String finalAnswer = response.substring(textStartIndex, textEndIndex);
+
+    // 줄바꿈 기호(\n)를 보기 좋게 진짜 줄바꿈으로 바꾸기
+    finalAnswer.replace("\\n", "\n");
+
+    Serial.println("\n🎉 [AI의 답변] 🎉");
+    Serial.println("--------------------------------------------------");
+    Serial.println(finalAnswer);
+    Serial.println("--------------------------------------------------");
+  } else {
+    // 만약 에러가 났다면 구글이 보낸 원본 메시지를 보여줍니다.
+    Serial.println("\n❌ 답변을 찾을 수 없습니다. 구글 서버 메시지:");
+    Serial.println(response);
+  }
+}
+
+```
+</details>
+
+<br>     
+<details>
+    <summary>💻 step3.ino </summary>
+
+```c
+// ============================================================
+// step3.ino - ESP32-S3 한국어 TTS 음성 출력
+// 보드    : i2r-05 (ESP32-S3)
+// 라이브러리: ESP32-audioI2S
+//            Arduino IDE → 라이브러리 관리자 → "ESP32-audioI2S" 검색 후 설치
+// ============================================================
+//
+// 동작 원리:
+//   ESP32-S3 → WiFi → Google TTS → MP3 스트림 수신
+//                                → I2S 디코딩 → MAX98357A → 스피커
+//
+// 핀 연결 (CONNECTION.md 기준)
+//   GPIO 11 → MAX98357A DIN   (오디오 데이터)
+//   GPIO 12 → MAX98357A BCLK  (비트 클럭)
+//   GPIO 13 → MAX98357A LRCLK (채널 클럭)
+//   GPIO 14 → MAX98357A SD    (HIGH = ON)
+// ============================================================
+
+#include "Arduino.h"
+#include "Audio.h" // ESP32-audioI2S 라이브러리
+#include "WiFi.h"
+
+// ── WiFi 설정 (본인 환경에 맞게 수정) ────────────────────
+#define WIFI_SSID "i2r"
+#define WIFI_PASSWORD "00000000"
+
+// ── MAX98357A 핀 설정 ──────────────────────────────────────
+#define PIN_I2S_BCLK 12
+#define PIN_I2S_LRC 13
+#define PIN_I2S_DOUT 11
+#define PIN_I2S_SD 14
+
+// ── Audio 객체 ────────────────────────────────────────────
+Audio audio;
+
+// ============================================================
+// 한국어 TTS - URL 인코딩된 텍스트를 구글 TTS로 스트리밍
+//
+// 사용 예)
+//   speakKorean("안녕하세요");     // 한글 직접 입력
+//   speakUrl("%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94");  // URL인코딩
+// ============================================================
+
+// UTF-8 문자열 → URL 인코딩 변환
+String urlEncode(const String &text) {
+  String encoded = "";
+  const char *src = text.c_str();
+  while (*src) {
+    uint8_t c = (uint8_t)*src;
+    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+        (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.' ||
+        c == '~') {
+      encoded += (char)c;
+    } else {
+      char hex[4];
+      sprintf(hex, "%%%02X", c);
+      encoded += hex;
+    }
+    src++;
+  }
+  return encoded;
+}
+
+// Google TTS로 한국어 음성 재생
+void speakKorean(const String &text) {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("[ERROR] WiFi 연결 없음!");
+    return;
+  }
+
+  String encoded = urlEncode(text);
+  // Google Translate TTS (무료, 짧은 문장 지원)
+  String url = "http://translate.google.com/translate_tts"
+               "?ie=UTF-8&client=tw-ob&tl=ko&q=" +
+               encoded;
+
+  Serial.println("────────────────────────────────");
+  Serial.print("[TTS] 텍스트: ");
+  Serial.println(text);
+  Serial.print("[TTS] URL: ");
+  Serial.println(url);
+
+  audio.connecttohost(url.c_str());
+}
+
+// ============================================================
+// WiFi 연결
+// ============================================================
+bool connectWiFi() {
+  Serial.printf("[WiFi] 연결 시도: %s\n", WIFI_SSID);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+
+  int retry = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+    if (++retry > 30) {
+      Serial.println("\n[ERROR] WiFi 연결 실패!");
+      return false;
+    }
+  }
+  Serial.printf("\n[WiFi] 연결됨! IP: %s\n", WiFi.localIP().toString().c_str());
+  return true;
+}
+
+// ============================================================
+// PSRAM 체크
+// ============================================================
+void checkPsram() {
+  if (psramFound()) {
+    Serial.printf("[PSRAM] 감지됨! 크기: %d bytes (%.1f MB)\n",
+                  ESP.getPsramSize(), ESP.getPsramSize() / 1048576.0f);
+    Serial.printf("[PSRAM] 여유: %d bytes\n", ESP.getFreePsram());
+  } else {
+    Serial.println("┌─────────────────────────────────────────────┐");
+    Serial.println("│ [경고] PSRAM을 찾을 수 없습니다!             │");
+    Serial.println("│ Arduino IDE에서 PSRAM을 활성화하세요:        │");
+    Serial.println("│   Tools → PSRAM → OPI PSRAM                 │");
+    Serial.println("│ 활성화하지 않으면 OOM 에러가 발생합니다.     │");
+    Serial.println("└─────────────────────────────────────────────┘");
+  }
+  Serial.printf("[RAM] 여유 힙: %d bytes (%.0f KB)\n", ESP.getFreeHeap(),
+                ESP.getFreeHeap() / 1024.0f);
+}
+
+// ============================================================
+// Setup
+// ============================================================
+void setup() {
+  Serial.begin(115200);
+  delay(1000);
+
+  Serial.println("=================================");
+  Serial.println("  ESP32-S3 한국어 TTS 스피커     ");
+  Serial.println("=================================");
+
+  // ① PSRAM 확인 (OOM 방지용)
+  checkPsram();
+
+  // ② MAX98357A 앰프 활성화
+  pinMode(PIN_I2S_SD, OUTPUT);
+  digitalWrite(PIN_I2S_SD, HIGH);
+  Serial.println("[OK] 앰프 활성화 (SD=HIGH)");
+
+  // ③ WiFi 연결
+  if (!connectWiFi()) {
+    Serial.println("[FAIL] WiFi 없이는 TTS 불가. SSID/PW 확인 후 재시작.");
+    return;
+  }
+
+  // ④ I2S 오디오 초기화
+  audio.setPinout(PIN_I2S_BCLK, PIN_I2S_LRC, PIN_I2S_DOUT);
+  audio.setVolume(18); // 볼륨: 0(무음) ~ 21(최대)
+
+  // PSRAM 유무 확인
+  if (psramFound()) {
+    Serial.println("[OK] PSRAM 사용 → 고품질 스트리밍");
+  } else {
+    Serial.println(
+        "[경고] PSRAM 없음 (N16R8이라면 Tools→PSRAM→OPI PSRAM 설정 필요)");
+  }
+
+  Serial.println("[OK] I2S 오디오 초기화 완료");
+  Serial.printf("[RAM] 남은 힙: %d KB\n", ESP.getFreeHeap() / 1024);
+  delay(500);
+
+  // ⑤ 부팅 시 음성 테스트
+  speakKorean("안녕하세요! 스피커 테스트입니다.");
+
+  Serial.println();
+  Serial.println("─────────────────────────────────");
+  Serial.println("시리얼 모니터 (115200 baud) 사용법:");
+  Serial.println("  텍스트 입력 후 Enter → 해당 내용 음성 출력");
+  Serial.println("  예) 안녕하세요");
+  Serial.println("  예) 오늘 날씨가 맑네요");
+  Serial.println("─────────────────────────────────");
+}
+
+// ============================================================
+// Loop - 시리얼 입력으로 임의 텍스트 TTS 출력
+// ============================================================
+void loop() {
+  audio.loop(); // I2S 스트리밍 유지 (반드시 필요)
+
+  if (Serial.available()) {
+    String input = Serial.readStringUntil('\n');
+    input.trim();
+    if (input.length() > 0) {
+      Serial.printf("[입력] \"%s\"\n", input.c_str());
+      speakKorean(input);
+    }
+  }
+}
+
+// ============================================================
+// ESP32-audioI2S 콜백 함수 (디버깅 정보 출력)
+// ============================================================
+void audio_info(const char *info) { Serial.printf("[Audio] %s\n", info); }
+
+void audio_eof_mp3(const char *info) { Serial.println("[Audio] 재생 완료"); }
+
+void audio_showstation(const char *info) {
+  Serial.printf("[Station] %s\n", info);
+}
+
+```
+</details>
+
+
 ---
 
 **📌  실용 챗봇 프로그램**
@@ -676,7 +1386,698 @@ API 키 클릭
    - **자동 복귀 지연 (2초 타임아웃)**: 오디오 출력이 진행되다가 데이터가 끝나 진행이 2초 이상 멈추면 정상 완료 처리합니다.
 4. **루프 순환**: 음성 출력이 완전히 끝나고 2초가 경과하면(타임아웃 감지), 시스템은 즉시 상태를 `RECORDING`으로 변경하여 사용자의 다음 질문을 듣기 시작합니다.
 
+<br>     
+<details>
+    <summary>💻 llm.ino </summary>
 
+```c
+// ============================================================
+// llm.ino - ESP32-S3 한국어 음성 대화 챗봇
+// 보드  : i2r-05 (ESP32-S3-WROOM-1-N16R8)
+//
+// 동작 흐름:
+//   Enter 누름 → 🎤 녹음(2초) → Gemini STT(음성→텍스트)
+//   → Gemini LLM(대화) → 🔊 Google TTS(텍스트→음성) → 반복
+//
+// 하드웨어 연결:
+//   [마이크 INMP441]            [스피커 MAX98357A]
+//   GPIO  8 → SD (데이터)      GPIO 11 → DIN  (데이터)
+//   GPIO  9 → SCK (클럭)       GPIO 12 → BCLK (클럭)
+//   GPIO 10 → WS  (채널선택)   GPIO 13 → LRCLK(채널선택)
+//   3.3V    → VDD               GPIO 14 → SD   (앰프 ON/OFF)
+//   GND     → GND + L/R        3.3V    → VIN
+// ============================================================
+
+#include "Arduino.h"
+#include "Audio.h" // ESP32-audioI2S (schreibfaul1)
+#include "NetworkClientSecure.h"
+#include "WiFi.h"
+#include "driver/i2s_std.h" // 새 I2S 드라이버 (마이크) - legacy 충돌 방지
+#include "mbedtls/base64.h"
+
+// ── WiFi ──────────────────────────────────────────────────────
+#define WIFI_SSID "i2r"
+#define WIFI_PASSWORD "00000000"
+
+// ── Gemini API ────────────────────────────────────────────────
+#define GEMINI_API_KEY "AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"
+#define GEMINI_HOST "generativelanguage.googleapis.com"
+#define GEMINI_MODEL_STT "gemini-2.5-flash" // STT용
+#define GEMINI_MODEL_LLM "gemini-2.5-flash" // LLM 대화용
+
+// ── 마이크 핀 (INMP441) ──────────────────────────────────────
+#define MIC_SD 8
+#define MIC_SCK 9
+#define MIC_WS 10
+
+// ── 스피커 핀 (MAX98357A) ────────────────────────────────────
+#define SPK_BCLK 12
+#define SPK_LRC 13
+#define SPK_DOUT 11
+#define SPK_SD 14
+
+// ── 녹음 및 VAD 설정 ─────────────────────────────────────────
+#define SAMPLE_RATE 16000
+#define MAX_REC_SECONDS 10 // 최대 10초 대기/녹음 가능
+#define MAX_PCM_SIZE (SAMPLE_RATE * MAX_REC_SECONDS * 2)
+#define MAX_WAV_SIZE (MAX_PCM_SIZE + 44)
+#define MAX_B64_SIZE (MAX_WAV_SIZE * 4 / 3 + 8)
+
+#define VAD_THRESHOLD 500        // 목소리 감지 기준 (너무 민감하면 수치 올림)
+#define SILENCE_THRESHOLD 300    // 무음 판단 기준
+#define SILENCE_DURATION_MS 1500 // 1.5초 조용하면 녹음 종료
+
+// ── 대화 기록 (다중 턴) ───────────────────────────────────────
+#define MAX_HISTORY 10 // 최대 대화 기록 턴 수
+struct Turn {
+  String user;
+  String assistant;
+};
+Turn history[MAX_HISTORY];
+int historyCount = 0;
+
+// ── 버퍼 ─────────────────────────────────────────────────────
+uint8_t *wavBuf = nullptr;
+char *b64Buf = nullptr;
+
+// ── Audio 객체 ───────────────────────────────────────────────
+Audio audio;
+
+// ── I2S 마이크 핸들 ──────────────────────────────────────────
+static i2s_chan_handle_t mic_rx_chan = NULL;
+
+// ── 상태 머신 ────────────────────────────────────────────────
+enum State { IDLE, RECORDING, STT_WAIT, LLM_WAIT, TTS_PLAYING };
+State state = IDLE;
+bool ttsActive = false;
+
+// ============================================================
+// WiFi 연결
+// ============================================================
+void connectWiFi() {
+  Serial.printf("[WiFi] %s 연결 중...\n", WIFI_SSID);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
+  int retry = 0;
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+    if (++retry > 30) {
+      Serial.println("\n[오류] WiFi 연결 실패! 재시작...");
+      ESP.restart();
+    }
+  }
+  Serial.printf("\n[WiFi] 연결됨! IP: %s\n", WiFi.localIP().toString().c_str());
+}
+
+// ============================================================
+// 마이크 초기화 (새 I2S 드라이버 - i2s_std.h)
+// ============================================================
+void setupMic() {
+  i2s_chan_config_t chan_cfg =
+      I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_1, I2S_ROLE_MASTER);
+  chan_cfg.auto_clear = true;
+  ESP_ERROR_CHECK(i2s_new_channel(&chan_cfg, NULL, &mic_rx_chan));
+
+  i2s_std_config_t std_cfg = {
+      .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(SAMPLE_RATE),
+      .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_32BIT,
+                                                  I2S_SLOT_MODE_MONO),
+      .gpio_cfg =
+          {
+              .mclk = I2S_GPIO_UNUSED,
+              .bclk = (gpio_num_t)MIC_SCK,
+              .ws = (gpio_num_t)MIC_WS,
+              .dout = I2S_GPIO_UNUSED,
+              .din = (gpio_num_t)MIC_SD,
+              .invert_flags =
+                  {
+                      .mclk_inv = false,
+                      .bclk_inv = false,
+                      .ws_inv = false,
+                  },
+          },
+  };
+  std_cfg.slot_cfg.slot_mask = I2S_STD_SLOT_LEFT; // INMP441: 왼쪽 채널
+
+  ESP_ERROR_CHECK(i2s_channel_init_std_mode(mic_rx_chan, &std_cfg));
+  ESP_ERROR_CHECK(i2s_channel_enable(mic_rx_chan));
+  Serial.println("[OK] 마이크 초기화 완료 (새 I2S 드라이버)");
+}
+
+// ============================================================
+// WAV 헤더 작성 (44바이트)
+// ============================================================
+void writeWavHeader(uint8_t *buf, uint32_t pcmSize) {
+  uint32_t fileSize = pcmSize + 36;
+  uint32_t byteRate = SAMPLE_RATE * 2;
+  uint16_t blockAlign = 2, bitsPerSample = 16, numChannels = 1;
+  uint16_t audioFormat = 1;
+  uint32_t fmtSize = 16, sampleRate = SAMPLE_RATE;
+
+  memcpy(buf, "RIFF", 4);
+  memcpy(buf + 4, &fileSize, 4);
+  memcpy(buf + 8, "WAVE", 4);
+  memcpy(buf + 12, "fmt ", 4);
+  memcpy(buf + 16, &fmtSize, 4);
+  memcpy(buf + 20, &audioFormat, 2);
+  memcpy(buf + 22, &numChannels, 2);
+  memcpy(buf + 24, &sampleRate, 4);
+  memcpy(buf + 28, &byteRate, 4);
+  memcpy(buf + 32, &blockAlign, 2);
+  memcpy(buf + 34, &bitsPerSample, 2);
+  memcpy(buf + 36, "data", 4);
+  memcpy(buf + 40, &pcmSize, 4);
+}
+
+// ============================================================
+// ① 자동 녹음 (VAD 적용: 목소리가 들리면 시작, 조용해지면 종료)
+// ============================================================
+size_t recordAudio() {
+  Serial.println("[녹음 대기] 아무 말이나 시작하면 자동으로 녹음됩니다...");
+
+  int32_t raw[128];
+  bool isRecording = false;
+  uint32_t written = 0;
+  uint8_t *pcmPtr = wavBuf + 44;
+  unsigned long silenceStartTime = 0;
+  int activeChunks = 0; // 유효 소리 유지 프레임 카운트
+
+  while (written < MAX_PCM_SIZE) {
+    size_t bytesRead = 0;
+    i2s_channel_read(mic_rx_chan, raw, sizeof(raw), &bytesRead, portMAX_DELAY);
+
+    // 소리 크기(RMS) 계산
+    int64_t sumSq = 0;
+    int samples = bytesRead / 4;
+    for (int i = 0; i < samples; i++) {
+      int16_t sample = (int16_t)(raw[i] >> 14);
+      sumSq += sample * sample;
+    }
+    int rms = sqrt(sumSq / samples);
+
+    // 1. 녹음 대기 중 -> 목소리 감지 시 시작
+    if (!isRecording) {
+      if (rms > VAD_THRESHOLD) {
+        isRecording = true;
+        Serial.println("[녹음 시작] 🔴 목소리를 듣고 있습니다...");
+      }
+    }
+
+    // 2. 녹음 진행 중
+    if (isRecording) {
+      // 단순히 책상 치는 소리(충격음)인지 진짜 목소리인지 구별하기 위해
+      // 의미 있는 소리의 지속 시간을 카운트합니다. (1 chunk = 약 8ms)
+      if (rms > SILENCE_THRESHOLD) {
+        activeChunks++;
+      }
+
+      for (int i = 0; i < samples && written < MAX_PCM_SIZE; i++) {
+        int16_t sample = (int16_t)(raw[i] >> 14);
+        memcpy(pcmPtr + written, &sample, 2);
+        written += 2;
+      }
+
+      // 조용한지 확인
+      if (rms < SILENCE_THRESHOLD) {
+        if (silenceStartTime == 0) {
+          silenceStartTime = millis();
+        } else if (millis() - silenceStartTime > SILENCE_DURATION_MS) {
+          Serial.println("[녹음 종료] ⬛ 말이 끝난 것을 감지했습니다.");
+          break; // 무음이 1.5초 지속되면 녹음 루프 탈출
+        }
+      } else {
+        silenceStartTime = 0; // 소리가 다시 나면 타이머 초기화
+      }
+    }
+  }
+
+  // 1 chunk가 약 8ms이므로, activeChunks가 15 미만(약 120ms 미만)이면
+  // 책상 치는 소리, 문 닫는 소리, 기침 등 짧은 충격음 노이즈로 판단하고 무시합니다.
+  if (activeChunks < 15) {
+    Serial.println("[녹음 취소] ⚠️ 짧은 노이즈(충격음 등)로 판단되어 무시합니다.\n");
+    return 0; // 0바이트 반환하여 녹음 처리 취소
+  }
+
+  // 실제 녹음된 길이만큼 WAV 헤더 작성
+  writeWavHeader(wavBuf, written);
+  return written + 44; // 헤더 포함 실제 파일 사이즈 반환
+}
+
+// ============================================================
+// ② Base64 인코딩 (동적 사이즈 할당)
+// ============================================================
+size_t encodeBase64(size_t wavLen) {
+  size_t outLen = 0;
+  mbedtls_base64_encode((unsigned char *)b64Buf, MAX_B64_SIZE, &outLen, wavBuf,
+                        wavLen);
+  b64Buf[outLen] = '\0';
+  Serial.printf("[Base64] 완료: %d KB (실제 녹음 길이 기준)\n", outLen / 1024);
+  return outLen;
+}
+
+// ============================================================
+// HTTPS POST 헬퍼 - 요청 전송 & 응답 본문 반환
+// ============================================================
+String httpsPost(const String &path, const String &bodyHead,
+                 const char *bodyMid, size_t midLen, const String &bodyTail) {
+  NetworkClientSecure *client = new NetworkClientSecure;
+  client->setInsecure();
+  if (!client->connect(GEMINI_HOST, 443)) {
+    Serial.println("[오류] 서버 연결 실패");
+    delete client;
+    return "";
+  }
+
+  uint32_t totalLen = bodyHead.length() + midLen + bodyTail.length();
+
+  client->printf("POST %s HTTP/1.0\r\n", path.c_str());
+  client->printf("Host: %s\r\n", GEMINI_HOST);
+  client->println("Content-Type: application/json");
+  client->printf("Content-Length: %d\r\n\r\n", totalLen);
+
+  client->print(bodyHead);
+  if (bodyMid && midLen > 0) {
+    for (size_t i = 0; i < midLen; i += 1024) {
+      size_t chunk = min((size_t)1024, midLen - i);
+      client->write((const uint8_t *)bodyMid + i, chunk);
+    }
+  }
+  client->print(bodyTail);
+
+  // 응답 수신
+  String response = "";
+  unsigned long t = millis();
+  while (millis() - t < 20000) {
+    while (client->available())
+      response += (char)client->read();
+    if (!client->connected() && !client->available())
+      break;
+    delay(1);
+  }
+  client->stop();
+  delete client; // 메모리 강제 반환
+
+  // HTTP 헤더 제거 → JSON 본문만 반환
+  int bodyStart = response.indexOf("\r\n\r\n");
+  return (bodyStart >= 0) ? response.substring(bodyStart + 4) : response;
+}
+
+// ============================================================
+// JSON 문자열에서 특정 키의 문자열 값 추출
+// ============================================================
+String extractJsonString(const String &json, const String &key) {
+  int idx = json.indexOf("\"" + key + "\":");
+  if (idx < 0)
+    return "";
+  int qs = json.indexOf("\"", idx + key.length() + 3);
+  if (qs < 0)
+    return "";
+  qs++;
+  // 이스케이프 처리하며 값 추출
+  String result = "";
+  while (qs < (int)json.length()) {
+    char c = json[qs];
+    if (c == '\\' && qs + 1 < (int)json.length()) {
+      char next = json[qs + 1];
+      if (next == '"') {
+        result += '"';
+        qs += 2;
+      } else if (next == '\\') {
+        result += '\\';
+        qs += 2;
+      } else if (next == 'n') {
+        result += '\n';
+        qs += 2;
+      } else if (next == 't') {
+        result += '\t';
+        qs += 2;
+      } else {
+        result += c;
+        qs++;
+      }
+    } else if (c == '"') {
+      break;
+    } else {
+      result += c;
+      qs++;
+    }
+  }
+  return result;
+}
+
+// ============================================================
+// ③ Gemini STT - 오디오 → 텍스트
+// ============================================================
+String geminiSTT(size_t b64Len) {
+  Serial.println("[STT] Gemini API 전송 중...");
+
+  String path = String("/v1beta/models/") + GEMINI_MODEL_STT +
+                ":generateContent?key=" + GEMINI_API_KEY;
+
+  String head = "{\"contents\":[{\"parts\":["
+                "{\"inline_data\":{\"mime_type\":\"audio/wav\",\"data\":\"";
+  String tail = "\"}},"
+                "{\"text\":\"이 오디오의 한국어 내용을 텍스트로만 출력해줘. "
+                "설명 없이 말한 내용만.\"}]"
+                "}]}";
+
+  String body = httpsPost(path, head, b64Buf, b64Len, tail);
+  if (body.length() == 0)
+    return "[인식 실패]";
+
+  String text = extractJsonString(body, "text");
+  if (text.length() == 0) {
+    Serial.println("[STT] 인식 실패 (응답에 text 없음)");
+    return "[인식 실패]";
+  }
+  text.trim();
+  return text;
+}
+
+// ============================================================
+// ④ Gemini LLM - 텍스트 → AI 응답 (다중 턴 대화)
+// ============================================================
+String geminiLLM(const String &userText) {
+  Serial.println("[LLM] Gemini LLM 전송 중...");
+
+  String path = String("/v1beta/models/") + GEMINI_MODEL_LLM +
+                ":generateContent?key=" + GEMINI_API_KEY;
+
+  // ── 대화 기록 포함 JSON 조립 ──────────────────────────────
+  // system instruction + 이전 대화 기록 + 현재 질문
+  String body = "{"
+                "\"system_instruction\":{"
+                "\"parts\":[{\"text\":\"당신은 친절하고 유용한 한국어 AI "
+                "어시스턴트입니다. "
+                "간결하고 자연스러운 한국어로 대답하세요. "
+                "답변은 2~3문장 이내로 간략하게 해주세요.\"}]"
+                "},"
+                "\"contents\":[";
+
+  // 이전 대화 기록 추가
+  for (int i = 0; i < historyCount; i++) {
+    body += "{\"role\":\"user\",\"parts\":[{\"text\":\"";
+    body += history[i].user;
+    body += "\"}]},";
+    body += "{\"role\":\"model\",\"parts\":[{\"text\":\"";
+    body += history[i].assistant;
+    body += "\"}]},";
+  }
+
+  // 현재 질문 추가
+  body += "{\"role\":\"user\",\"parts\":[{\"text\":\"";
+  body += userText;
+  body += "\"}]}";
+  body += "]}";
+
+  String response = httpsPost(path, body, nullptr, 0, "");
+  if (response.length() == 0)
+    return "[응답 실패]";
+
+  String answer = extractJsonString(response, "text");
+  if (answer.length() == 0) {
+    Serial.println("[LLM] 응답 파싱 실패");
+    Serial.println("[LLM] RAW: " + response.substring(0, 500));
+    return "[응답 실패]";
+  }
+  answer.trim();
+
+  // ── 대화 기록 저장 ────────────────────────────────────────
+  if (historyCount < MAX_HISTORY) {
+    history[historyCount].user = userText;
+    history[historyCount].assistant = answer;
+    historyCount++;
+  } else {
+    // 오래된 기록 밀어내기 (링 버퍼)
+    for (int i = 0; i < MAX_HISTORY - 1; i++)
+      history[i] = history[i + 1];
+    history[MAX_HISTORY - 1].user = userText;
+    history[MAX_HISTORY - 1].assistant = answer;
+  }
+
+  return answer;
+}
+
+// ============================================================
+// URL 인코딩 (TTS용)
+// ============================================================
+String urlEncode(const String &text) {
+  String encoded = "";
+  const char *src = text.c_str();
+  while (*src) {
+    uint8_t c = (uint8_t)*src;
+    if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z') ||
+        (c >= '0' && c <= '9') || c == '-' || c == '_' || c == '.' ||
+        c == '~') {
+      encoded += (char)c;
+    } else {
+      char hex[4];
+      sprintf(hex, "%%%02X", c);
+      encoded += hex;
+    }
+    src++;
+  }
+  return encoded;
+}
+
+// ============================================================
+// ⑤ TTS 재생 시작 (논블로킹)
+// ============================================================
+void startTTS(const String &text) {
+  if (text == "[인식 실패]" || text == "[응답 실패]" ||
+      text.startsWith("[오류]")) {
+    Serial.println("[TTS] 건너뜀");
+    state = IDLE;
+    return;
+  }
+  // Google TTS (메모리를 아끼기 위해 http 사용)
+  String url = "http://translate.google.com/translate_tts"
+               "?ie=UTF-8&client=tw-ob&tl=ko&q=" +
+               urlEncode(text);
+  Serial.println("[TTS] 🔊 음성 출력 시작 (Google 서버 접속 중...)");
+  audio.connecttohost(url.c_str());
+  Serial.println("[TTS] ✅ 서버 접속 완료, 스트리밍을 시작합니다!");
+  ttsActive = true;
+  state = TTS_PLAYING;
+}
+
+// ============================================================
+// 대화 기록 초기화 (시리얼로 'r' 입력 시)
+// ============================================================
+void resetHistory() {
+  historyCount = 0;
+  Serial.println("[대화] 기록 초기화 완료. 새 대화를 시작합니다.");
+  Serial.println("──────────────────────────────────────────────");
+}
+
+// ============================================================
+// Setup
+// ============================================================
+void setup() {
+  Serial.begin(115200);
+  delay(1500);
+
+  Serial.println("==============================================");
+  Serial.println("  ESP32-S3 한국어 음성 대화 챗봇 (LLM)       ");
+  Serial.println("==============================================");
+  Serial.println("  Enter  → 녹음 시작                          ");
+  Serial.println("  'r'    → 대화 기록 초기화                   ");
+  Serial.println("==============================================");
+
+  // ① PSRAM 확인 및 버퍼 할당
+  if (!psramFound()) {
+    Serial.println("[오류] PSRAM 없음! Tools → PSRAM → OPI PSRAM");
+    while (1)
+      delay(1000);
+  }
+  wavBuf = (uint8_t *)ps_malloc(MAX_WAV_SIZE);
+  b64Buf = (char *)ps_malloc(MAX_B64_SIZE);
+  if (!wavBuf || !b64Buf) {
+    Serial.println("[오류] PSRAM 버퍼 할당 실패!");
+    while (1)
+      delay(1000);
+  }
+  Serial.printf("[PSRAM] WAV:%dKB  Base64:%dKB (최대)\n", MAX_WAV_SIZE / 1024,
+                MAX_B64_SIZE / 1024);
+
+  // ② 마이크 초기화 (Audio 라이브러리보다 먼저!)
+  setupMic();
+  delay(200);
+
+  // ③ WiFi 연결
+  connectWiFi();
+
+  // ④ 앰프 활성화
+  pinMode(SPK_SD, OUTPUT);
+  digitalWrite(SPK_SD, HIGH);
+
+  // ⑤ 스피커 초기화
+  delay(200);
+  audio.setPinout(SPK_BCLK, SPK_LRC, SPK_DOUT);
+  audio.setVolume(18);
+  Serial.println("[OK] 스피커 초기화 완료");
+
+  Serial.println("\n──────────────────────────────────────────────");
+  Serial.println("  전원 ON! 말씀을 시작하시면 자동으로 듣고 대답합니다. ");
+  Serial.println("  (과거 기억을 지우려면 언제든 'r'을 입력하세요)  ");
+  Serial.println("──────────────────────────────────────────────\n");
+  state = RECORDING; // 부팅 직후 바로 마이크 대기
+}
+
+// ============================================================
+// Loop - 상태 머신
+// ============================================================
+void loop() {
+  audio.loop(); // TTS 스트리밍 항상 처리
+
+  // ── 언제든 'r'을 입력하면 대화 기록 초기화 ─────────────────
+  if (Serial.available()) {
+    String input = "";
+    while (Serial.available())
+      input += (char)Serial.read();
+    input.trim();
+    if (input == "r" || input == "R") {
+      resetHistory();
+    }
+  }
+
+  switch (state) {
+
+  case IDLE:
+    // 이제 엔터키 대기가 필요 없으므로 바로 RECORDING으로 넘어갑니다.
+    state = RECORDING;
+    break;
+
+  // ── 녹음 → STT → LLM → TTS 파이프라인 ───────────────────
+  case RECORDING: {
+    // ① 녹음
+    size_t wavSize = recordAudio();
+
+    // wavSize가 0이면 (짧은 노이즈 필터링됨) 진행하지 않고 다시 대기
+    if (wavSize == 0) {
+      break;
+    }
+
+    // ② Base64 인코딩
+    size_t b64Len = encodeBase64(wavSize);
+
+    // ③ STT
+    state = STT_WAIT;
+    String userText = geminiSTT(b64Len);
+    Serial.println("──────────────────────────────────────────────");
+    Serial.print("[사용자] ");
+    Serial.println(userText);
+
+    if (userText == "[인식 실패]") {
+      Serial.println("[안내] 잘못 들었습니다. 다시 말씀을 기다립니다...");
+      state = RECORDING; // 즉시 다시 마이크 대기 모드로
+      break;
+    }
+
+    // ④ LLM 대화
+    state = LLM_WAIT;
+    String aiAnswer = geminiLLM(userText);
+    Serial.print("[AI 답변] ");
+    Serial.println(aiAnswer);
+    Serial.println("──────────────────────────────────────────────");
+
+    // ⑤ TTS 재생 시작 (네트워크 소켓이 정리될 시간을 잠시 줍니다)
+    delay(500);
+    startTTS(aiAnswer);
+    break;
+  }
+
+  // ── TTS 재생 중 ───────────────────────────────────────────
+  case TTS_PLAYING: {
+    static unsigned long ttsStartTime = 0;
+    static uint32_t lastAudioTime = 0;
+    static unsigned long lastAudioTimeChange = 0;
+    static unsigned long lastPrintTime = 0;
+
+    if (ttsStartTime == 0) {
+      ttsStartTime = millis();
+      lastAudioTime = 0;
+      lastAudioTimeChange = millis();
+      lastPrintTime = millis();
+    }
+
+    // 재생(또는 대기) 중임을 알 수 있도록 0.5초마다 '.' 출력
+    if (millis() - lastPrintTime > 500) {
+      Serial.print(".");
+      lastPrintTime = millis();
+    }
+
+    uint32_t currTime = audio.getAudioCurrentTime();
+    if (currTime != lastAudioTime) {
+      lastAudioTime = currTime;
+      lastAudioTimeChange = millis(); // 오디오가 정상 재생중이면 타임아웃 리셋
+    }
+
+    // 오디오 재생 전(버퍼링/접속) 최대 5초 대기, 재생 후(스트림 끝) 2초 대기
+    uint32_t timeoutLimit = (lastAudioTime == 0) ? 5000 : 2000;
+
+    // 1. 오디오가 정상 종료되었는지 확인 (라이브러리 내장 상태)
+    if (!audio.isRunning()) {
+      Serial.println("\n[TTS] 음성 출력이 정상 종료되었습니다.");
+      ttsActive = false;
+      ttsStartTime = 0;
+      state = RECORDING; // 즉시 다음 질문 대기
+      Serial.println("\n──────────────────────────────────────────────");
+      Serial.println("  👂 이어서 바로 다음 질문을 말씀해 주세요...    ");
+      Serial.printf("  (현재 대화 기억: %d턴 / 최대 %d턴)\n", historyCount, MAX_HISTORY);
+      Serial.println("──────────────────────────────────────────────");
+    } 
+    // 2. 만약 시간이 경과했는데도 오디오 시간이 흐르지 않는다면 (타임아웃)
+    else if (millis() - lastAudioTimeChange > timeoutLimit) {
+      Serial.println(); // 진행 표시 줄바꿈
+      
+      if (lastAudioTime > 0) {
+        // 이미 재생이 진행되었다면, 스트림의 끝(정상 종료)으로 간주합니다.
+        Serial.println("[TTS] 🔊 음성출력 종료 (스트림 끝 도달)");
+      } else {
+        // 단 한 번도 재생되지 않고 5초가 지났다면 연결 오류로 간주합니다.
+        Serial.println("[TTS] ⚠️ 스트리밍 지연 (네트워크/소켓 오류 추정) - 강제 종료");
+      }
+      
+      audio.stopSong();
+      ttsActive = false;
+      ttsStartTime = 0;
+      state = RECORDING;
+      Serial.println("\n──────────────────────────────────────────────");
+      Serial.println("  👂 이어서 다음 질문을 말씀해 주세요...    ");
+      Serial.println("──────────────────────────────────────────────");
+    }
+    break;
+  }
+
+  case STT_WAIT:
+  case LLM_WAIT:
+    // 동기 처리이므로 이 상태는 실제로 도달하지 않음
+    break;
+
+  default:
+    state = IDLE;
+    break;
+  }
+}
+
+// ============================================================
+// ESP32-audioI2S 콜백 - TTS 재생 완료
+// ============================================================
+void audio_eof_mp3(const char *info) {
+  // 네트워크 환경에 따라 EOF 콜백이 누락될 수 있으므로,
+  // 실제 상태 전환(다음 질문 대기)은 loop() 안의 !audio.isRunning()에서
+  // 안전하게 처리합니다.
+  Serial.println("[TTS] 스트림 재생 완료 ✅");
+}
+
+void audio_info(const char *info) {
+  Serial.printf("[Audio] %s\n", info);  // 문제 파악을 위해 로그 활성화
+}
+
+```
+</details>
 ---
 
 **📌  참고 자료**
