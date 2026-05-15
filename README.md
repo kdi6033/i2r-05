@@ -460,469 +460,55 @@ i2r-05 보드
 └─────────────────────────────────────────────┘
 ```
 
----
+## 💡 전체 동작 원리 (Step 1, 2, 3)
 
-📌  동작 원리
+보드(ESP32-S3) 안에서 다음 3단계가 물 흐르듯 자동으로 반복되며 챗봇이 작동합니다.
 
-```
-[텍스트 입력]
-     │
+```text
+[사용자 음성] 🗣️
      ▼
-[ESP32-S3]
-  ① 텍스트를 URL 인코딩
-     예) "안녕하세요" → "%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94"
-     │
-  ② WiFi로 Google TTS 서버에 HTTP 요청
-     URL: http://translate.google.com/translate_tts?tl=ko&q=...
-     │
-  ③ MP3 오디오 스트림을 수신 (인터넷에서 음성 파일 다운로드)
-     │
-  ④ ESP32-audioI2S 라이브러리가 MP3를 실시간 디코딩
-     │
-  ⑤ I2S 프로토콜로 MAX98357A 앰프에 전송
-     (GPIO 11=데이터, GPIO 12=클럭, GPIO 13=채널선택)
-     │
-  ⑥ MAX98357A가 디지털 신호 → 아날로그 증폭
-     │
+[Step 1: 음성 인식 (STT)]
+  ① 마이크로 소리 녹음 (INMP441)
+  ② 소리 → 글자로 변환 (Gemini API)
      ▼
-[스피커에서 한국어 음성 출력] 🔊
+[질문 텍스트: "안녕?"]
+     ▼
+[Step 2: 대화형 AI (LLM)]
+  ③ 질문을 AI에게 전송 (Gemini API)
+  ④ AI가 생각하여 답변 생성
+     ▼
+[답변 텍스트: "안녕하세요!"]
+     ▼
+[Step 3: 음성 합성 (TTS)]
+  ⑤ 글자 → 소리로 변환 (Google TTS)
+  ⑥ 스피커로 출력 (MAX98357A)
+     ▼
+[AI 음성 출력] 🔊 (끝나면 다시 Step 1으로)
 ```
 
 ---
 
-📌  단어 입력 → 음성 출력 상세 과정
+## 🔍 단계별 핵심 기술 원리
 
-**Step 1: 텍스트 입력 수신**
+### 🟢 Step 1: 내 음성을 글자로 (STT - Speech to Text)
+* **스마트 녹음**: 마이크가 말소리를 감지하면 자동으로 녹음을 시작합니다. 조용해지면 녹음을 마칩니다. (책상 치는 소리 등 짧은 소음은 무시합니다.)
+* **데이터 변환**: 녹음된 오디오 파일(WAV)을 텍스트 형태(Base64)로 변환합니다. 인터넷(HTTPS)으로 전송하기 위함입니다.
+* **Gemini 요청**: 변환된 데이터를 구글 Gemini AI 서버로 보내 "이 음성을 한글 텍스트로 바꿔줘"라고 요청합니다.
 
-시리얼 모니터에서 "안녕하세요" 입력 후 Enter를 누르면
-`loop()` 함수가 이를 감지합니다.
+### 🟢 Step 2: 글자를 AI가 생각하고 답변 (LLM - 대형 언어 모델)
+* **문맥 기억**: 자연스러운 대화를 위해 이전 대화 내용(최대 10회)과 방금 인식된 질문을 함께 묶어서 Gemini AI에게 보냅니다.
+* **답변 생성**: AI가 전체 문맥을 파악하고 알맞은 한국어 답변 텍스트를 만들어 보드로 돌려줍니다.
 
-```cpp
-// loop() 안에서 실행
-String input = Serial.readStringUntil('\n');
-// input = "안녕하세요"
-speakKorean(input);   // 다음 단계로 전달
-```
-
-**Step 2: 한글 → URL 인코딩 변환**
-
-한글은 인터넷 URL에 바로 사용할 수 없습니다.
-각 바이트를 `%XX` 형식으로 변환합니다.
-
-```
-"안녕하세요"  ←  UTF-8 바이트로 분해
-  안 = EC 95 88  →  %EC%95%88
-  녕 = EB 85 95  →  %EB%85%95
-  하 = ED 95 98  →  %ED%95%98
-  세 = EC 84 B8  →  %EC%84%B8
-  요 = EC 9A 94  →  %EC%9A%94
-
-결과: "%EC%95%88%EB%85%95%ED%95%98%EC%84%B8%EC%9A%94"
-```
-
-**Step 3: Google TTS 서버에 HTTP 요청**
-
-URL을 완성하여 WiFi로 Google 서버에 접속합니다.
-
-```
-http://translate.google.com/translate_tts
-  ?ie=UTF-8          ← 인코딩 방식
-  &client=tw-ob      ← 클라이언트 식별자
-  &tl=ko             ← 언어: 한국어(Korean)
-  &q=%EC%95%88...    ← 인코딩된 텍스트
-```
-
-```
-여러분의 ESP32-S3          인터넷           Google 서버
-      │                                          │
-      │──── HTTP 요청 (URL로 접속) ────────────→ │
-      │                                          │ 텍스트를
-      │                                          │ MP3로 변환
-      │ ←──── MP3 파일 데이터 전송 ─────────── │
-      │                                          │
-    재생!
-```
-
-**Step 4: MP3 스트리밍 수신 + 디코딩**
-
-> **"다운로드 후 재생"이 아닌 "받으면서 동시에 재생"입니다!**
-
-```
-Google 서버
-  └─ MP3 데이터를 조금씩 전송 (스트리밍)
-          ↓
-ESP32-S3 PSRAM (8MB)
-  └─ 수신된 MP3를 720KB 버퍼에 임시 저장
-          ↓
-ESP32-audioI2S 라이브러리
-  └─ MP3 압축 해제 → PCM(날것의 오디오 샘플) 변환
-     (16000Hz, 16bit 오디오 데이터)
-```
-
-| 방식 | 설명 | 이 프로젝트 |
-|------|------|------------|
-| **다운로드** | 파일 전체를 받은 후 재생 | ❌ 사용 안 함 |
-| **스트리밍** | 받으면서 동시에 재생 | ✅ 사용 |
-
-**Step 5: I2S로 앰프에 전송**
-
-```
-ESP32-S3 내부 I2S 하드웨어
-  GPIO 12 (BCLK)  → 초당 수십만 번 클럭 신호
-  GPIO 13 (LRCLK) → 좌/우 채널 구분 신호
-  GPIO 11 (DIN)   → 오디오 데이터 비트 전송
-          ↓
-MAX98357A 칩이 수신
-```
-
-**Step 6: 디지털 → 아날로그 변환 + 증폭**
-
-```
-MAX98357A 내부:
-  ① DAC : 디지털 비트 → 아날로그 전압 파형으로 변환
-  ② 앰프 : 미세한 신호 → 스피커를 구동할 수 있는 전력으로 증폭
-           (최대 3.7W @ 4Ω)
-          ↓
-OUT+ / OUT- 단자 → 스피커 코일에 전류 흘림
-  → 진동판 떨림 → 공기 진동 → 귀에 소리로 인식! 🔊
-```
-
-**⏱ 전체 타임라인**
-
-```
-0ms      Enter 누름
-  │
-10ms     loop()에서 텍스트 읽기 완료
-  │
-20ms     URL 인코딩 완료
-  │
-50ms     WiFi TCP 연결 (Google 서버)
-  │
-200ms    HTTP 응답 시작 (첫 MP3 데이터 수신)
-  │
-500ms    버퍼 충분히 채워짐 → 재생 시작! 🔊
-  │
-(재생 중) audio.loop()가 계속 호출되며 스트리밍 유지
-  │
-끝       audio_eof_mp3() 콜백 → "[Audio] 재생 완료" 출력
-```
-
-**❓ 자주 나오는 질문**
-
-**Q: MP3 파일을 ESP32에 저장하나요?**
-> **아니오!** 저장하지 않습니다. 받으면서 바로 재생(스트리밍)합니다.
-> 재생이 끝나면 데이터는 버려집니다.
-
-**Q: 매번 Google 서버에 접속하나요?**
-> **네!** 텍스트를 입력할 때마다 매번 인터넷으로 요청합니다.
-> 따라서 **WiFi가 없으면 소리가 나지 않습니다.**
-
-**Q: 내가 입력한 텍스트가 Google에 전송되나요?**
-> **네.** URL에 텍스트가 담겨 Google 서버로 전송됩니다.
-> 나중에 보안이 중요하다면 **로컬 TTS** 또는 **유료 API** 사용을 권장합니다.
-
-**Q: `audio.loop()`는 왜 loop()에 있어야 하나요?**
-> 스트리밍 데이터를 계속 받아서 처리하기 위해서입니다.
-> 이 줄이 없으면 첫 버퍼만 재생되고 음성이 중간에 멈춥니다.
-
-**Q: API 키가 없어도 사용할 수 있나요?**
-> **네, API 키 없이 사용 가능합니다!**
-> 이 프로젝트의 URL은 Google Translate 웹사이트가 내부적으로 사용하는
-> **비공식(undocumented) 무료 엔드포인트**입니다.
-
-📌 비공식 vs 공식 Google TTS 비교
-
-| 구분 | 이 프로젝트 (비공식) | Google Cloud TTS (공식) |
-|------|---------------------|------------------------|
-| **API 키** | ❌ 불필요 | ✅ 필요 |
-| **비용** | 완전 무료 | 월 100만 자 무료, 이후 유료 |
-| **텍스트 길이** | 약 200자 제한 | 최대 5,000자 |
-| **안정성** | 구글이 언제든 차단 가능 ⚠️ | 안정적 보장 ✅ |
-| **음질** | 보통 | 고품질 (WaveNet 등) |
-| **상업적 사용** | ❌ 불가 | ✅ 가능 |
-| **용도** | 학습, 프로토타입 | 실제 서비스, 제품 |
-
-> ⚠️ **학생 실습 주의사항**
-> - 비공식 API이므로 **교육 목적으로만** 사용하세요.
-> - 간혹 Google이 요청을 차단하면 소리가 나지 않을 수 있습니다.
-> - LLM 챗봇 등 실제 서비스에 연결할 때는 **공식 TTS API** 사용을 권장합니다.
+### 🟢 Step 3: 글자를 내 음성으로 (TTS - Text to Speech)
+* **Google TTS**: AI가 보내온 답변 텍스트를 구글 번역기(TTS) 서버로 보내 음성 파일(MP3)을 요청합니다.
+* **실시간 재생(스트리밍)**: 파일을 다 다운로드할 때까지 기다리지 않고, **받는 즉시 스피커로 재생**하여 답답한 지연 시간을 없앴습니다.
+* **무한 대화 루프**: 스피커 출력이 완전히 끝나고 2초가 지나면, 시스템은 자동으로 Step 1(마이크 대기) 상태로 돌아가 다음 대화를 준비합니다.
 
 ---
 
-📌 개발 환경 설정
+## 🔑 Gemini API 키 발급 방법
 
-**1단계: Arduino IDE 설치**
-- [Arduino IDE 다운로드](https://www.arduino.cc/en/software)
-
-**2단계: ESP32 보드 패키지 설치**
-Arduino IDE → **File → Preferences → Additional boards manager URLs** 에 추가:
-```
-https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
-```
-그 다음 **Tools → Board Manager → "esp32"** 검색 → 설치
-
-**3단계: ESP32-audioI2S 라이브러리 설치**
-**Tools → Manage Libraries → "ESP32-audioI2S" 검색 → Install**
-- 제작자: **schreibfaul1**
-- 버전: **3.4.5** 이상
-
-**4단계: Arduino IDE 보드 설정**
-
-**Tools** 메뉴에서 아래와 같이 설정:
-
-| 항목 | 설정값 |
-|------|--------|
-| Board | **ESP32S3 Dev Module** |
-| Flash Size | **16MB (128Mb)** |
-| **PSRAM** | **OPI PSRAM** ← 반드시 설정! |
-| Partition Scheme | **Custom** (또는 16M Flash) |
-| Upload Speed | 921600 |
-
-> ⚠️ **PSRAM 설정이 가장 중요합니다!**  
-> 오디오 스트리밍에 720KB 버퍼가 필요한데, PSRAM을 활성화해야 사용 가능합니다.
-
-**5단계: WiFi 설정 변경**
-`speak.ino` 파일에서 본인 WiFi 정보로 수정:
-```cpp
-#define WIFI_SSID      "본인_WiFi_이름"
-#define WIFI_PASSWORD  "본인_WiFi_비밀번호"
-```
-
----
-
-📌  코드 설명
-
-**전체 구조 (`speak.ino`)**
-
-```
-speak.ino
-├── urlEncode()      한글 → URL 인코딩 변환
-├── speakKorean()    Google TTS로 음성 재생
-├── connectWiFi()    WiFi 연결
-├── checkPsram()     PSRAM 메모리 확인
-├── setup()          초기화 (1회 실행)
-│   ├── PSRAM 확인
-│   ├── 앰프 활성화 (SD 핀 HIGH)
-│   ├── WiFi 연결
-│   ├── I2S 오디오 초기화
-│   └── 부팅 시 음성 테스트
-├── loop()           반복 실행
-│   ├── audio.loop()  ← 스트리밍 유지 (필수!)
-│   └── 시리얼 입력 수신 → speakKorean() 호출
-└── 콜백 함수들
-    ├── audio_info()       오디오 상태 출력
-    ├── audio_eof_mp3()    재생 완료 알림
-    └── audio_showstation() 스테이션 정보 출력
-```
-
-📌 핵심 코드 해설
-
-**① URL 인코딩 (`urlEncode`)**
-한국어(UTF-8)는 인터넷 URL에 바로 사용할 수 없습니다.  
-각 바이트를 `%XX` 형식으로 변환합니다.
-
-```cpp
-// "안" (UTF-8: EC 95 88) → "%EC%95%88"
-String urlEncode(const String& text) {
-    // 영문자/숫자는 그대로, 나머지는 %XX 형식으로 변환
-    sprintf(hex, "%%%02X", c);  // c = 바이트 값
-}
-```
-
-**② Google TTS 호출 (`speakKorean`)**
-```cpp
-String url = "http://translate.google.com/translate_tts"
-             "?ie=UTF-8&client=tw-ob&tl=ko&q=" + encoded;
-//                                     ^^^^^
-//                                     tl=ko : 한국어 설정
-
-audio.connecttohost(url.c_str());  // MP3 스트리밍 시작
-```
-
-**③ I2S 오디오 초기화 (`setup`)**
-```cpp
-audio.setPinout(PIN_I2S_BCLK,   // GPIO 12: 비트 클럭
-                PIN_I2S_LRC,    // GPIO 13: 채널 클럭
-                PIN_I2S_DOUT);  // GPIO 11: 데이터
-
-audio.setVolume(18);  // 볼륨: 0(무음) ~ 21(최대)
-```
-
-**④ 앰프 활성화**
-```cpp
-pinMode(PIN_I2S_SD, OUTPUT);    // GPIO 14를 출력으로 설정
-digitalWrite(PIN_I2S_SD, HIGH); // HIGH → MAX98357A 앰프 ON
-// LOW로 하면 음소거됩니다
-```
-
-**⑤ 스트리밍 유지 (`loop`)**
-```cpp
-void loop() {
-    audio.loop();  // ← 이 줄이 없으면 소리가 끊깁니다!
-                   //   반복적으로 호출해야 MP3 스트리밍 지속
-}
-```
-
----
-
-📌 주요 기술 개념
-
-**I2S (Inter-IC Sound) 프로토콜**
-디지털 오디오를 칩 간에 전송하는 표준 프로토콜입니다.
-
-```
-ESP32-S3                MAX98357A
-  GPIO 12 (BCLK)  ──→  각 비트의 타이밍을 알려주는 신호
-  GPIO 13 (LRCLK) ──→  Left/Right 채널을 구분하는 신호
-  GPIO 11 (DIN)   ──→  실제 오디오 데이터 (0과 1)
-```
-
-**TTS (Text-to-Speech)**
-텍스트를 음성으로 변환하는 기술입니다.  
-이 프로젝트에서는 **Google Translate의 무료 TTS API**를 사용합니다.
-
-```
-내 코드 → Google 서버 → MP3 음성 파일 → 스피커
-```
-
-> 💡 인터넷 연결이 필요합니다. WiFi가 없으면 소리가 나지 않습니다.
-
-**PSRAM (Pseudo Static RAM)**
-ESP32-S3 칩 내부 RAM은 512KB로 제한됩니다.  
-오디오 스트리밍 버퍼(720KB)를 담기에 부족하므로,  
-외부에 붙어있는 PSRAM 8MB를 사용합니다.
-
-```
-내부 SRAM  512 KB  ← 코드 실행용
-PSRAM     8 MB   ← 오디오 버퍼용 (Arduino IDE에서 활성화 필요!)
-Flash     16 MB  ← 프로그램 저장소
-```
-
-**MP3 스트리밍**
-전체 파일을 다운로드하지 않고, 받으면서 동시에 재생합니다.  
-`ESP32-audioI2S` 라이브러리가 이를 자동으로 처리합니다.
-
-```
-Google 서버 → [조금씩 수신] → [실시간 MP3 디코딩] → I2S → 스피커
-              ↑ 버퍼링 필요 (PSRAM에 임시 저장)
-```
-
----
-
-📌  문제 해결
-
-**문제 1: `OOM: failed to allocate 720896 bytes`**
-**원인**: PSRAM이 비활성화되어 있음  
-**해결**: Arduino IDE → **Tools → PSRAM → OPI PSRAM**
-
-**문제 2: `'class Audio' has no member named 'setBufsize'`**
-**원인**: ESP32-audioI2S v3.x에서 해당 함수가 제거됨  
-**해결**: `setBufsize()` 호출 코드를 삭제
-
-**문제 3: WiFi는 연결되는데 소리가 안 남**
-**원인 및 확인 순서**:
-1. 시리얼 모니터에서 `[PSRAM] 감지됨` 메시지 확인
-2. `[Audio]` 메시지가 출력되는지 확인
-3. SD 핀(GPIO 14) 연결 확인 (HIGH = 앰프 ON)
-4. 스피커 연결 방향 확인 (빨강=OUT+, 검정=OUT-)
-5. 볼륨 설정 확인 (`audio.setVolume(18)`)
-
-**문제 4: Google TTS URL 오류**
-**원인**: Google TTS는 비공식 API로 간헐적으로 차단될 수 있음  
-**해결**: 잠시 기다리거나, 유료 TTS API(OpenAI, ElevenLabs 등)로 교체
-
-📌 시리얼 모니터 정상 출력 예시
-```
-=================================
-  ESP32-S3 한국어 TTS 스피커
-=================================
-[PSRAM] 감지됨! 크기: 8388608 bytes (8.0 MB)
-[RAM] 여유 힙: 327680 bytes (320 KB)
-[OK] 앰프 활성화 (SD=HIGH)
-[WiFi] 연결 시도: i2r
-..
-[WiFi] 연결됨! IP: 192.168.0.36
-[OK] PSRAM 사용 → 고품질 스트리밍
-[OK] I2S 오디오 초기화 완료
-────────────────────────────────
-[TTS] 텍스트: 안녕하세요! 스피커 테스트입니다.
-[TTS] URL: http://translate.google.com/...
-[Audio] 재생 완료
-```
-
----
-
-📌 다음 단계: LLM 연결
-
-이 프로젝트의 `speakKorean()` 함수를 활용하면 LLM(대형 언어 모델)의 응답을 바로 음성으로 출력할 수 있습니다:
-
-```cpp
-// LLM에서 받은 응답 텍스트를 음성으로 출력
-String llmResponse = "오늘 날씨는 맑고 기온은 25도입니다.";
-speakKorean(llmResponse);  // 바로 음성 출력!
-```
-
-📌 전체 AI 챗봇 구조 (목표)
-```
-[마이크] → [음성 인식(STT)] → [LLM 서버] → [TTS(speak.ino)] → [스피커]
-INMP441       Whisper API       OpenAI/etc    Google TTS        MAX98357A
-```
-
----
-
-📌 ESP32-S3 한국어 음성인식(STT) 프로젝트
-
-> **INMP441 마이크**로 음성을 녹음하고 **Gemini 2.5 Flash API**로 한국어 텍스트를 인식하는 프로젝트입니다.  
-> 파일: `mike/mike.ino`
-
----
-
-📌  STT 프로젝트 목차
-
-1. [동작 흐름 한눈에 보기](#-동작-흐름-한눈에-보기)
-2. [Gemini API 키 발급 방법](#-gemini-api-키-발급-방법)
-3. [Google Cloud 설정](#-google-cloud-설정)
-4. [코드에 API 키 입력](#-코드에-api-키-입력)
-5. [실행 과정 상세 설명](#-실행-과정-상세-설명)
-6. [시리얼 모니터 출력 해석](#-시리얼-모니터-출력-해석)
-7. [STT 기술 원리](#-stt-기술-원리)
-8. [문제 해결 (STT)](#-문제-해결-stt)
-
----
-
-**🔄 동작 흐름 한눈에 보기**
-
-```
-[학생이 Enter 누름]
-        ↓
-[INMP441 마이크로 2초 녹음]
-  → I2S 디지털 신호로 수신
-  → PCM 16kHz, 16bit 오디오 데이터
-        ↓
-[WAV 파일 만들기]
-  → 44바이트 WAV 헤더 + PCM 데이터
-  → PSRAM에 저장 (약 62KB)
-        ↓
-[Base64 인코딩]
-  → 바이너리 → 텍스트 변환
-  → HTTPS 전송을 위한 변환 (약 83KB)
-        ↓
-[Gemini 2.5 Flash API 전송]
-  → HTTPS POST 요청
-  → generativelanguage.googleapis.com
-        ↓
-[Gemini AI가 음성 분석]
-  → "이 오디오의 한국어 내용을 텍스트로만 출력해줘"
-        ↓
-[시리얼 모니터에 결과 출력]
-  → [인식 결과] 안녕하세요
-```
-
----
-
-📌  Gemini API 키 발급 방법
-
-**1단계: Google AI Studio 접속**
+### 1단계: Google AI Studio 접속
 
 ```
 https://aistudio.google.com
@@ -930,7 +516,7 @@ https://aistudio.google.com
 
 - Google 계정으로 로그인
 
-**2단계: API 키 발급**
+### 2단계: API 키 발급
 
 ```
 왼쪽 사이드바 하단 → "Get API key" 클릭
@@ -947,7 +533,7 @@ AIzaSy... 로 시작하는 키 복사!
 
 > ⚠️ **API 키는 절대 다른 사람과 공유하지 마세요!**
 
-**3단계: 무료 사용 한도**
+### 3단계: 무료 사용 한도
 
 | 항목 | 무료 한도 |
 |------|---------|
@@ -959,14 +545,14 @@ AIzaSy... 로 시작하는 키 복사!
 
 ---
 
-📌  Google Cloud 설정
+## ☁️ Google Cloud 설정
 
-**왜 Google Cloud 설정이 필요한가?**
+### 왜 Google Cloud 설정이 필요한가?
 
 Gemini API는 Google Cloud 프로젝트와 연결되어 있습니다.  
 **무료로 사용해도** 결제 계정 연결이 필요합니다.
 
-**1단계: 결제 계정 연결**
+### 1단계: 결제 계정 연결
 
 ```
 https://console.cloud.google.com/billing
@@ -980,7 +566,7 @@ https://console.cloud.google.com/billing
 결제 계정 연결
 ```
 
-**2단계: Gemini API 활성화 확인**
+### 2단계: Gemini API 활성화 확인
 
 ```
 https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
@@ -990,7 +576,7 @@ https://console.cloud.google.com/apis/library/generativelanguage.googleapis.com
 "● API 사용 설정됨" 확인 (이미 활성화됨)
 ```
 
-**3단계: API 키 제한 설정 확인**
+### 3단계: API 키 제한 설정 확인
 
 ```
 https://console.cloud.google.com/apis/credentials
@@ -1003,9 +589,9 @@ API 키 클릭
 
 ---
 
-📌  코드에 API 키 입력
+## 💻 코드에 API 키 입력
 
-`mike/mike.ino` 파일 38번째 줄:
+코드 상단 부분에 발급받은 API 키와 WiFi 정보를 입력하세요.
 
 ```cpp
 // ── Gemini API 키 ──────────────────────────────────────────
@@ -1016,237 +602,58 @@ API 키 클릭
 
 > 반드시 큰따옴표 `" "` 안에 키를 넣어야 합니다!
 
-📌 WiFi 설정도 변경
-
 ```cpp
+// ── WiFi 설정 ──────────────────────────────────────────
 #define WIFI_SSID      "내_WiFi_이름"    // 예: "i2r"
 #define WIFI_PASSWORD  "내_WiFi_비밀번호" // 예: "00000000"
 ```
 
 ---
 
-📌 실행 과정 상세 설명
+## 🛠 필수 개발 환경 설정
 
-**① 부팅 및 초기화**
+아두이노 IDE에서 보드에 업로드하기 전, 아래 두 가지를 반드시 확인하세요!
 
-```
-[시리얼 모니터 출력]
+### 1단계: 아두이노 IDE 보드 설정 (PSRAM 활성화)
+음성을 실시간으로 처리하려면 추가 메모리(PSRAM)가 꼭 필요합니다.
+* **Board**: `ESP32S3 Dev Module`
+* **Flash Size**: `16MB (128Mb)`
+* **PSRAM**: **`OPI PSRAM`** ← ⚠️ **이것을 안 켜면 에러가 납니다!**
+* **Partition Scheme**: `16M Flash`
 
-==============================
-  음성인식 데모 (Gemini STT)  
-==============================
-[PSRAM] WAV: 62KB, Base64: 83KB 할당 완료
-[OK] 마이크 초기화 완료
-[WiFi] i2r 연결 중...
-[WiFi] 연결됨! IP: 192.168.0.36
-```
-
-| 출력 | 의미 |
-|------|------|
-| `WAV: 62KB` | 2초 녹음 버퍼 (16kHz × 2초 × 2바이트) |
-| `Base64: 83KB` | WAV를 텍스트로 변환한 크기 |
-| `마이크 초기화 완료` | I2S 마이크 정상 연결 확인 |
-| `IP: 192.168.0.36` | WiFi 연결 성공 |
-
-**② 녹음**
-
-```
-[녹음] 🔴 말씀하세요! (2초)
-[녹음] ⬛ 완료!
-[Base64] 인코딩 완료: 83 KB
-```
-
-| 출력 | 의미 |
-|------|------|
-| `🔴 말씀하세요!` | 지금 말하면 됩니다! |
-| `⬛ 완료!` | 2초 녹음 완료 |
-| `인코딩 완료: 83KB` | API 전송 준비 완료 |
-
-**③ API 전송 및 결과**
-
-```
-[STT] Gemini API 전송 중...
-[DEBUG] 응답길이: 1057
-
-──────────────────────────────
-[인식 결과] 안녕하세요
-──────────────────────────────
-```
-
-| 출력 | 의미 |
-|------|------|
-| `응답길이: 1057` | Gemini 서버가 보낸 응답 크기 |
-| `[인식 결과] 안녕하세요` | ✅ 인식 성공! |
+### 2단계: 필수 라이브러리 설치
+* `ESP32-audioI2S` (작성자: schreibfaul1) : 스피커로 MP3를 출력할 때 사용하는 라이브러리입니다. (Tools → Manage Libraries에서 검색 후 설치)
 
 ---
 
-📌 시리얼 모니터 출력 해석
+## 💻 시리얼 모니터로 보는 실행 과정
 
-**정상 동작**
+프로그램을 업로드하고 시리얼 모니터를 열면, 3단계가 어떻게 진행되는지 눈으로 확인할 수 있습니다.
 
-```
-[녹음] 🔴 말씀하세요! (2초)   ← 지금 말하세요!
-[녹음] ⬛ 완료!
-[Base64] 인코딩 완료: 83 KB
-[STT] Gemini API 전송 중...
-[DEBUG] 응답길이: 1057         ← 숫자가 크면 정상
-[인식 결과] 안녕하세요          ← 성공!
-```
+```text
+[Step 1] 🔴 마이크 녹음 중... (사용자가 말하는 중)
+[Step 1] ⬛ 녹음 완료! Gemini에게 텍스트 변환 요청 중...
+[Step 1] 🗣️ 인식된 질문: "안녕"
 
-**오류 출력 해석**
+[Step 2] 🧠 Gemini AI가 답변을 생각하는 중...
+[Step 2] 💬 AI 답변: "안녕하세요! 무엇을 도와드릴까요?"
 
-| 출력 | 원인 | 해결 |
-|------|------|------|
-| `[오류] Gemini 서버 연결 실패` | WiFi 연결 안됨 | SSID/비밀번호 확인 |
-| `[인식 실패]` + 응답길이 0 | API 키 오류 | API 키 재확인 |
-| `429 quota exceeded` | 분당 요청 초과 | 1분 기다렸다 재시도 |
-| `404 not found` | 모델명 오류 | 코드의 모델명 확인 |
-| `[인식 실패]` + 응답길이 1000+ | 파싱 오류 | 코드 업데이트 필요 |
-
----
-
-📌  STT 기술 원리
-
-**I2S 마이크 (INMP441)**
-
-```
-소리 (아날로그)
-    ↓
-INMP441 내부 ADC 변환
-    ↓
-I2S 디지털 신호 (0과 1)
-    ↓ SCK(클럭), WS(채널), SD(데이터)
-ESP32-S3 수신
-```
-
-**WAV 파일 구조**
-
-```
-[44바이트 WAV 헤더]     ← 파일 형식 정보
-  RIFF, WAVE, fmt
-  샘플레이트: 16000Hz
-  비트심도: 16bit
-  채널: 1(모노)
-[PCM 데이터 64000바이트] ← 실제 소리 데이터
-  = 16000Hz × 2초 × 2바이트
-```
-
-**Base64 인코딩**
-
-```
-바이너리 데이터: 11110000 10110011 ...
-        ↓
-텍스트 변환: "8LM..." (A-Z, a-z, 0-9, +, / 만 사용)
-        ↓
-HTTPS JSON에 포함 가능해짐
-```
-
-> 바이너리 3바이트 → 텍스트 4글자로 변환되어 크기가 약 33% 증가합니다.
-
-**Gemini API 요청 구조**
-
-```json
-{
-  "contents": [{
-    "parts": [
-      {
-        "inline_data": {
-          "mime_type": "audio/wav",
-          "data": "Base64로_인코딩된_WAV_데이터"
-        }
-      },
-      {
-        "text": "이 오디오의 한국어 내용을 텍스트로만 출력해줘"
-      }
-    ]
-  }]
-}
-```
-
-**Gemini API 응답 구조**
-
-```json
-{
-  "candidates": [{
-    "content": {
-      "parts": [{
-        "text": "안녕하세요"
-      }]
-    }
-  }]
-}
+[Step 3] 🔊 스피커로 답변 출력 중...
+[Step 3] ✅ 재생 완료. (2초 후 다시 Step 1 마이크 대기 상태로 자동 복귀)
 ```
 
 ---
 
-**🔧 문제 해결 (STT)**
+## 🔧 자주 발생하는 문제 해결
 
-**PSRAM 오류**
-
-```
-[오류] PSRAM 없음! Tools → PSRAM → OPI PSRAM
-```
-
-**해결:**
-```
-Arduino IDE → Tools → PSRAM → "OPI PSRAM" 선택
-```
-
-📌  WiFi 연결 실패
-
-```
-[WiFi] i2r 연결 중...
-...............
-```
-
-**해결:**
-```cpp
-// SSID와 비밀번호 확인
-#define WIFI_SSID      "정확한_WiFi_이름"
-#define WIFI_PASSWORD  "정확한_비밀번호"
-```
-
-**인식률이 낮을 때**
-
-| 원인 | 해결 |
-|------|------|
-| 마이크 거리 너무 멀음 | 마이크에서 5~10cm 거리에서 말하기 |
-| 주변 소음 | 조용한 환경에서 테스트 |
-| 말하는 속도가 빠름 | 천천히 또렷하게 발음 |
-| L/R 핀 미연결 | INMP441의 L/R 핀 → GND 연결 확인 |
-
-**분당 요청 초과 (429 오류)**
-
-```
-여러 번 연속 테스트하면 429 오류 발생
-→ 1분 기다린 후 재시도
-```
+* **에러:** `OOM: failed to allocate...`
+  * **해결:** 오디오 처리를 위한 메모리 부족입니다. 아두이노 IDE 보드 설정에서 **PSRAM → OPI PSRAM**으로 되어있는지 꼭 확인하세요.
+* **에러:** `Gemini 서버 연결 실패` 또는 아무 응답이 없음
+  * **해결:** 공유기(WiFi) 이름과 비밀번호가 맞는지, API 키 오타가 없는지 점검하세요.
+* **현상:** 마이크 인식이 잘 안 되고 엉뚱한 글자가 나옴
+  * **해결:** 마이크(INMP441)의 `L/R` 핀이 보드의 `GND` 핀에 잘 연결되었는지 확인하고, 마이크 가까이(5~10cm)서 또렷하게 말해보세요.
 
 ---
-
-📌  다음 단계: TTS + STT 통합 챗봇
-
-현재 구현된 두 프로그램을 연결하면:
-
-```
-[마이크로 질문]
-INMP441 → mike.ino → Gemini STT
-        ↓
-[AI가 답변 생성]
-Gemini API (텍스트 응답)
-        ↓
-[스피커로 답변 출력]
-speak.ino → Google TTS → MAX98357A → 스피커
-```
-
-```cpp
-// 통합 예시 코드 구조
-void loop() {
-  String question = listenAndTranscribe();  // STT
-  String answer   = askGemini(question);    // AI 답변
-  speakKorean(answer);                      // TTS
-}
-```
 
 ---
 
