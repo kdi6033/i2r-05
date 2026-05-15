@@ -292,12 +292,11 @@ void flowingEffect() {
 > 2. **그 문자로 구글 AI에게 문자로 답변 받고** (대화형 AI / LLM)
 > 3. **그 답변 문자를 구글 도움으로 음성으로 출력** (음성 합성 / TTS)
 
-
 ```mermaid
 graph LR
     User(("👤 사용자<br>(음성)")) --> |"말하기"| Mic["🎤 ESP32 (마이크)"]
     
-    subgraph 구글 클라우드 (Google AI)
+    subgraph GoogleCloud ["구글 클라우드 (Google AI)"]
         STT["🗣️ 1. STT<br>(음성 ➡️ 문자)"]
         LLM["🧠 2. LLM<br>(질문 ➡️ 답변)"]
         TTS["🔊 3. TTS<br>(문자 ➡️ 음성)"]
