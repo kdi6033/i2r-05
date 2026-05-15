@@ -286,39 +286,13 @@ void flowingEffect() {
 
 > 단순히 모니터 속에 갇힌 챗봇이 아닙니다. 카메라/센서로 사람을 인식하고, 마이크로 명령을 이해하며, 스스로 말하고 기계(릴레이 등)를 조작하는 진짜 **'물리적 인공지능(Physical AI)'**을 아두이노(ESP32-S3)로 구현하는 프로젝트입니다.
 
+<img width="600" alt="i2r Shield V1" src="https://github.com/kdi6033/i2r-05/raw/main/images/ai_chatbot_pipeline.png?raw=true" />     
+
 **💡 요약 (3줄 핵심 원리)**
 
 > 1. **내 음성을 구글 도움으로 문자로 만들고** (음성 인식 / STT)
 > 2. **그 문자로 구글 AI에게 문자로 답변 받고** (대화형 AI / LLM)
 > 3. **그 답변 문자를 구글 도움으로 음성으로 출력** (음성 합성 / TTS)
-
-```mermaid
-graph LR
-    User(("👤 사용자<br>(음성)")) --> |"말하기"| Mic["🎤 ESP32 (마이크)"]
-    
-    subgraph GoogleCloud ["구글 클라우드 (Google AI)"]
-        STT["🗣️ 1. STT<br>(음성 ➡️ 문자)"]
-        LLM["🧠 2. LLM<br>(질문 ➡️ 답변)"]
-        TTS["🔊 3. TTS<br>(문자 ➡️ 음성)"]
-    end
-    
-    Mic --> |"WAV 오디오"| STT
-    STT --> |"질문 텍스트"| LLM
-    LLM --> |"답변 텍스트"| TTS
-    
-    TTS --> |"MP3 오디오"| Spk["🔊 ESP32 (스피커)"]
-    Spk --> |"대답하기"| User
-    
-    style User fill:#f9f,stroke:#333,stroke-width:2px
-    style Mic fill:#ff9,stroke:#333,stroke-width:2px
-    style Spk fill:#ff9,stroke:#333,stroke-width:2px
-    style STT fill:#bbf,stroke:#333,stroke-width:2px
-    style LLM fill:#bbf,stroke:#333,stroke-width:2px
-    style TTS fill:#bbf,stroke:#333,stroke-width:2px
-```
-
-> **학생들을 위한 개념도 (Nano Banana AI 생성)**
-> <br>![AI 챗봇 파이프라인 개념도](./ai_chatbot_pipeline.png)
 
 
 **🔄 동작 설명 (상세 파이프라인)**
