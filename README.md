@@ -317,6 +317,10 @@ graph LR
     style TTS fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
+> **학생들을 위한 개념도 (Nano Banana AI 생성)**
+> <br>![AI 챗봇 파이프라인 개념도](./ai_chatbot_pipeline.png)
+
+
 **🔄 동작 설명 (상세 파이프라인)**
 
 **1. 음성 녹음 (마이크 ➡️ 보드)**
