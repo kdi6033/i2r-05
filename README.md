@@ -292,6 +292,32 @@ void flowingEffect() {
 > 2. **그 문자로 구글 AI에게 문자로 답변 받고** (대화형 AI / LLM)
 > 3. **그 답변 문자를 구글 도움으로 음성으로 출력** (음성 합성 / TTS)
 
+
+```mermaid
+graph LR
+    User(("👤 사용자<br>(음성)")) --> |"말하기"| Mic["🎤 ESP32 (마이크)"]
+    
+    subgraph 구글 클라우드 (Google AI)
+        STT["🗣️ 1. STT<br>(음성 ➡️ 문자)"]
+        LLM["🧠 2. LLM<br>(질문 ➡️ 답변)"]
+        TTS["🔊 3. TTS<br>(문자 ➡️ 음성)"]
+    end
+    
+    Mic --> |"WAV 오디오"| STT
+    STT --> |"질문 텍스트"| LLM
+    LLM --> |"답변 텍스트"| TTS
+    
+    TTS --> |"MP3 오디오"| Spk["🔊 ESP32 (스피커)"]
+    Spk --> |"대답하기"| User
+    
+    style User fill:#f9f,stroke:#333,stroke-width:2px
+    style Mic fill:#ff9,stroke:#333,stroke-width:2px
+    style Spk fill:#ff9,stroke:#333,stroke-width:2px
+    style STT fill:#bbf,stroke:#333,stroke-width:2px
+    style LLM fill:#bbf,stroke:#333,stroke-width:2px
+    style TTS fill:#bbf,stroke:#333,stroke-width:2px
+```
+
 **🔄 동작 설명 (상세 파이프라인)**
 
 **1. 음성 녹음 (마이크 ➡️ 보드)**
