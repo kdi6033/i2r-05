@@ -284,7 +284,7 @@ void flowingEffect() {
 
 -----------
 
-## ✅ 4. 아두이노로 구현하는 Physical AI 챗봇 (feat. ESP32 & Gemini)
+## ✅ 4. Physical AI 챗봇 (feat. ESP32 & Gemini)
 
 > 단순히 모니터 속에 갇힌 챗봇이 아닙니다. 카메라/센서로 사람을 인식하고, 마이크로 명령을 이해하며, 스스로 말하고 기계(릴레이 등)를 조작하는 진짜 **'물리적 인공지능(Physical AI)'**을 아두이노(ESP32-S3)로 구현하는 프로젝트입니다.
 
