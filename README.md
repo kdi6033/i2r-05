@@ -3205,7 +3205,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ----
 
-## ✅ 6. i2r-shield-04 (RS485 RS232 HMI)
+## ✅ 7. i2r-shield-04 (RS485 RS232 HMI)
 
 📌 2. LCD 핀 연결 
 
@@ -3233,7 +3233,7 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
 
 ----
 
-## ✅ 7. 온도  습도 센서  (i2r-06)
+## ✅ 8. 온도  습도 센서  (i2r-06)
 
 🎯 개요
 SHT30은 Sensirion의 **SHT3X 시리즈 디지털 온습도 센서**로,  
@@ -3498,7 +3498,7 @@ void readSHT30() {
 ---
 
 
-## ✅ 7. Otto Ninja 로봇
+## ✅ 9. Otto Ninja 로봇
 배선연결 요약
 |이름 | 핀번호 | 모터이름 |
 |-----|-------|-------|
@@ -4118,7 +4118,7 @@ void loop() {
 }
 ```
 
-## ✅ 8. 1.3" OLED LCD 128x64
+## ✅ 10. 1.3" OLED LCD 128x64
 - Resolution: 128*64
 - Control chip: SSH1106
 - Display area: 29.42 x 14.7mm
@@ -4401,7 +4401,7 @@ void flowingEffect() {
 점멸 색상 랜덤화 → CHSV(random8(),255,255)    
 무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
-## ✅ 9.  VL53L0X Time-of-Flight (ToF) 거리 센서
+## ✅ 11.  VL53L0X Time-of-Flight (ToF) 거리 센서
 <img src="https://github.com/user-attachments/assets/1e3b3bde-cb82-42ad-af43-7e03a7ce1e27" alt="VL53L0X" width="300">
 
 🔍 개요
@@ -4667,7 +4667,7 @@ void updateBreathingEffect() {
 ---
 
 -----------
-## ✅ 10. 조도센서 (GY302)
+## ✅ 12. 조도센서 (GY302)
 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
 
 i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH1750) 조도 센서용 아두이노 프로그램 입니다.
@@ -4723,7 +4723,7 @@ void loop() {
 - 조도 범위: 약 1~65535 lux까지 측정 가능.
 
 -----------------------------------------------------------------
-## ✅ 11. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
+## ✅ 13. ESP32 S3 AI IoT  아두이노보드 크라우드 연결 및 개요요
 ESP32는 Bluetooth Classic과 Bluetooth Low Energy(BLE)를 모두 지원하는 강력한 무선 모듈입니다.
 BLE는 저전력으로 데이터를 전송할 수 있어, IoT(사물인터넷) 기기에서 널리 사용됩니다.
 블루투스는 스마트폰의 블루투스와 연결하여 와이파이 정보를 보드로 전송하여 통신 접속을 하게 합니다. 
