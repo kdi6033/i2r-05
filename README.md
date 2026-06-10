@@ -284,7 +284,7 @@ void flowingEffect() {
 
 -----------
 
-## ✅ 4. Google LLM 연동 Physical AI 챗봇 (ESP32-S3 i2r-05 구현)
+## ✅ 4. i2r-shield-03 ( Google LLM 연동 Physical AI 챗봇 )
 
 > 단순히 모니터 속에 갇힌 챗봇이 아닙니다. 카메라/센서로 사람을 인식하고, 마이크로 명령을 이해하며, 스스로 말하고 기계(릴레이 등)를 조작하는 진짜 **'물리적 인공지능(Physical AI)'**을 아두이노(ESP32-S3)로 구현하는 프로젝트입니다.
 
@@ -3204,7 +3204,35 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ----
 
-## ✅ 7. 온도  습도 센서  (i2r-06)
+##✅ 6. i2r-shield-04 (RS485 RS232 HMI)
+
+📌 2. LCD 핀 연결 
+
+상업용 PCB 설계 시 ESP32-S3의 **8~16번 핀(연속된 9개 핀)**을 활용하여 가장 효율적이고 안정적으로 설계하는 핀맵입니다.
+
+| i2r-06 (ESP32-S3) | LCD 핀 번호 | LCD 핀 이름 | 역할 및 배선 가이드 (PCB 설계 시 주의점) |
+|:------:|:-----------:|:-----------:|:------|
+| **5V** | 1 | VDD | **반드시 5V** (3.3V 시 터치 오작동) |
+| GND | 2 | GND | 공통 접지 |
+| **GPIO 8** | 3 | CS | LCD Chip Select |
+| **GPIO 9** | 4 | RST | LCD 리셋 |
+| **GPIO 10** | 5 | DC | 데이터/커맨드 선택 |
+| **GPIO 11** | 6 & 12 | SDI & TDI | **MOSI 공유**: PCB에서 LCD 6번과 12번을 묶어서 ESP 11번에 연결 |
+| **GPIO 12** | 7 & 10 | SCK & TCK | **SCK 공유**: PCB에서 LCD 7번과 10번을 묶어서 ESP 12번에 연결 |
+| **GPIO 13** | 8 | BL | 백라이트 제어 |
+| ❌ **연결 금지** | **9** | **SDO** | **절대 연결 금지 (N.C)**: ILI9488 하드웨어 버그로 버스 충돌 유발 |
+| **GPIO 7** | 11 | TCS | 터치 Chip Select |
+| **GPIO 6** | 13 | TDO | **MISO**: 터치 데이터 출력 |
+| **GPIO 3** | 14 | PEN (IRQ) | 터치 인터럽트 |
+
+----
+TFT_eSPI 라이브러리를 설치하고 \Arduino\libraries\TFT_eSPI\
+이 폴더 안에 있는 기존 User_Setup.h를 프로젝트의 User_Setup.h로 덮어쓰기:
+TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라고 알려주는 필수 설정 파일입니다.
+
+----
+
+##✅ 7. 온도  습도 센서  (i2r-06)
 
 🎯 개요
 SHT30은 Sensirion의 **SHT3X 시리즈 디지털 온습도 센서**로,  
