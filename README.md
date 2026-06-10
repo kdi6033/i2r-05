@@ -3201,6 +3201,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
   analogWrite(greenPin, greenValue);
   analogWrite(bluePin, blueValue);
 }
+```
 
 ----
 
