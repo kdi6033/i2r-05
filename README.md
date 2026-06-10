@@ -1482,10 +1482,13 @@ void audio_showstation(const char *info) {
 #define WIFI_PASSWORD "00000000"
 
 // ── Gemini API ────────────────────────────────────────────────
-#define GEMINI_API_KEY "AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"
+#define GEMINI_API_KEY "******"
 #define GEMINI_HOST "generativelanguage.googleapis.com"
 #define GEMINI_MODEL_STT "gemini-2.5-flash" // STT용
 #define GEMINI_MODEL_LLM "gemini-2.5-flash" // LLM 대화용
+
+#define API_RETRY_COUNT 3
+#define API_RETRY_DELAY_MS 1500
 
 // ── 마이크 핀 (INMP441) ──────────────────────────────────────
 #define MIC_SD 8
@@ -1494,8 +1497,8 @@ void audio_showstation(const char *info) {
 
 // ── 스피커 핀 (MAX98357A) ────────────────────────────────────
 #define SPK_BCLK 12
-#define SPK_LRC 13
-#define SPK_DOUT 11
+#define SPK_LRC 11
+#define SPK_DOUT 13
 #define SPK_SD 14
 
 // ── 녹음 및 VAD 설정 ─────────────────────────────────────────
@@ -1505,8 +1508,8 @@ void audio_showstation(const char *info) {
 #define MAX_WAV_SIZE (MAX_PCM_SIZE + 44)
 #define MAX_B64_SIZE (MAX_WAV_SIZE * 4 / 3 + 8)
 
-#define VAD_THRESHOLD 500        // 목소리 감지 기준 (너무 민감하면 수치 올림)
-#define SILENCE_THRESHOLD 300    // 무음 판단 기준
+#define VAD_THRESHOLD 600        // 목소리 감지 기준 (너무 민감하면 수치 올림, 기본 500 -> 600)
+#define SILENCE_THRESHOLD 400    // 무음 판단 기준 (기본 300 -> 400)
 #define SILENCE_DURATION_MS 1500 // 1.5초 조용하면 녹음 종료
 
 // ── 대화 기록 (다중 턴) ───────────────────────────────────────
@@ -1625,6 +1628,10 @@ size_t recordAudio() {
   unsigned long silenceStartTime = 0;
   int activeChunks = 0; // 유효 소리 유지 프레임 카운트
 
+  // 실시간 노이즈 모니터링용 변수
+  unsigned long lastRmsPrint = 0;
+  int maxRmsInPeriod = 0;
+
   while (written < MAX_PCM_SIZE) {
     size_t bytesRead = 0;
     i2s_channel_read(mic_rx_chan, raw, sizeof(raw), &bytesRead, portMAX_DELAY);
@@ -1640,6 +1647,16 @@ size_t recordAudio() {
 
     // 1. 녹음 대기 중 -> 목소리 감지 시 시작
     if (!isRecording) {
+      if (rms > maxRmsInPeriod) {
+        maxRmsInPeriod = rms;
+      }
+      // 1초마다 대기 중인 주변 소음의 최대 RMS 값을 출력하여 최적의 Threshold 설정을 돕습니다.
+      if (millis() - lastRmsPrint > 1000) {
+        Serial.printf("[대기 중] 주변 소음(RMS 최대): %d (감지 기준: %d)\n", maxRmsInPeriod, VAD_THRESHOLD);
+        maxRmsInPeriod = 0;
+        lastRmsPrint = millis();
+      }
+
       if (rms > VAD_THRESHOLD) {
         isRecording = true;
         Serial.println("[녹음 시작] 🔴 목소리를 듣고 있습니다...");
@@ -1804,17 +1821,59 @@ String geminiSTT(size_t b64Len) {
                 "설명 없이 말한 내용만.\"}]"
                 "}]}";
 
-  String body = httpsPost(path, head, b64Buf, b64Len, tail);
-  if (body.length() == 0)
-    return "[인식 실패]";
+  for (int attempt = 1; attempt <= API_RETRY_COUNT; attempt++) {
+    String body = httpsPost(path, head, b64Buf, b64Len, tail);
+    if (body.length() == 0) {
+      if (attempt < API_RETRY_COUNT) {
+        Serial.printf("[STT] 전송 실패. %dms 후 재시도 (%d/%d)...\n", API_RETRY_DELAY_MS, attempt, API_RETRY_COUNT);
+        delay(API_RETRY_DELAY_MS);
+        continue;
+      }
+      return "[인식 실패]";
+    }
 
-  String text = extractJsonString(body, "text");
-  if (text.length() == 0) {
-    Serial.println("[STT] 인식 실패 (응답에 text 없음)");
-    return "[인식 실패]";
+    if (body.indexOf("\"error\":") >= 0) {
+      if (body.indexOf("RESOURCE_EXHAUSTED") >= 0 || body.indexOf("429") >= 0) {
+        Serial.println("[STT] 할당량 초과 에러(429) 감지");
+        if (attempt < API_RETRY_COUNT) {
+          Serial.printf("[STT] 429 할당량 초과. 3초 후 재시도 (%d/%d)...\n", attempt, API_RETRY_COUNT);
+          delay(3000);
+          continue;
+        }
+        return "[할당량 초과]";
+      } else if (body.indexOf("UNAVAILABLE") >= 0 || body.indexOf("503") >= 0) {
+        Serial.println("[STT] 서버 일시적 과부하 에러(503) 감지");
+        if (attempt < API_RETRY_COUNT) {
+          Serial.printf("[STT] 503 서버 과부하. 3초 후 재시도 (%d/%d)...\n", attempt, API_RETRY_COUNT);
+          delay(3000);
+          continue;
+        }
+        return "[서버 과부하]";
+      } else {
+        Serial.println("[STT] API 에러 응답 수신");
+        Serial.println("[STT] RAW: " + body.substring(0, 500));
+        if (attempt < API_RETRY_COUNT) {
+          delay(API_RETRY_DELAY_MS);
+          continue;
+        }
+        return "[인식 실패]";
+      }
+    }
+
+    String text = extractJsonString(body, "text");
+    if (text.length() == 0) {
+      Serial.println("[STT] 인식 실패 (응답에 text 없음)");
+      Serial.println("[STT] 디버깅용 응답 전체: " + body.substring(0, 500));
+      if (attempt < API_RETRY_COUNT) {
+        delay(API_RETRY_DELAY_MS);
+        continue;
+      }
+      return "[인식 실패]";
+    }
+    text.trim();
+    return text;
   }
-  text.trim();
-  return text;
+  return "[인식 실패]";
 }
 
 // ============================================================
@@ -1853,32 +1912,73 @@ String geminiLLM(const String &userText) {
   body += "\"}]}";
   body += "]}";
 
-  String response = httpsPost(path, body, nullptr, 0, "");
-  if (response.length() == 0)
-    return "[응답 실패]";
+  for (int attempt = 1; attempt <= API_RETRY_COUNT; attempt++) {
+    String response = httpsPost(path, body, nullptr, 0, "");
+    if (response.length() == 0) {
+      if (attempt < API_RETRY_COUNT) {
+        Serial.printf("[LLM] 전송 실패. %dms 후 재시도 (%d/%d)...\n", API_RETRY_DELAY_MS, attempt, API_RETRY_COUNT);
+        delay(API_RETRY_DELAY_MS);
+        continue;
+      }
+      return "[응답 실패]";
+    }
 
-  String answer = extractJsonString(response, "text");
-  if (answer.length() == 0) {
-    Serial.println("[LLM] 응답 파싱 실패");
-    Serial.println("[LLM] RAW: " + response.substring(0, 500));
-    return "[응답 실패]";
+    if (response.indexOf("\"error\":") >= 0) {
+      if (response.indexOf("RESOURCE_EXHAUSTED") >= 0 || response.indexOf("429") >= 0) {
+        Serial.println("[LLM] 할당량 초과 에러(429) 감지");
+        if (attempt < API_RETRY_COUNT) {
+          Serial.printf("[LLM] 429 할당량 초과. 3초 후 재시도 (%d/%d)...\n", attempt, API_RETRY_COUNT);
+          delay(3000);
+          continue;
+        }
+        return "[할당량 초과]";
+      } else if (response.indexOf("UNAVAILABLE") >= 0 || response.indexOf("503") >= 0) {
+        Serial.println("[LLM] 서버 일시적 과부하 에러(503) 감지");
+        if (attempt < API_RETRY_COUNT) {
+          Serial.printf("[LLM] 503 서버 과부하. 3초 후 재시도 (%d/%d)...\n", attempt, API_RETRY_COUNT);
+          delay(3000);
+          continue;
+        }
+        return "[서버 과부하]";
+      } else {
+        Serial.println("[LLM] API 에러 응답 수신");
+        Serial.println("[LLM] RAW: " + response.substring(0, 500));
+        if (attempt < API_RETRY_COUNT) {
+          delay(API_RETRY_DELAY_MS);
+          continue;
+        }
+        return "[응답 실패]";
+      }
+    }
+
+    String answer = extractJsonString(response, "text");
+    if (answer.length() == 0) {
+      Serial.println("[LLM] 응답 파싱 실패");
+      Serial.println("[LLM] RAW: " + response.substring(0, 500));
+      if (attempt < API_RETRY_COUNT) {
+        delay(API_RETRY_DELAY_MS);
+        continue;
+      }
+      return "[응답 실패]";
+    }
+    answer.trim();
+
+    // ── 대화 기록 저장 ────────────────────────────────────────
+    if (historyCount < MAX_HISTORY) {
+      history[historyCount].user = userText;
+      history[historyCount].assistant = answer;
+      historyCount++;
+    } else {
+      // 오래된 기록 밀어내기 (링 버퍼)
+      for (int i = 0; i < MAX_HISTORY - 1; i++)
+        history[i] = history[i + 1];
+      history[MAX_HISTORY - 1].user = userText;
+      history[MAX_HISTORY - 1].assistant = answer;
+    }
+
+    return answer;
   }
-  answer.trim();
-
-  // ── 대화 기록 저장 ────────────────────────────────────────
-  if (historyCount < MAX_HISTORY) {
-    history[historyCount].user = userText;
-    history[historyCount].assistant = answer;
-    historyCount++;
-  } else {
-    // 오래된 기록 밀어내기 (링 버퍼)
-    for (int i = 0; i < MAX_HISTORY - 1; i++)
-      history[i] = history[i + 1];
-    history[MAX_HISTORY - 1].user = userText;
-    history[MAX_HISTORY - 1].assistant = answer;
-  }
-
-  return answer;
+  return "[응답 실패]";
 }
 
 // ============================================================
@@ -1907,17 +2007,23 @@ String urlEncode(const String &text) {
 // ⑤ TTS 재생 시작 (논블로킹)
 // ============================================================
 void startTTS(const String &text) {
-  if (text == "[인식 실패]" || text == "[응답 실패]" ||
-      text.startsWith("[오류]")) {
-    Serial.println("[TTS] 건너뜀");
-    state = IDLE;
-    return;
+  String ttsText = text;
+  
+  if (text == "[인식 실패]") {
+    ttsText = "잘 들리지 않았습니다. 다시 말씀해 주세요.";
+  } else if (text == "[할당량 초과]") {
+    ttsText = "API 사용량이 초과되었습니다. 잠시 후에 다시 대화해 주세요.";
+  } else if (text == "[서버 과부하]") {
+    ttsText = "서버가 혼잡합니다. 잠시 후에 다시 시도해 주세요.";
+  } else if (text == "[응답 실패]" || text.startsWith("[오류]")) {
+    ttsText = "죄송합니다. 오류가 발생하여 응답을 받을 수 없습니다.";
   }
+
   // Google TTS (메모리를 아끼기 위해 http 사용)
   String url = "http://translate.google.com/translate_tts"
                "?ie=UTF-8&client=tw-ob&tl=ko&q=" +
-               urlEncode(text);
-  Serial.println("[TTS] 🔊 음성 출력 시작 (Google 서버 접속 중...)");
+               urlEncode(ttsText);
+  Serial.printf("[TTS] 🔊 음성 출력 시작: \"%s\" (Google 서버 접속 중...)\n", ttsText.c_str());
   audio.connecttohost(url.c_str());
   Serial.println("[TTS] ✅ 서버 접속 완료, 스트리밍을 시작합니다!");
   ttsActive = true;
@@ -2031,9 +2137,16 @@ void loop() {
     Serial.print("[사용자] ");
     Serial.println(userText);
 
-    if (userText == "[인식 실패]") {
-      Serial.println("[안내] 잘못 들었습니다. 다시 말씀을 기다립니다...");
-      state = RECORDING; // 즉시 다시 마이크 대기 모드로
+    if (userText == "[인식 실패]" || userText == "[할당량 초과]" || userText == "[서버 과부하]") {
+      if (userText == "[인식 실패]") {
+        Serial.println("[안내] 잘못 들었습니다. 오류 음성을 안내합니다.");
+      } else if (userText == "[할당량 초과]") {
+        Serial.println("[안내] API 할당량이 초과되었습니다. 오류 음성을 안내합니다.");
+      } else {
+        Serial.println("[안내] API 서버가 UNAVAILABLE(503) 상태입니다. 오류 음성을 안내합니다.");
+      }
+      delay(500);
+      startTTS(userText);
       break;
     }
 
@@ -2137,6 +2250,7 @@ void audio_eof_mp3(const char *info) {
 void audio_info(const char *info) {
   Serial.printf("[Audio] %s\n", info);  // 문제 파악을 위해 로그 활성화
 }
+
 
 ```
 </details>
