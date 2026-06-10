@@ -3224,7 +3224,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 | ❌ **연결 금지** | **9** | **SDO** | **절대 연결 금지 (N.C)**: ILI9488 하드웨어 버그로 버스 충돌 유발 |
 | **GPIO 7** | 11 | TCS | 터치 Chip Select |
 | **GPIO 6** | 13 | TDO | **MISO**: 터치 데이터 출력 |
-| **GPIO 3** | 14 | PEN (IRQ) | 터치 인터럽트 |
+| **GPIO 5** | 14 | PEN (IRQ) | 터치 인터럽트 |
 
 ----
 TFT_eSPI 라이브러리를 설치하고 \Arduino\libraries\TFT_eSPI\
