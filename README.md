@@ -3204,7 +3204,7 @@ void setColor(int redValue, int greenValue, int blueValue) {
 
 ----
 
-##✅ 6. i2r-shield-04 (RS485 RS232 HMI)
+## ✅ 6. i2r-shield-04 (RS485 RS232 HMI)
 
 📌 2. LCD 핀 연결 
 
@@ -3232,7 +3232,7 @@ TFT_eSPI 라이브러리에 "내 LCD 드라이버와 연결 핀이 이것"이라
 
 ----
 
-##✅ 7. 온도  습도 센서  (i2r-06)
+## ✅ 7. 온도  습도 센서  (i2r-06)
 
 🎯 개요
 SHT30은 Sensirion의 **SHT3X 시리즈 디지털 온습도 센서**로,  
