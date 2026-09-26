@@ -3557,13 +3557,164 @@ servo.writeMicroseconds(us);
 - 정지 명령에도 서서히 돈다면 정지값이 실제 정지점과 다른 것이므로 정지값을 다시 측정합니다.
 - 회전이 끝나면 `detach()` 후 핀을 `LOW`로 고정해 확실히 멈춥니다.
 
-
-
 ```
 서보모터를 esp32 보드 i2r-05 에 연결합니다. YL 4번, YR 5번, RL 6번, RR 7번 핀에 연결 했습니다.
 YL YR 는 180도 각도조절 서보모터이고 RL RR 은 360도 회전하는 서보모터 입니다.
 ESP32Servo.h 를 이용하여 ninja otto 로봇을 아두이노 프로그램 하려고 합니다.
 ```
+
+
+<br>     
+<details>
+    <summary>💻 모터 동작 확인과 초기셋 프로그램 </summary>
+
+```c
+#include <ESP32Servo.h>
+
+// 로봇 조립 직후 모터 동작 확인 + 초기셋(수평 보정)용 프로그램
+// 순서 (1회만 실행하고 멈춤):
+//   1) YL, YR : 90도 기준 좌우 30도씩 움직이고 90도로 복귀 (이때 나사를 조여 수평 보정)
+//   2) RR     : 정회전 -> 정지 -> 역회전 -> 정지
+//   3) RL     : 정회전 -> 정지 -> 역회전 -> 정지
+//   4) 모든 모터 정지(detach) 후 종료. 다시 하려면 보드의 리셋 버튼을 누른다.
+
+struct ServoJoint {
+  const char* name;
+  uint8_t pin;
+  const char* location;  // 물리적 위치
+  const char* action;    // 이 서보가 하는 동작
+  int trim;               // 보정값: 눈으로 맞춘 혼이 살짝 비뚤어졌을 때 미세 조정 (-10~10 정도)
+  Servo servo;
+};
+
+ServoJoint joints[2] = {
+  {"YL", 4, "왼쪽 엉덩이", "다리를 앞뒤로 벌리고 오므림", 0, Servo()},
+  {"YR", 5, "오른쪽 엉덩이", "다리를 앞뒤로 벌리고 오므림", 0, Servo()},
+};
+
+// 360도 연속회전 서보 (발)
+const int RL_PIN = 6;
+const int RR_PIN = 7;
+const int RL_STOP_US = 1500;  // RL 정지값(us)
+const int RR_STOP_US = 1500;   // RR 정지값(us)
+const int RL_SPEED_US = 200;   // 왼발 회전 속도(us 오프셋)
+const int RR_SPEED_US = 200;   // 오른발 회전 속도(us 오프셋)
+const int ROLL_TIME = 2000;    // 정회전/역회전 각각 회전 시간(ms)
+const int ROLL_PAUSE = 800;    // 방향 바꾸기 전 정지 시간(ms)
+
+Servo servoRL;
+Servo servoRR;
+
+const int NEUTRAL = 90;
+const int SWING = 30;        // 좌우로 움직여볼 각도 폭
+const int MOVE_DELAY = 600;  // 좌/우로 움직인 뒤 대기 시간(ms)
+const int REST_DELAY = 3000; // 90도(중립)에서 쉬는 시간(ms) - 이 사이에 탁자에 대고 나사를 조여 수평을 보정한다
+
+void testJoint(int index) {
+  ServoJoint &joint = joints[index];
+
+  Serial.println("===================================");
+  Serial.print("[");
+  Serial.print(joint.name);
+  Serial.print("] ");
+  Serial.print(joint.location);
+  Serial.print(" (핀 ");
+  Serial.print(joint.pin);
+  Serial.println(")");
+  Serial.print("동작: ");
+  Serial.println(joint.action);
+
+  int center = NEUTRAL + joint.trim;
+  int steps[3]          = { center - SWING,        center + SWING,        center };
+  const char* phases[3] = { "1단계: 최소 각도로 이동", "2단계: 최대 각도로 이동", "3단계: 중립(90도) 복귀 - 지금 탁자에 다리를 대고 나사를 조여 보정해도 됩니다" };
+  int delays[3]         = { MOVE_DELAY, MOVE_DELAY, REST_DELAY };
+
+  for (int i = 0; i < 3; i++) {
+    joint.servo.write(steps[i]);
+    Serial.print("  - ");
+    Serial.print(phases[i]);
+    Serial.print(": ");
+    Serial.print(steps[i]);
+    Serial.println("도");
+    delay(delays[i]);
+  }
+}
+
+// 연속회전 서보: 정회전 -> 정지 -> 역회전 -> 정지
+void testRoll(const char* name, int pin, Servo &servo, int stopUs, int speedUs) {
+  Serial.println("===================================");
+  Serial.print("[");
+  Serial.print(name);
+  Serial.print("] 발 회전 테스트 (핀 ");
+  Serial.print(pin);
+  Serial.println(")");
+
+  servo.attach(pin, 500, 2400);
+
+  Serial.println("  - 정회전");
+  servo.writeMicroseconds(stopUs + speedUs);
+  delay(ROLL_TIME);
+
+  Serial.println("  - 정지");
+  servo.writeMicroseconds(stopUs);
+  delay(ROLL_PAUSE);
+
+  Serial.println("  - 역회전");
+  servo.writeMicroseconds(stopUs - speedUs);
+  delay(ROLL_TIME);
+
+  Serial.println("  - 정지");
+  servo.writeMicroseconds(stopUs);
+  delay(ROLL_PAUSE);
+
+  // 확실히 멈추도록 detach 후 핀을 LOW로 고정
+  servo.detach();
+  pinMode(pin, OUTPUT);
+  digitalWrite(pin, LOW);
+}
+
+void setup() {
+  Serial.begin(115200);
+  Serial.println("Otto Ninja 모터 테스트 시작 (YL, YR, RR, RL) - 1회 실행 후 정지");
+
+  ESP32PWM::allocateTimer(0);
+  ESP32PWM::allocateTimer(1);
+  ESP32PWM::allocateTimer(2);
+  ESP32PWM::allocateTimer(3);
+
+  for (int i = 0; i < 2; i++) {
+    joints[i].servo.setPeriodHertz(50);
+    joints[i].servo.attach(joints[i].pin, 500, 2400);
+    joints[i].servo.write(NEUTRAL + joints[i].trim);
+  }
+  servoRL.setPeriodHertz(50);
+  servoRR.setPeriodHertz(50);
+  delay(1000);
+
+  // 1) 엉덩이 30도 테스트
+  for (int i = 0; i < 2; i++) {
+    testJoint(i);
+    delay(500);
+  }
+
+  // 2) RR, 3) RL 정회전/역회전
+  testRoll("RR", RR_PIN, servoRR, RR_STOP_US, RR_SPEED_US);
+  testRoll("RL", RL_PIN, servoRL, RL_STOP_US, RL_SPEED_US);
+
+  // 4) 모두 정지
+  for (int i = 0; i < 2; i++) {
+    joints[i].servo.detach();
+  }
+  Serial.println("===================================");
+  Serial.println("테스트 완료. 모든 모터 정지. 다시 하려면 리셋 버튼을 누르세요.");
+}
+
+void loop() {
+  // 1회 실행 후 아무것도 하지 않음
+}
+
+```
+</details>
 
 ## 4. 첫 모터 테스트 프로그램
 
