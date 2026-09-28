@@ -3496,7 +3496,7 @@ void readSHT30() {
 
 ---
 
-## ✅ 9. Otto Ninja 로봇
+## ✅ 9. Otto Ninja Robot
 
 ✅  1. 서보모터 이름, 역할, 연결 핀
 
