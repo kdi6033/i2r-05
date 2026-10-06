@@ -3688,16 +3688,14 @@ Otto I2R 로봇의 **다리 수직 맞춤**과 **두 바퀴 직진 맞춤**을 �
 #include "config.h"
 
 // 서보 테스트: 다리가 수직인지, 똑바로 전진/후진하는지 확인하는 프로그램.
-// 고칠 건 config.h 안의 숫자 4개뿐이다.
+// 고칠 건 config.h 안의 숫자뿐이다.
 
 void setup() {
-  ottoInit(YL_PULSE_CENTER, YR_PULSE_CENTER);
 }
 
 void loop() {
-  ottoCalibrationRolling(RL_SPEED_US, RR_SPEED_US);
+  ottoCalibrationRolling();
 }
-
 ```
 </details>
 
