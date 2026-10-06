@@ -3758,6 +3758,59 @@ Otto Ninja 로봇이 **똑바로 걷도록** 발을 드는 각도를 맞추는 �
 - 보정이 끝나면 `config.h` 값을 메모해 두세요.
 
 
+<br>     
+<details>
+    <summary>💻 회전 보정 (callibration_walk.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"
+
+// 서보 테스트: 다리가 수직인지, 똑바로 전진/후진하는지 확인하는 프로그램.
+// 고칠 건 config.h 안의 숫자 4개뿐이다.
+
+void setup() {
+  ottoInit(YL_PULSE_CENTER, YR_PULSE_CENTER);
+}
+
+void loop() {
+  ottoCalibrationRolling(RL_SPEED_US, RR_SPEED_US);
+}
+
+```
+</details>
+
+----
+✅ 3.3 앞으로 걷기 (walk_front)
+
+Otto Ninja 로봇이 **앞으로 똑바로 걷게** 하는 프로그램입니다. 오른발과 왼발을 번갈아 한 걸음씩 내딛습니다. 걸음 동작은 `OttoI2R` 라이브러리의 `walkFront()` 함수 하나에 들어 있으니, 프로그램에는 함수 호출만 적습니다.
+**걸음 순서**
+1. 오른쪽으로 기울여 오른발을 들어 올립니다.
+2. 오른발을 굴려 앞으로 내딛습니다.
+3. 다리를 가운데(90도)로 되돌리고 잠시 멈춥니다.
+4. 왼쪽으로 기울여 왼발을 들어 올립니다.
+5. 왼발을 굴려 앞으로 내딛습니다.
+6. 다리를 가운데로 되돌리고 잠시 멈춥니다. 1번으로 돌아가 반복합니다.
+
+<br>     
+<details>
+    <summary>💻 앞으로 걷기 (walk_front.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"   // 보정값이 자동으로 등록된다
+
+// 앞으로 걷기: 오른발 -> 왼발 번갈아 한 걸음씩 내딛는다.
+// 고칠 건 이 폴더의 config.h 뿐이다. (callibration_walk의 config.h를 복사해서 쓴다)
+
+void setup() {
+}
+
+void loop() {
+  walkFront();
+}
+```
+</details>
 --------
 
 ## ✅ 10. 1.3" OLED LCD 128x64
