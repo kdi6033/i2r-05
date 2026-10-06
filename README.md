@@ -3685,7 +3685,7 @@ void loop() {
 </details>
 
 
-```
+--------
 
 ## ✅ 10. 1.3" OLED LCD 128x64
 - Resolution: 128*64
