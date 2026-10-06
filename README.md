@@ -3767,15 +3767,13 @@ Otto I2R 로봇이 **똑바로 걷도록** 발을 드는 각도를 맞추는 보
 #include <OttoI2R.h>
 #include "config.h"
 
-// 서보 테스트: 다리가 수직인지, 똑바로 전진/후진하는지 확인하는 프로그램.
-// 고칠 건 config.h 안의 숫자 4개뿐이다.
+// 걷기 테스트: 오른발 -> 왼발 번갈아 내딛는다. 고칠 건 config.h 안의 숫자뿐이다.
 
 void setup() {
-  ottoInit(YL_PULSE_CENTER, YR_PULSE_CENTER);
 }
 
 void loop() {
-  ottoCalibrationRolling(RL_SPEED_US, RR_SPEED_US);
+  ottoCalibrationWalk();
 }
 
 ```
