@@ -3519,173 +3519,36 @@ Otto Ninja는 서보모터 4개로 걷습니다. 이름은 **[관절 종류][좌
 
 -------
 
-✅  2. 동작 프로그램 관리: 목록 파일과 공통 설정
+✅  2. 프로젝트 구조
+
+이 프로젝트는 세 부분으로 나뉩니다.
+
+| 위치 | 내용 | 누가 다루는가 |
+|---|---|---|
+| **GitHub 저장소** | 동작 프로그램 여러 개(약 50개) | 사용자가 주소만 알려 줌 |
+| **OttoI2R 라이브러리** | 걷기, 회전, 정지 등 실제 동작 코드 | 정교한 조작이 필요할 때 변수를 수정 |
+| **config.h** | 로봇마다 다른 보정값 | 누구나 숫자만 채움 |
+
+**프로그램을 만들 때는 AI에게 **저장소 주소나 참고할 유튜브 주소**를 알려 주면 됩니다. AI가 저장소의 동작 예제와 라이브러리를 보고 새 프로그램을 만들어 줍니다.**
+
+**config.h의 역할**
+
+`config.h`는 **이 로봇만의 보정값을 모아 둔 파일**입니다. 같은 프로그램이라도 로봇마다 조립 상태가 달라서 값이 다르기 때문에, 프로그램 코드와 분리해 두었습니다.
+
+- **프로그래머가 최소한으로 입력하는 곳**입니다. 프로그램 코드를 고치지 않고 숫자만 바꿔도 로봇이 보정됩니다.
+- 값을 바꾸고 다시 업로드하면 동작이 바뀝니다.
+- 로봇을 새로 조립하거나 패드를 붙이면 이 파일의 값을 다시 맞춥니다.
+
 
 동작 프로그램을 여러 개(50개 정도) 만들어 GitHub에 올려 두고, 저장소 주소를 알려 주면 Claude가 그것을 참조해서 새 동작을 만들 수 있게 하려는 구조입니다.
 
-**목록 파일(README.md)을 만드는 이유**
-
-- **찾는 시간을 줄입니다.** 프로그램이 50개가 되면 폴더를 하나씩 열어 보지 않고는 어떤 동작이 있는지 알 수 없습니다. 목록 표 하나만 읽으면 전체를 파악하고 필요한 프로그램만 골라 열 수 있습니다.
-- **Claude가 참조하기 쉽습니다.** 저장소 주소만 받으면 Claude는 파일을 하나씩 열어야 하는데, 목록이 있으면 "걷기 관련은 10번대, 춤은 30번대"처럼 바로 필요한 예제를 찾아 비슷한 동작을 만들 수 있습니다.
-- **중복 제작을 막습니다.** 이미 있는 동작을 다시 만들지 않고, 비슷한 동작이 있으면 그것을 고쳐서 새 동작을 만들 수 있습니다.
-- **튜닝 포인트를 모아 둡니다.** 동작마다 어떤 상수를 조절해야 하는지 표에 적어 두면, 속도나 각도를 바꾸고 싶을 때 코드를 다 읽지 않아도 됩니다.
-- **누락과 번호 충돌을 막습니다.** 새 동작을 추가할 때 목록을 보고 카테고리와 번호를 정하므로 번호가 겹치지 않습니다.
-
+**프로그램 목록**
 
 | 번호 | 이름 | 설명 | 사용 모터 | 주요 튜닝 값 |
 |---|---|---|---|---|
-| 00 | motor_test | 조립 후 모터 확인, 초기셋 | YL YR RL RR | SWING, ROLL_TIME |
-| 10 | walk_front | 앞으로 걷기 | YL YR RL RR | TILT_OFFSET, STEP_TIME |
+| 00 | callibration_rolling | 조립 후 모터 확인, 초기셋 | YL YR RL RR | SWING, ROLL_TIME |
+| 01 | callibration_walk | 앞으로 걷기 | YL YR RL RR | TILT_OFFSET, STEP_TIME |
 
-**공통 설정 파일(config.h)**
-
-핀 번호, 정지값(1500), 트림, 기본 시간, 서보 객체를 `otto/config.h` 한 곳에 모아 둡니다. 50개 파일마다 같은 값을 복사해 두면 정지값 하나를 고칠 때 50곳을 고쳐야 하기 때문입니다.
-
-```cpp
-#include <ESP32Servo.h>
-#include "../config.h"   // otto/config.h
-
-void setup() {
-  ottoInit();            // 서보 초기화
-  rollRight(-1);         // 오른발 역회전
-  delay(STEP_TIME);
-  stopRight();           // 확실히 정지
-}
-```
-
-- `hipsTilt(offset)`, `hipsNeutral()`: 엉덩이 기울임과 중립 복귀
-- `rollLeft(방향)`, `rollRight(방향)`: 발 굴리기 (+1 정회전, -1 역회전)
-- `stopLeft()`, `stopRight()`: `detach()` 후 핀을 `LOW`로 고정해 정지
-
-**프로그램 맨 위 주석 양식**
-
-모든 동작 프로그램은 맨 위에 같은 양식의 주석을 넣습니다. Claude가 코드를 다 읽지 않고도 무슨 동작인지, 무엇을 조절하는지 알 수 있습니다.
-
-```cpp
-// [번호] 이름 - 한 줄 설명
-// 사용 모터: YL YR RL RR 중 사용하는 것
-// 동작: 동작 순서 요약 (예: 무게중심 이동 -> 발 굴림 -> 중립 복귀)
-// 반복: 1회 실행 / 무한 반복
-// 튜닝: 조절할 상수 이름들
-```
-<details>
-    <summary>💻 config.h </summary>
-
-```c
-#pragma once
-// ============================================================
-// Otto Ninja 공통 설정 (config.h)
-//
-// 모든 동작 프로그램이 공유하는 핀 번호, 정지값, 속도, 기본 시간 값을 모아 둔다.
-// 각 동작 프로그램(.ino)은 맨 위에서 아래처럼 불러 쓴다.
-//
-//   #include <ESP32Servo.h>
-//   #include "../config.h"     // 폴더 구조: otto/config.h, otto/10_walk_front/10_walk_front.ino
-//
-// 정지값이나 트림을 고칠 때는 이 파일 한 곳만 고치면 모든 동작에 반영된다.
-// ============================================================
-//
-// [동작 프로그램 맨 위 주석 양식] - 새 프로그램을 만들 때 복사해서 채운다.
-//
-//   // [번호] 이름 - 한 줄 설명
-//   // 사용 모터: YL YR RL RR 중 사용하는 것
-//   // 동작: 동작 순서를 화살표로 요약 (예: 무게중심 이동 -> 발 굴림 -> 중립 복귀)
-//   // 반복: 1회 실행 / 무한 반복
-//   // 튜닝: 조절할 상수 이름들 (예: TILT_OFFSET, STEP_TIME)
-//
-// ============================================================
-
-#include <Arduino.h>
-#include <ESP32Servo.h>
-
-// ---------- 핀 번호 ----------
-const int YL_PIN = 4;   // 왼쪽 엉덩이 (180도 서보)
-const int YR_PIN = 5;   // 오른쪽 엉덩이 (180도 서보)
-const int RL_PIN = 6;   // 왼발 (360도 연속회전 서보)
-const int RR_PIN = 7;   // 오른발 (360도 연속회전 서보)
-
-// ---------- 180도 서보 (YL, YR) ----------
-const int NEUTRAL = 90;   // 중립값 (조립 기준)
-const int YL_TRIM = 0;    // 왼쪽 다리 미세 보정 (-10~10) - 다리가 평평하지 않고 기울어져 보일 때 조정
-const int YR_TRIM = 0;    // 오른쪽 다리 미세 보정 (-10~10)
-
-// ---------- 360도 연속회전 서보 (RL, RR) ----------
-// 각도가 아니라 펄스 폭(us)으로 방향과 속도를 정한다.
-//   STOP_US            : 정지
-//   STOP_US + SPEED_US : 한쪽 방향 회전
-//   STOP_US - SPEED_US : 반대 방향 회전
-const int RL_STOP_US = 1500;    // RL 정지값(us)
-const int RR_STOP_US = 1500;    // RR 정지값(us)
-const int RL_SPEED_US = 200;    // 왼발 회전 속도(us 오프셋) - 클수록 빠름
-const int RR_SPEED_US = 200;    // 오른발 회전 속도(us 오프셋) - 클수록 빠름
-// 로봇이 한쪽으로 돌면 도는 반대쪽 발이 더 세게 나가는 것이므로 좌우 속도를 서로 다르게 조정한다.
-
-// ---------- 기본 시간(ms) ----------
-const int TILT_TIME = 150;          // 다리를 기울이는 시간
-const int STEP_TIME = 150;          // 발을 굴리는 시간
-const int NEUTRAL_HOLD_TIME = 100;  // 중립 위치에서 멈춰 있는 시간
-const int WAIT_TIME = 30;           // 한 발 내딛은 뒤 다음 발로 넘어가기 전 대기 시간
-
-// ---------- 서보 객체 ----------
-// 각 .ino에서 별도로 만들지 않고 여기 것을 공유한다.
-Servo servoYL;
-Servo servoYR;
-Servo servoRL;
-Servo servoRR;
-
-// ---------- 공통 함수 ----------
-
-// 서보 4개 초기화: 타이머 할당, YL/YR을 중립으로. RL/RR은 정지 신호를 준 뒤 신호를 끊는다.
-inline void ottoInit() {
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
-
-  servoYL.setPeriodHertz(50);
-  servoYL.attach(YL_PIN, 500, 2400);
-  servoYR.setPeriodHertz(50);
-  servoYR.attach(YR_PIN, 500, 2400);
-  servoRL.setPeriodHertz(50);
-  servoRR.setPeriodHertz(50);
-
-  servoYL.write(NEUTRAL + YL_TRIM);
-  servoYR.write(NEUTRAL + YR_TRIM);
-  delay(500);
-}
-
-// 엉덩이를 중립으로 되돌린다.
-inline void hipsNeutral() {
-  servoYL.write(NEUTRAL + YL_TRIM);
-  servoYR.write(NEUTRAL + YR_TRIM);
-}
-
-// 엉덩이를 기울인다. offset이 +이면 왼쪽, -이면 오른쪽으로 기울어 반대쪽 발이 뜬다.
-inline void hipsTilt(int offset) {
-  servoYL.write(NEUTRAL + offset + YL_TRIM);
-  servoYR.write(NEUTRAL + offset + YR_TRIM);
-}
-
-// 발(RL/RR)을 정지시킨다. detach만 하면 핀이 플로팅되어 잡음을 신호로 착각하므로 핀을 LOW로 고정한다.
-inline void footStop(Servo &servo, int pin) {
-  servo.detach();
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, LOW);
-}
-
-// 발(RL/RR)을 굴린다. direction: +1 정회전(STOP+SPEED), -1 역회전(STOP-SPEED). 굴리기 직전에 attach한다.
-inline void footRoll(Servo &servo, int pin, int stopUs, int speedUs, int direction) {
-  servo.attach(pin, 500, 2400);
-  servo.writeMicroseconds(stopUs + direction * speedUs);
-}
-
-inline void rollLeft(int direction)  { footRoll(servoRL, RL_PIN, RL_STOP_US, RL_SPEED_US, direction); }
-inline void rollRight(int direction) { footRoll(servoRR, RR_PIN, RR_STOP_US, RR_SPEED_US, direction); }
-inline void stopLeft()  { footStop(servoRL, RL_PIN); }
-inline void stopRight() { footStop(servoRR, RR_PIN); }
-```
-</details>
-> 파일 위치: `otto/config.h`
 ---
 
 ✅  3. 조립 후 모터 동작 확인과 초기셋
