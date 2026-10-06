@@ -4017,7 +4017,7 @@ Otto Ninja 로봇의 **두 발을 같은 시점에 서로 반대 방향으로 �
 
 <br>     
 <details>
-    <summary>💻 스케이트처럼 후진 (slide_back.ino) </summary>
+    <summary>💻 스케이트처럼 우회전 (slide_right.ino) </summary>
 
 ```c
 #include <OttoI2R.h>
@@ -4035,6 +4035,45 @@ void loop() {
 }
 ```
 </details>
+----
+
+✅ 3.10 오른발 반시계, 왼발 시계로 동시에 돌기 (slide_left)
+
+Otto Ninja 로봇의 **두 발을 같은 시점에 서로 반대 방향으로 굴리는** 프로그램입니다. 왼발은 시계, 오른발은 반시계 방향으로 돕니다. 오른쪽 엉덩이는 살짝 기울여 오른발을 조금 띄운 뒤 굴리고, 다시 90도로 되돌립니다. 동작은 `OttoI2R` 라이브러리의 `slideLeft()` 함수 하나에 들어 있으니, 프로그램에는 함수 호출만 적습니다.     
+
+**동작 순서**    
+
+1. `YR`을 `TILT_OFFSET_R`만큼 부드럽게 기울여 오른발을 살짝 띄웁니다(약 120ms).
+2. 왼발(RL)은 시계 방향, 오른발(RR)은 반시계 방향으로 **동시에** 굴립니다(약 200ms).
+3. 두 발을 정지시킵니다.
+4. `YR`을 90도로 부드럽게 되돌립니다(약 120ms).
+5. 1번으로 돌아가 반복합니다.
+
+> 왼발은 엉덩이를 기울이지 않습니다. 오른쪽 엉덩이(`YR`)만 기울입니다.
+
+<br>     
+<details>
+    <summary>💻 스케이트처럼 좌회전 (slide_left.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"   // 보정값이 자동으로 등록된다
+
+// 두 발을 같은 시점에 반대 방향으로 굴린다 (slide_right를 좌우 대칭으로 뒤집은 동작).
+// 왼발은 시계, 오른발은 반시계 방향이며, 오른쪽 다리(YR)만 살짝 기울인다.
+// 동작은 OttoI2R 라이브러리의 slideLeft()에 들어 있다.
+// 고칠 건 이 폴더의 config.h 뿐이다. (walk_zigzag의 config.h를 복사해서 쓴다)
+
+void setup() {
+}
+
+void loop() {
+  slideLeft();
+}
+```
+</details>
+
+----
 
 
 
