@@ -3690,7 +3690,63 @@ inline void stopRight() { footStop(servoRR, RR_PIN); }
 
 ✅  3. 조립 후 모터 동작 확인과 초기셋
 
-로봇을 처음 조립한 뒤에는 걷기 프로그램을 올리기 전에 `motor_test.ino`로 4개 서보가 제대로 동작하는지 확인하고, 다리 수평을 맞추는 초기셋을 합니다. 리셋할 때마다 **한 번만** 실행하고 멈춥니다.
+로봇의 모터마다 동작이 조금씩 다르고 바다면에서 기계적으로 미끄럼이 발생함으로 지기진시 똑바로 굴러가고 걸어가도록 보정을 해줘야 동작이 정확 합니다. 그래도 바닥의 접촉면과 마찰의 힘이 달라서 프로그램 하면서 보정해 주세요.   
+1. 다리가 90도로 접히도록 보정.
+2. 앞으로 직진하여 굴러가도록 RR RL 모터의 회전속도 보정.
+3. 앞으로 똑바로 걸어 가도록 YR YL 의 각도로 보폭을 보정.
+
+✅ 3.1 회전 보정 (callibration_rolling)    
+
+Otto Ninja 로봇의 **다리 수직 맞춤**과 **두 바퀴 직진 맞춤**을 확인하고 조정하는 프로그램입니다. 프로그램 코드는 수정하지 않고, `config.h`의 숫자 4개만 고칩니다.   
+
+**파일 구성**
+
+| 파일 | 역할 |
+|---|---|
+| `callibration_rolling.ino` | 메인 프로그램. `ottoInit()`으로 초기화한 뒤 `ottoCalibrationRolling()`을 계속 실행합니다. |
+| `config.h` | 보정값 모음. 로봇마다 이 파일의 값을 실측해서 채웁니다. |
+
+라이브러리 `OttoI2R`(`OttoI2R.cpp`) 안에 실제 동작 코드가 들어 있습니다. 이 프로그램은 값만 넣어서 호출합니다.
+
+**고칠 값 (config.h)**
+
+| 상수 | 의미 | 기준값 | 로봇별 실측값 |
+|---|---|---|---|
+| `YL_PULSE_CENTER` | 왼쪽 다리가 **수직(90도)** 이 되는 펄스폭(us) | 1450 | 1250 |
+| `YR_PULSE_CENTER` | 오른쪽 다리가 **수직(90도)** 이 되는 펄스폭(us) | 1450 | 1450 |
+| `RL_SPEED_US` | 왼발 회전 속도 오프셋(us). 클수록 빠름 | 400~500 | 450 |
+| `RR_SPEED_US` | 오른발 회전 속도 오프셋(us). 클수록 빠름 | 400~500 | 550 |
+
+> `config.h`의 **[2] 걷기 테스트** 값(`TILT_OFFSET_R`, `TILT_OFFSET_L`)은 이 프로그램에서 쓰지 않습니다. 걷기 보정은 별도 `callibration_walk`에서 합니다. 두 값을 공유하지 마세요.
+
+**보정 순서**
+
+**1단계: 다리 수직 맞추기 (YL, YR)**
+
+다리가 몸체에 대해 수직(90도)이어야 로봇이 바닥에 평평하게 섭니다.
+
+1. `config.h`의 `YL_PULSE_CENTER`, `YR_PULSE_CENTER`를 기준값 1450으로 두고 업로드합니다.
+2. 전원을 켜면 엉덩이 서보가 중립 위치로 이동합니다. 다리가 바닥과 수직인지 자와 수평계로 확인합니다.
+3. 다리가 기울어 있으면 해당 값을 조금씩 바꿉니다.
+   - 1450에서 **작은 값**으로 줄이면 다리가 한쪽 방향으로 움직입니다.
+   - 값을 바꾸고 다시 업로드하면서 수직이 될 때까지 반복합니다.
+4. 수직이 맞으면 조립 나사를 조입니다. 나사를 조인 뒤에 다리가 다시 틀어지지 않는지 확인합니다.
+
+> 로봇마다 기계 조립 상태가 달라서 두 다리의 중심값이 같지 않을 수 있습니다. 이 로봇은 왼쪽 1250, 오른쪽 1450으로 실측했습니다.
+
+**2단계: 두 바퀴 직진 맞추기 (RL, RR)**
+
+두 발을 같은 속도로 굴렸을 때 로봇이 똑바로 가는지 확인합니다.
+
+1. 로봇을 **바닥의 직선 자리**(예: 탁자 위 긴 줄을 따라)에 놓습니다.
+2. 업로드 후 프로그램이 계속 굴러갑니다. 전원을 끄거나 보드의 리셋 버튼을 눌러 멈춥니다.
+3. 로봇이 한쪽으로 돌면 **느린 쪽이 돌아가는 방향**이 됩니다. 따라서 다음처럼 조정합니다.
+   - 로봇이 **왼쪽**으로 휘면 왼발이 느린 것이므로 `RL_SPEED_US`를 키웁니다.
+   - 로봇이 **오른쪽**으로 휘면 오른발이 느린 것이므로 `RR_SPEED_US`를 키웁니다.
+4. 한 번에 **20~50us 이내**로만 바꿉니다. 값을 크게 바꾸면 방향이 반대로 넘어가기 쉽습니다.
+5. 직진이 될 때까지 반복합니다. 약 1m 거리를 두 번 이상 확인하세요.
+
+> 방향이 반대로 휘면 값을 되돌리거나, 바꾼 쪽을 반대로 조정하세요. 어느 쪽이 느린지 확실하지 않으면 한쪽만 조금 바꿔서 결과를 보는 것이 가장 빠릅니다.
 
 **동작 순서**
 
@@ -3699,202 +3755,72 @@ inline void stopRight() { footStop(servoRR, RR_PIN); }
 3. **RL (6번 핀)**: 정회전 → 정지 → 역회전 → 정지
 4. 모든 모터를 멈추고 종료합니다. 다시 하려면 보드의 리셋 버튼을 누릅니다.
 
-**각도 조절 - YL, YR (180도 서보)**
+<br>     
+<details>
+    <summary>💻 config.h </summary>
 
-```cpp
-joint.servo.write(각도);   // 0~180도, 90도가 중립
+```c
+#pragma once
+// 이 로봇의 보정값 - 로봇마다 실측해서 채운다.
+// "기준값"은 로봇을 처음 조립했을 때 일반적으로 이 근처에서 시작해서 맞추면 되는 값이다.
+
+// ============================================================
+// [1] ottoCalibrationRolling() - 360도 회전 테스트에서 쓰는 값
+//     두 바퀴(RL, RR)가 동시에 같은 속도로 돌 때 똑바로 가는지 확인한다.
+// ============================================================
+
+// 다리(YL, YR)가 정확히 수직(90도)이 되는 펄스폭(us).
+// 기준값: 서보 사양상 0도=500us, 180도=2400us이니 산술 중심은 1450us.
+// 물리적으로 다리를 0도 180도로 구르현태로 위치하고 나사를 조이고 다음 단계 진행하세요
+// 다리가 수평(90도=1450us)하게 위치하고  아래값을 조정해서 수평을 맟추세요
+const int YL_PULSE_CENTER = 1250;  // 실측값
+const int YR_PULSE_CENTER = 1450;  // 실측값 (이 로봇은 우연히 기준값과 같음)
+
+// 두 바퀴가 동시에 돌 때 전진 속도 오프셋(us).
+// 기준값: 400~500us 사이에서 시작해서, 똑바로 가도록 좌우를 다르게 조정한다.
+const int RL_SPEED_US = 450;
+const int RR_SPEED_US = 550;
+
+// ============================================================
+// [2] ottoCalibrationWalk() - 걷기 테스트에서 쓰는 값
+//     오른발 -> 왼발 번갈아 한 걸음씩 내딛는다.
+//     ⚠️ 위 [1]과 물리적으로 동작 방식이 달라서 값을 공유하면 안 된다.
+// ============================================================
+
+// 그쪽 발을 들 때 기울이는 각도.
+// 기준값: 20도에서 시작 - 로봇이 안 들리면 올리고, 한쪽으로 돌면 그쪽을 더 올린다.
+const int TILT_OFFSET_R = 20;  // 오른발을 들 때
+const int TILT_OFFSET_L = 23;  // 왼발을 들 때
+
+// 걷는 속도·보폭(WALK_RL/RR_SPEED_US, TILT_TIME, STEP_TIME 등)은
+// OttoI2R 라이브러리(OttoI2R.cpp) 안에 들어있다.
+// 걷는 모양이나 속도를 바꾸고 싶으면 그 파일에서 수정한다.
+
 ```
-
-- 지정한 각도로 이동한 뒤 그 위치를 유지합니다.
-- `SWING`(30)은 움직이는 각도 폭, `trim`은 혼이 살짝 비뚤어졌을 때 쓰는 미세 보정값(-10~10)입니다.
-
-**속도 조절 - RR, RL (360도 연속회전 서보)**
-
-연속회전 서보는 각도가 아니라 **펄스 폭(us)** 으로 방향과 속도를 정합니다.
-
-```cpp
-servo.writeMicroseconds(us);
-```
-
-| 값 | 동작 |
-|---|---|
-| `STOP_US` (1500) | 정지 |
-| `STOP_US + SPEED_US` (1700) | 정회전 |
-| `STOP_US - SPEED_US` (1300) | 역회전 |
-
-- 1500에서 멀어질수록 빠르고, 가까울수록 느립니다. `SPEED_US`(200)를 줄이면 느려지고 늘리면 빨라집니다.
-- 정지 명령에도 서서히 돈다면 정지값이 실제 정지점과 다른 것이므로 정지값을 다시 측정합니다.
-- 회전이 끝나면 `detach()` 후 핀을 `LOW`로 고정해 확실히 멈춥니다.
-
-```
-서보모터를 esp32 보드 i2r-05 에 연결합니다. YL 4번, YR 5번, RL 6번, RR 7번 핀에 연결 했습니다.
-YL YR 는 180도 각도조절 서보모터이고 RL RR 은 360도 회전하는 서보모터 입니다.
-ESP32Servo.h 를 이용하여 ninja otto 로봇을 아두이노 프로그램 하려고 합니다.
-```
-
+</details>
 
 <br>     
 <details>
-    <summary>💻 모터 동작 확인과 초기셋 프로그램 </summary>
+    <summary>💻 회전 보정 (callibration_rolling.ino) </summary>
 
 ```c
-#include <ESP32Servo.h>
+#include <OttoI2R.h>
+#include "config.h"
 
-// 로봇 조립 직후 모터 동작 확인 + 초기셋(수평 보정)용 프로그램
-// 순서 (1회만 실행하고 멈춤):
-//   1) YL, YR : 90도 기준 좌우 30도씩 움직이고 90도로 복귀 (이때 나사를 조여 수평 보정)
-//   2) RR     : 정회전 -> 정지 -> 역회전 -> 정지
-//   3) RL     : 정회전 -> 정지 -> 역회전 -> 정지
-//   4) 모든 모터 정지(detach) 후 종료. 다시 하려면 보드의 리셋 버튼을 누른다.
-
-struct ServoJoint {
-  const char* name;
-  uint8_t pin;
-  const char* location;  // 물리적 위치
-  const char* action;    // 이 서보가 하는 동작
-  int trim;               // 보정값: 눈으로 맞춘 혼이 살짝 비뚤어졌을 때 미세 조정 (-10~10 정도)
-  Servo servo;
-};
-
-ServoJoint joints[2] = {
-  {"YL", 4, "왼쪽 엉덩이", "다리를 앞뒤로 벌리고 오므림", 0, Servo()},
-  {"YR", 5, "오른쪽 엉덩이", "다리를 앞뒤로 벌리고 오므림", 0, Servo()},
-};
-
-// 360도 연속회전 서보 (발)
-const int RL_PIN = 6;
-const int RR_PIN = 7;
-const int RL_STOP_US = 1500;  // RL 정지값(us)
-const int RR_STOP_US = 1500;   // RR 정지값(us)
-const int RL_SPEED_US = 200;   // 왼발 회전 속도(us 오프셋)
-const int RR_SPEED_US = 200;   // 오른발 회전 속도(us 오프셋)
-const int ROLL_TIME = 2000;    // 정회전/역회전 각각 회전 시간(ms)
-const int ROLL_PAUSE = 800;    // 방향 바꾸기 전 정지 시간(ms)
-
-Servo servoRL;
-Servo servoRR;
-
-const int NEUTRAL = 90;
-const int SWING = 30;        // 좌우로 움직여볼 각도 폭
-const int MOVE_DELAY = 600;  // 좌/우로 움직인 뒤 대기 시간(ms)
-const int REST_DELAY = 3000; // 90도(중립)에서 쉬는 시간(ms) - 이 사이에 탁자에 대고 나사를 조여 수평을 보정한다
-
-void testJoint(int index) {
-  ServoJoint &joint = joints[index];
-
-  Serial.println("===================================");
-  Serial.print("[");
-  Serial.print(joint.name);
-  Serial.print("] ");
-  Serial.print(joint.location);
-  Serial.print(" (핀 ");
-  Serial.print(joint.pin);
-  Serial.println(")");
-  Serial.print("동작: ");
-  Serial.println(joint.action);
-
-  int center = NEUTRAL + joint.trim;
-  int steps[3]          = { center - SWING,        center + SWING,        center };
-  const char* phases[3] = { "1단계: 최소 각도로 이동", "2단계: 최대 각도로 이동", "3단계: 중립(90도) 복귀 - 지금 탁자에 다리를 대고 나사를 조여 보정해도 됩니다" };
-  int delays[3]         = { MOVE_DELAY, MOVE_DELAY, REST_DELAY };
-
-  for (int i = 0; i < 3; i++) {
-    joint.servo.write(steps[i]);
-    Serial.print("  - ");
-    Serial.print(phases[i]);
-    Serial.print(": ");
-    Serial.print(steps[i]);
-    Serial.println("도");
-    delay(delays[i]);
-  }
-}
-
-// 연속회전 서보: 정회전 -> 정지 -> 역회전 -> 정지
-void testRoll(const char* name, int pin, Servo &servo, int stopUs, int speedUs) {
-  Serial.println("===================================");
-  Serial.print("[");
-  Serial.print(name);
-  Serial.print("] 발 회전 테스트 (핀 ");
-  Serial.print(pin);
-  Serial.println(")");
-
-  servo.attach(pin, 500, 2400);
-
-  Serial.println("  - 정회전");
-  servo.writeMicroseconds(stopUs + speedUs);
-  delay(ROLL_TIME);
-
-  Serial.println("  - 정지");
-  servo.writeMicroseconds(stopUs);
-  delay(ROLL_PAUSE);
-
-  Serial.println("  - 역회전");
-  servo.writeMicroseconds(stopUs - speedUs);
-  delay(ROLL_TIME);
-
-  Serial.println("  - 정지");
-  servo.writeMicroseconds(stopUs);
-  delay(ROLL_PAUSE);
-
-  // 확실히 멈추도록 detach 후 핀을 LOW로 고정
-  servo.detach();
-  pinMode(pin, OUTPUT);
-  digitalWrite(pin, LOW);
-}
+// 서보 테스트: 다리가 수직인지, 똑바로 전진/후진하는지 확인하는 프로그램.
+// 고칠 건 config.h 안의 숫자 4개뿐이다.
 
 void setup() {
-  Serial.begin(115200);
-  Serial.println("Otto Ninja 모터 테스트 시작 (YL, YR, RR, RL) - 1회 실행 후 정지");
-
-  ESP32PWM::allocateTimer(0);
-  ESP32PWM::allocateTimer(1);
-  ESP32PWM::allocateTimer(2);
-  ESP32PWM::allocateTimer(3);
-
-  for (int i = 0; i < 2; i++) {
-    joints[i].servo.setPeriodHertz(50);
-    joints[i].servo.attach(joints[i].pin, 500, 2400);
-    joints[i].servo.write(NEUTRAL + joints[i].trim);
-  }
-  servoRL.setPeriodHertz(50);
-  servoRR.setPeriodHertz(50);
-  delay(1000);
-
-  // 1) 엉덩이 30도 테스트
-  for (int i = 0; i < 2; i++) {
-    testJoint(i);
-    delay(500);
-  }
-
-  // 2) RR, 3) RL 정회전/역회전
-  testRoll("RR", RR_PIN, servoRR, RR_STOP_US, RR_SPEED_US);
-  testRoll("RL", RL_PIN, servoRL, RL_STOP_US, RL_SPEED_US);
-
-  // 4) 모두 정지
-  for (int i = 0; i < 2; i++) {
-    joints[i].servo.detach();
-  }
-  Serial.println("===================================");
-  Serial.println("테스트 완료. 모든 모터 정지. 다시 하려면 리셋 버튼을 누르세요.");
+  ottoInit(YL_PULSE_CENTER, YR_PULSE_CENTER);
 }
 
 void loop() {
-  // 1회 실행 후 아무것도 하지 않음
+  ottoCalibrationRolling(RL_SPEED_US, RR_SPEED_US);
 }
 
 ```
 </details>
 
-**보정 (Trim / Calibration)**
-
-눈대중으로 수평을 맞추는 것보다 훨씬 정확한 방법입니다. 조립 나사를 완전히 조이지 않고 살짝 걸어둔 상태로 시작합니다.
-
-1. 프로그램이 90도에서 3초간 멈추는 구간(`REST_DELAY`)에, 로봇 다리(발)가 바닥에 닿도록 평평한 탁자 위에 올려놓는다.
-2. 서보는 여전히 90도를 유지한 채 전원이 켜져 있고, 조립 나사는 아직 헐겁게 걸려 있는 상태이므로 다리가 탁자 표면에 자연스럽게 닿아 수평이 맞춰진다. 탁자 바닥이 절대적인 수평 기준이 되어, 손으로 눈대중 맞추는 것보다 정확하다.
-3. 다리가 탁자에 완전히 밀착된 상태를 유지한 채로 조립 나사를 조인다. 나사가 조여지는 순간의 각도로 다리 위치가 고정되므로, 탁자에 닿아 수평이 된 상태 그대로 굳는다.
-4. 다음 반복(다시 90도로 돌아왔을 때)에 로봇을 탁자에서 들어 세워보고, 다리가 몸체와 수평인지 확인한다. 아직 어긋나 있으면 나사를 다시 살짝 풀고 1~3을 반복한다.
-
-> 이 방법이 되려면 다리(혼)와 서보 축 사이의 조립 나사가 완전히 조여지기 전까지는 헐겁게 돌아갈 수 있는 구조여야 합니다. 나사를 처음부터 완전히 조여버리면 탁자에 대고 맞출 수 없으니, 조립 초기 단계에서는 살짝만 걸어두세요.
 
 ```
 
