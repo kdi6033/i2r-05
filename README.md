@@ -4110,6 +4110,40 @@ void loop() {
 </details>
 ----
 
+✅ 3.12 뒤로 굴리기 (rolling_back)
+
+Otto Ninja 로봇의 **두 발을 멈추지 않고 계속 뒤로 굴리는** 프로그램입니다. 엉덩이는 처음 한 번만 끝까지 돌려 두고, 그 뒤에는 발이 계속 굴러갑니다. `rolling_front`와 같은 방식이고 발을 굴리는 방향만 반대입니다. 동작은 `OttoI2R` 라이브러리의 `rollingBack()` 함수 하나에 들어 있으니, 프로그램에는 함수 호출만 적습니다.    
+
+**동작 순서**    
+
+1. 처음 한 번만 `YR`을 0도, `YL`을 180도로 움직이고 1초 머무릅니다.
+2. 왼발(RL)은 뒤로(`-`), 오른발(RR)은 뒤로(`+`) **멈추지 않고 계속** 굴립니다.
+3. 호출이 반복되어도 정지 명령을 주지 않으므로 회전이 이어집니다.
+
+> 멈추려면 보드를 리셋하거나 전원을 끄세요. 이 함수에는 정지 기능이 없습니다.
+
+
+<br>     
+<details>
+    <summary>💻 뒤로 굴리기 (rolling_back.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"   // 보정값이 자동으로 등록된다
+
+// 엉덩이(YR 0도, YL 180도)를 끝까지 움직인 뒤, 발(RL, RR)을 뒤로 계속 굴린다.
+// 동작은 OttoI2R 라이브러리의 rollingBack()에 들어 있다.
+// 고칠 건 이 폴더의 config.h 뿐이다. (walk_zigzag의 config.h를 복사해서 쓴다)
+
+void setup() {
+}
+
+void loop() {
+  rollingBack();
+}
+
+```
+</details>
 
 
 ----
