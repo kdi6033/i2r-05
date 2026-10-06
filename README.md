@@ -3940,7 +3940,7 @@ Otto Ninja 로봇이 **왼쪽과 오른쪽으로 번갈아 부드럽게 이어�
 
 <br>     
 <details>
-    <summary>💻 스케이트처럼 (slide_front.ino) </summary>
+    <summary>💻 스케이트처럼 전진 (slide_front.ino) </summary>
 
 ```c
 #include <OttoI2R.h>
@@ -3959,6 +3959,46 @@ void loop() {
 }
 ```
 </details>
+
+----
+
+✅ 3.8 좌우 교대로 부드럽게 뒤로 움직이기 (slide_back)
+
+Otto Ninja 로봇이 **왼쪽과 오른쪽으로 번갈아 부드럽게 이어서 뒤로 움직이는** 프로그램입니다. `slide_front`와 같은 순서로 움직이지만, 발을 굴리는 방향만 반대입니다. 엉덩이는 여러 단계로 나눠서 옮기고, 발은 멈출 때도 서보를 붙여 두기 때문에 동작이 끊기지 않고 이어집니다. 동작은 `OttoI2R` 라이브러리의 `slideBack()` 함수 하나에 들어 있으니, 프로그램에는 함수 호출만 적습니다.    
+
+**걸음 순서**   
+
+1. **왼쪽 걸음**: `YR`을 `TILT_OFFSET_R`만큼 부드럽게 기울이고, 기울인 상태에서 RR을 **반대 방향**으로 굴립니다(약 200ms).
+2. `YR`을 90도로 부드럽게 되돌립니다.
+3. RL을 **반대 방향**으로 짧게 굴립니다(약 100ms).
+4. **오른쪽 걸음**: `YL`을 `TILT_OFFSET_L`만큼 부드럽게 기울이고, 기울인 상태에서 RL을 **반대 방향**으로 굴립니다(약 200ms).
+5. `YL`을 90도로 부드럽게 되돌립니다.
+6. RR을 **반대 방향**으로 짧게 굴립니다(약 100ms). 1번으로 돌아가 반복합니다.
+
+> `slide_front`와 비교하면 엉덩이 기울임과 시간은 같고, 발을 굴리는 방향만 반대입니다.
+
+<br>     
+<details>
+    <summary>💻 스케이트처럼 후진 (slide_back.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"   // 보정값이 자동으로 등록된다
+
+// 좌우 교대로 부드럽게 뒤로 움직인다 (slide_front와 같은 순서, 발 굴리는 방향만 반대).
+// 동작은 OttoI2R 라이브러리의 slideBack()에 들어 있다.
+// 고칠 건 이 폴더의 config.h 뿐이다. (walk_zigzag의 config.h를 복사해서 쓴다)
+
+void setup() {
+}
+
+void loop() {
+  slideBack();
+}
+
+```
+</details>
+
 
 ----
 ## ✅ 10. 1.3" OLED LCD 128x64
