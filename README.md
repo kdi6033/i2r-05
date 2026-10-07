@@ -3603,13 +3603,7 @@ static OttoCalibrationRegister ottoCalibrationRegister;
 
 동작 프로그램을 여러 개(50개 정도) 만들어 GitHub에 올려 두고, 저장소 주소를 알려 주면 Claude가 그것을 참조해서 새 동작을 만들 수 있게 하려는 구조입니다.
 
-**프로그램 목록**
-
-| 번호 | 이름 | 설명 | 사용 모터 | 주요 튜닝 값 |
-|---|---|---|---|---|
-| 00 | callibration_rolling | 조립 후 모터 확인, 초기셋 | YL YR RL RR | SWING, ROLL_TIME |
-| 01 | callibration_walk | 앞으로 걷기 | YL YR RL RR | TILT_OFFSET, STEP_TIME |
-
+**프로그램 함수 목록**
 
 | 번호 | 이름 | 설명 | 사용 모터 | 주요 튜닝 값 |
 |---|---|---|---|---|
@@ -3627,6 +3621,7 @@ static OttoCalibrationRegister ottoCalibrationRegister;
 | 11 | rolling_back | 발을 멈추지 않고 뒤로 굴리기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
 | 12 | rolling_right | 제자리에서 오른쪽으로 계속 돌기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
 | 13 | rolling_left | 제자리에서 왼쪽으로 계속 돌기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
+| 14 | hip_sweep | 시리얼로 엉덩이 각도 입력하기 (`moveHip(yr, yl)`) | YR YL | 입력한 각도 (0~180, 90이 가운데) |
 ---
 
 ✅  3. 조립 후 모터 동작 확인과 초기셋
