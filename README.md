@@ -4426,7 +4426,7 @@ moveHip(125, 125);   // 두 다리를 더 기울여서 무게중심을 옮긴다
 
 <br>     
 <details>
-    <summary>💻 발을 하나씩 앞, 뒤로 굴리기 (roll_one_foot.ino) </summary>
+    <summary>💻 왼쪽 한발로 지탱하고 회전 (dance_left_turn.ino) </summary>
 
 ```c
 #include <OttoI2R.h>
@@ -4461,15 +4461,18 @@ void loop() {
 
 **dance_right_turn**
 
-왼쪽 한발로 지탱하고 회전 합니다.
+오른쪽 한발로 지탱하고 회전 합니다.
 
 <br>     
 <details>
-    <summary>💻 발을 하나씩 앞, 뒤로 굴리기 (roll_one_foot.ino) </summary>
+    <summary>💻 오른쪽 한발로 지탱하고 회전 (dance_right_turn.ino) </summary>
 
 ```c
 #include <OttoI2R.h>
 #include "config.h"   // 보정값이 자동으로 등록된다
+
+// callibration_rolling.ino와 같은 방식: setup()은 비워 두고,
+// moveHip()이 처음 호출될 때 config.h가 등록해 둔 값으로 자동 초기화한다.
 
 void setup() {
 }
@@ -4477,16 +4480,17 @@ void setup() {
 void loop() {
   moveHip(90, 90);
   delay(2000);
-  moveHip(125, 125);
+  moveHip(55, 55);
   delay(2000);
 
-  rollLeftFoot(150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
+  rollRightFoot(150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
   delay(2000);
-  rollLeftFoot(0);      // 오른발 멈춤
+  rollRightFoot(0);      // 오른발 멈춤
   delay(2000);
-  rollLeftFoot(-150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
+  rollRightFoot(-150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
   delay(2000);
-  rollLeftFoot(0);      // 오른발 멈춤
+  rollRightFoot(0);      // 오른발 멈춤
+
 }
 ```
 </details>
