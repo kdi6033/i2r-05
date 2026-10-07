@@ -4271,7 +4271,7 @@ Otto I2R 로봇의 **두 엉덩이(오른쪽 `YR`, 왼쪽 `YL`)를 각도로 움
 
 <br>     
 <details>
-    <summary>💻 힙움직이기 (hip_move.ino) </summary>
+    <summary>💻 엉덩이 각도 직접 입력 프로그램 (hip_move.ino) </summary>
 
 ```c
 #include <OttoI2R.h>
