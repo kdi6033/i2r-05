@@ -3610,6 +3610,23 @@ static OttoCalibrationRegister ottoCalibrationRegister;
 | 00 | callibration_rolling | 조립 후 모터 확인, 초기셋 | YL YR RL RR | SWING, ROLL_TIME |
 | 01 | callibration_walk | 앞으로 걷기 | YL YR RL RR | TILT_OFFSET, STEP_TIME |
 
+
+| 번호 | 이름 | 설명 | 사용 모터 | 주요 튜닝 값 |
+|---|---|---|---|---|
+| 00 | callibration_rolling | 조립 후 다리 수직, 두 바퀴 직진 확인 | YL YR RL RR | YL_PULSE_CENTER, YR_PULSE_CENTER, RL_SPEED_US, RR_SPEED_US |
+| 01 | callibration_walk | 걷기 기울기 맞추기 | YL YR RL RR | TILT_OFFSET_R, TILT_OFFSET_L |
+| 02 | walk_front | 앞으로 걷기 | YL YR RL RR | TILT_OFFSET_R, TILT_OFFSET_L, RL_SPEED_US, RR_SPEED_US |
+| 03 | walk_back | 뒤로 걷기 | YL YR RL RR | TILT_OFFSET_R, TILT_OFFSET_L, RL_SPEED_US, RR_SPEED_US |
+| 04 | walk_left | 걸으면서 왼쪽으로 돌기 | YL YR RL RR | TILT_OFFSET_R, RL_SPEED_US, RR_SPEED_US |
+| 05 | walk_right | 걸으면서 오른쪽으로 돌기 | YL YR RL RR | TILT_OFFSET_L, RL_SPEED_US, RR_SPEED_US |
+| 06 | slide_front | 좌우 교대로 부드럽게 움직이기 | YL YR RL RR | TILT_OFFSET_R, TILT_OFFSET_L, RL_SPEED_US, RR_SPEED_US |
+| 07 | slide_back | 좌우 교대로 부드럽게 뒤로 움직이기 | YL YR RL RR | TILT_OFFSET_R, TILT_OFFSET_L, RL_SPEED_US, RR_SPEED_US |
+| 08 | slide_right | 왼발 반시계, 오른발 시계로 동시에 돌기 | YL RL RR | TILT_OFFSET_L, RL_SPEED_US, RR_SPEED_US |
+| 09 | slide_left | 오른발 반시계, 왼발 시계로 동시에 돌기 | YR RL RR | TILT_OFFSET_R, RL_SPEED_US, RR_SPEED_US |
+| 10 | rolling_front | 발을 멈추지 않고 앞으로 굴리기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
+| 11 | rolling_back | 발을 멈추지 않고 뒤로 굴리기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
+| 12 | rolling_right | 제자리에서 오른쪽으로 계속 돌기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
+| 13 | rolling_left | 제자리에서 왼쪽으로 계속 돌기 | YL YR RL RR | RL_SPEED_US, RR_SPEED_US |
 ---
 
 ✅  3. 조립 후 모터 동작 확인과 초기셋
