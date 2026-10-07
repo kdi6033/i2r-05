@@ -4398,6 +4398,99 @@ void loop() {
 
 ----
 
+✅ 3.17 댄스 동작 만들기 (dance_right_turn, dance_left_turn)
+
+**춤 동작: 한 발 들고 돌기 (dance)**
+
+Otto I2R 로봇이 **한쪽 발을 들고, 반대쪽 발을 굴려서 도는** 춤 동작 모음입니다. `dance_left_turn`, `dance_right_turn` 두 프로그램이 들어 있습니다. 두 발 중 하나로만 서야 하므로, 무게중심을 맞추는 것이 가장 중요합니다.
+
+**핵심: 무게중심 맞추기**
+
+발을 들려면 먼저 몸무게를 **디딜 발 쪽으로 옮긴** 뒤에 들어야 넘어지지 않습니다. 이것을 `moveHip(yr, yl)`로 합니다.
+
+```cpp
+moveHip(90, 90);     // 기준 자세: 두 다리 모두 가운데(90도)
+moveHip(125, 125);   // 두 다리를 더 기울여서 무게중심을 옮긴다
+```
+
+- `moveHip(yr, yl)`의 첫 번째 값은 **오른쪽 엉덩이(YR)**, 두 번째 값은 **왼쪽 엉덩이(YL)**입니다.
+- 숫자가 90보다 크거나 작을수록 그만큼 기웁니다. 90이 가운데입니다.
+- **값을 한 번에 정하지 말고 조금씩 바꿔 가며 시험**하세요. 로봇마다 무게 중심이 달라서, 같은 숫자를 줘도 어떤 로봇은 넘어지고 어떤 로봇은 멀쩡합니다.
+- 예를 들어 `moveHip(55, 55)`처럼 더 작은 값으로 반대쪽으로 기울여 보는 것도 균형을 맞추는 한 방법입니다. 몸이 앞뒤, 좌우 어느 쪽으로도 기울지 않는 값을 찾는 것이 목표입니다.
+- 각도를 찾을 때는 **로봇을 손으로 받칠 수 있는 상태**에서 조금씩 올려 보고, 넘어지지 않는 범위를 확인한 뒤 프로그램에 넣으세요.
+
+**dance_left_turn**
+
+왼쪽 한발로 지탱하고 회전 합니다.
+
+
+<br>     
+<details>
+    <summary>💻 발을 하나씩 앞, 뒤로 굴리기 (roll_one_foot.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"   // 보정값이 자동으로 등록된다
+
+void setup() {
+}
+
+void loop() {
+  moveHip(90, 90);
+  delay(2000);
+  moveHip(125, 125);
+  delay(2000);
+
+  rollLeftFoot(150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
+  delay(2000);
+  rollLeftFoot(0);      // 오른발 멈춤
+  delay(2000);
+  rollLeftFoot(-150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
+  delay(2000);
+  rollLeftFoot(0);      // 오른발 멈춤
+}
+```
+</details>
+
+**동작 순서**
+1. 두 다리를 90도(기준 자세)에 둡니다.
+2. 두 다리를 125도로 기울여 무게중심을 옮기고, 한쪽 발을 듭니다.
+3. `rollLeftFoot(150)`으로 왼발을 굴려 돕니다. 2초 뒤 멈춥니다.
+4. `rollLeftFoot(-150)`으로 반대 방향으로 굴려 돕니다. 2초 뒤 멈춥니다.
+5. 1번으로 돌아가 반복합니다.
+
+**dance_right_turn**
+
+왼쪽 한발로 지탱하고 회전 합니다.
+
+<br>     
+<details>
+    <summary>💻 발을 하나씩 앞, 뒤로 굴리기 (roll_one_foot.ino) </summary>
+
+```c
+#include <OttoI2R.h>
+#include "config.h"   // 보정값이 자동으로 등록된다
+
+void setup() {
+}
+
+void loop() {
+  moveHip(90, 90);
+  delay(2000);
+  moveHip(125, 125);
+  delay(2000);
+
+  rollLeftFoot(150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
+  delay(2000);
+  rollLeftFoot(0);      // 오른발 멈춤
+  delay(2000);
+  rollLeftFoot(-150);     // 땅에 디딘 오른발을 굴려 오른쪽으로 돈다
+  delay(2000);
+  rollLeftFoot(0);      // 오른발 멈춤
+}
+```
+</details>
+
 ----
 ## ✅ 10. 1.3" OLED LCD 128x64
 - Resolution: 128*64
