@@ -494,7 +494,7 @@ i2r-05 보드
 
 ---
 
-**📌 Gemini API 키 발급 방법**
+###📌 Gemini API 키 발급 방법**
 
 **🟢 1단계: Google AI Studio 접속**
 
