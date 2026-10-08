@@ -4496,7 +4496,7 @@ void loop() {
 </details>
 
 ----
-## ✅ 3.18 1.3" OLED LCD 128x64
+**✅ 3.18 1.3" OLED LCD 128x64**
 - Resolution: 128*64
 - Control chip: SSH1106
 - Display area: 29.42 x 14.7mm
@@ -4514,8 +4514,12 @@ U8GLIB_SSD1306_128X64 u8g(U8G_I2C_OPT_NONE); // I2C / TWI
 본 제품의 기본 I2C주소는 0x3C로 예제코드의 초기화 코드를 아래와 같이 변경하여야 합니다.
 display.begin(SSD1306_SWITCHCAPVCC, 0x3C); // initialize with the I2C addr 0x3C (for the 128x64)
 
-✅ "hello world" 츨력 프로그램
-```
+
+<br>     
+<details>
+    <summary>💻 "hello world" 츨력 프로그램 </summary>
+
+```c
 #include <Wire.h>
 #include <U8g2lib.h>
 
@@ -4535,9 +4539,14 @@ void loop() {
   delay(1000);
 }
 ```
+</details>
 
-✅ "안녕하세요" 한글 츨력 프로그램
-```
+
+<br>     
+<details>
+    <summary>💻 "안녕하세요" 한글 츨력 프로그램 </summary>
+
+```c
 #include <Wire.h>
 #include <U8g2lib.h>
 
@@ -4562,9 +4571,14 @@ void loop() {
   delay(2000);
 }
 ```
+</details>
 
-✅ 눈동자 움직이는 그래픽 프로그램
-```
+
+<br>     
+<details>
+    <summary>💻 눈동자 움직이는 그래픽 프로그램 </summary>
+
+```c
 #include <Wire.h>
 #include <U8g2lib.h>
 
@@ -4609,8 +4623,14 @@ void loop() {
   delay(100);
 }
 ```
-✅ 잠자는 눈동자 그래픽 프로그램
-```
+</details>
+
+
+<br>     
+<details>
+    <summary>💻 잠자는 눈동자 그래픽 프로그램 </summary>
+
+```c
 #include <Wire.h>
 #include <U8g2lib.h>
 #include <math.h>
@@ -4664,11 +4684,17 @@ void drawSleepingEye(int cx, int cy) {
   }
 }
 ```
+</details>
 
-## ✅ 3.19 LED 프로그램
+
+**✅ 3.19 LED 프로그램**
 FastLED 라이브러리 사용하는 그래픽 프로그램
 
-```
+<br>     
+<details>
+    <summary>💻 예제 프로그램 </summary>
+
+```c
 #include <FastLED.h>
 
 #define NUM_LEDS 16
@@ -4698,6 +4724,10 @@ void loop() {
   delay(1000);
 }
 ```
+</details>
+
+
+
 🎨 색상표
 | 색상명    | 코드                               |
 | ------ | -------------------------------- |
@@ -4710,8 +4740,12 @@ void loop() {
 | 흰색     | `CRGB::White`                    |
 | 검정(꺼짐) | `CRGB::Black`                    |
 
-✅ 무지개 🌈 / 점멸 ✨ / 흐름 💨
-```
+
+<br>     
+<details>
+    <summary>💻  무지개 🌈 / 점멸 ✨ / 흐름 💨 </summary>
+
+```c
 #include <FastLED.h>
 
 #define NUM_LEDS 16       // LED 개수
@@ -4768,6 +4802,8 @@ void flowingEffect() {
   FastLED.show();
 }
 ```
+</details>
+
 
 | 효과  | 설명                               |
 | --- | -------------------------------- |
@@ -4780,7 +4816,7 @@ void flowingEffect() {
 점멸 색상 랜덤화 → CHSV(random8(),255,255)    
 무지개 속도 조절 → delay(10) 또는 EVERY_N_MILLISECONDS(20)    
 
-## ✅ 3.20  거리 센서
+**✅ 3.20  거리 센서**
  VL53L0X Time-of-Flight (ToF) 거리센서를 사용합니다.
 <img src="https://github.com/user-attachments/assets/1e3b3bde-cb82-42ad-af43-7e03a7ce1e27" alt="VL53L0X" width="300">
 
@@ -4830,8 +4866,11 @@ VL53L0X는 STMicroelectronics에서 개발한 **레이저 기반 Time-of-Flight(
 - IoT 환경 거리 측정기
 
 
-> 💻 예제 코드 
-```
+<br>     
+<details>
+    <summary>💻 예제 프로그램</summary>
+
+```c
 #include <Wire.h>
 #include "Adafruit_VL53L0X.h"
 
@@ -4870,10 +4909,16 @@ void loop() {
   delay(500);  // 0.5초 간격
 }
 ```
+</details>
 
-💻 통합 프로그램: OLED 눈 + LED 효과 + 거리 측정 출력 (Serial)
+통합 프로그램: OLED 눈 + LED 효과 + 거리 측정 출력 (Serial)
 센서 3개를 통합해서 동작하는 프로그램
-```
+
+<br>     
+<details>
+    <summary>💻 3개를 통합해서 동작하는 프로그램 </summary>
+
+```c
 #include <FastLED.h>
 #include <Wire.h>
 #include <U8g2lib.h>
@@ -5043,11 +5088,11 @@ void updateBreathingEffect() {
   }
 }
 ```
+</details>
 
----
 
 -----------
-## ✅ 3.20 조도센서 (GY302)
+**✅ 3.20 조도센서 (GY302)**
 🔗 [📺 영상 보기 - **AI IoT 아두이노 보드 조도센서 **](https://youtu.be/GoVdq9TUvuM)
 
 i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH1750) 조도 센서용 아두이노 프로그램 입니다.
@@ -5066,8 +5111,13 @@ i2r‑05 보드의 I2C 핀(GPIO17=SCL, GPIO18=SDA) 에 연결된 GY‑302 (BH175
 | SCL               | IO17        | I2C 클럭          |
 | ADDR              | GND (or NC) | 주소 설정 (기본 0x23) |
 
-💻 조도센서 GY-302 프로그램
-```
+
+
+<br>     
+<details>
+    <summary>💻 조도센서 GY-302 프로그램</summary>
+
+```c
 #include <Wire.h>
 #include <BH1750.h>
 
@@ -5097,12 +5147,14 @@ void loop() {
   delay(1000);  // 1초 간격
 }
 ```
+</details>
+
 
 📌 참고 사항    
 - 주소 변경: GY-302 센서에서 ADDR 핀을 GND에 연결하면 주소는 0x23, VCC에 연결하면 0x5C입니다. 대부분 GND 또는 미연결(기본 0x23)로 사용됩니다.
 - 조도 범위: 약 1~65535 lux까지 측정 가능.
 
-## ✅ 4 Otto 통신 프로토콜 v1.0 (초안)
+## ✅ 9.4 Otto 통신 프로토콜 v1.0 (초안)
 
 
 Otto 로봇과 앱(웹)이 주고받는 메시지 규격이다.
