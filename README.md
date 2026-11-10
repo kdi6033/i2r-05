@@ -347,9 +347,9 @@ void flowingEffect() {
 
 | MAX98357A 핀 | i2r-05 핀 | 신호 이름 | 역할 |
 |-------------|----------|----------|------|
-| **DIN** | **GPIO 11** | Data In | 오디오 데이터 전송 |
+| **DIN** | **GPIO 13** | Data In | 오디오 데이터 전송 |
 | **BCLK** | **GPIO 12** | Bit Clock | 데이터 동기화 클럭 |
-| **LRCLK** | **GPIO 13** | LR Clock | 좌/우 채널 구분 |
+| **LRCLK** | **GPIO 11** | LR Clock | 좌/우 채널 구분 |
 | **SD** | **GPIO 14** | Shutdown | HIGH = 앰프 ON, LOW = 음소거 |
 
 - 전원 및 공통선
@@ -378,16 +378,16 @@ void flowingEffect() {
 | **VDD** | **3.3V** | 전원 (⚠️ 반드시 3.3V! 5V 연결 시 파손) |
 | **GND** | **GND** | 접지 |
 | **L/R** | **GND** | 채널 선택 (GND = 왼쪽 채널 사용) |
-| **SCK** | **GPIO 9** | I2S 비트 클럭 |
+| **SCK** | **GPIO 8** | I2S 비트 클럭 |
 | **WS** | **GPIO 10** | I2S 채널 클럭 (Word Select) |
-| **SD** | **GPIO 8** | I2S 데이터 출력 (마이크 → ESP32) |
+| **SD** | **GPIO 9** | I2S 데이터 출력 (마이크 → ESP32) |
 
 > ⚠️ **L/R 핀을 반드시 GND에 연결**하세요!  
 > 연결하지 않으면 마이크가 랜덤 채널을 선택하여 소리가 잡히지 않습니다.
 
 > ⚠️ **스피커(MAX98357A) SD핀과 마이크(INMP441) SD핀은 다른 핀입니다!**  
 > 스피커 SD = GPIO 14 (앰프 ON/OFF)  
-> 마이크 SD = GPIO 8 (데이터 출력)
+> 마이크 SD = GPIO 9 (데이터 출력)
 
 ---
 
@@ -399,9 +399,9 @@ void flowingEffect() {
 i2r-05 보드 (ESP32-S3-N16R8)         MAX98357A 오디오 앰프
 ┌──────────────────────────┐           ┌──────────────────────┐
 │                          │           │                      │
-│  GPIO 11 (DIN)  ─────────┼───────────┤ DIN  (오디오 데이터) │
+│  GPIO 13 (DIN)  ─────────┼───────────┤ DIN  (오디오 데이터) │
 │  GPIO 12 (BCLK) ─────────┼───────────┤ BCLK (비트 클럭)     │
-│  GPIO 13 (LRCLK)─────────┼───────────┤ LRCLK(채널 클럭)     │
+│  GPIO 11 (LRCLK)─────────┼───────────┤ LRCLK(채널 클럭)     │
 │  GPIO 14 (SD)   ─────────┼───────────┤ SD   (앰프 ON/OFF)   │
 │                          │           │                      │
 │  3.3V    ────────────────┼───────────┤ VCC  (전원)          │
@@ -438,9 +438,9 @@ i2r-05 보드
 │  GPIO  9 ── INMP441 SCK   (마이크 클럭)     │
 │  GPIO 10 ── INMP441 WS    (마이크 채널)     │
 │                                             │
-│  GPIO 11 ── MAX98357A DIN  (스피커 데이터)  │
+│  GPIO 13 ── MAX98357A DIN  (스피커 데이터)  │
 │  GPIO 12 ── MAX98357A BCLK (스피커 클럭)    │
-│  GPIO 13 ── MAX98357A LRCLK(스피커 채널)    │
+│  GPIO 11 ── MAX98357A LRCLK(스피커 채널)    │
 │  GPIO 14 ── MAX98357A SD   (앰프 ON/OFF)    │
 │                                             │
 │  3.3V ── INMP441 VDD, MAX98357A VCC         │
@@ -743,13 +743,13 @@ API 키 클릭
 #define WIFI_PASSWORD "00000000"
 
 // ── Gemini API 키 (aistudio.google.com 에서 무료 발급) ────
-// #define GEMINI_API_KEY "여기에_API_키_입력
-// AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"
-#define GEMINI_API_KEY "AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"
+// #define GEMINI_API_KEY "여기에_API_키_입력"
+// (발급받은 키는 아래 줄의 큰따옴표 안에 넣으세요. 키는 절대 공개 저장소에 올리지 마세요)
+#define GEMINI_API_KEY "여기에_API_키_입력"
 
 // ── 마이크 핀 ──────────────────────────────────────────────
-#define MIC_SD 8
-#define MIC_SCK 9
+#define MIC_SD 9
+#define MIC_SCK 8
 #define MIC_WS 10
 
 // ── 녹음 설정 ──────────────────────────────────────────────
@@ -1071,7 +1071,7 @@ void loop() {
 const char *ssid = "i2r";
 const char *password = "00000000";
 const char *gemini_api_key =
-    "AIzaSyCt-KHN72cq1cmlFKynYC98W5ENDEeIDVA"; // 무료 발급받은 키
+    "여기에_API_키_입력"; // 무료 발급받은 키
 
 // ── 2. 초기 설정 (보드를 켜면 한 번만 실행됨) ────────────────
 void setup() {
@@ -1213,9 +1213,9 @@ void askGoogleAI(String question) {
 //                                → I2S 디코딩 → MAX98357A → 스피커
 //
 // 핀 연결 (CONNECTION.md 기준)
-//   GPIO 11 → MAX98357A DIN   (오디오 데이터)
+//   GPIO 13 → MAX98357A DIN   (오디오 데이터)
 //   GPIO 12 → MAX98357A BCLK  (비트 클럭)
-//   GPIO 13 → MAX98357A LRCLK (채널 클럭)
+//   GPIO 11 → MAX98357A LRCLK (채널 클럭)
 //   GPIO 14 → MAX98357A SD    (HIGH = ON)
 // ============================================================
 
@@ -1229,8 +1229,8 @@ void askGoogleAI(String question) {
 
 // ── MAX98357A 핀 설정 ──────────────────────────────────────
 #define PIN_I2S_BCLK 12
-#define PIN_I2S_LRC 13
-#define PIN_I2S_DOUT 11
+#define PIN_I2S_LRC 11
+#define PIN_I2S_DOUT 13
 #define PIN_I2S_SD 14
 
 // ── Audio 객체 ────────────────────────────────────────────
@@ -1463,9 +1463,9 @@ void audio_showstation(const char *info) {
 //
 // 하드웨어 연결:
 //   [마이크 INMP441]            [스피커 MAX98357A]
-//   GPIO  8 → SD (데이터)      GPIO 11 → DIN  (데이터)
-//   GPIO  9 → SCK (클럭)       GPIO 12 → BCLK (클럭)
-//   GPIO 10 → WS  (채널선택)   GPIO 13 → LRCLK(채널선택)
+//   GPIO  9 → SD (데이터)      GPIO 13 → DIN  (데이터)
+//   GPIO  8 → SCK (클럭)       GPIO 12 → BCLK (클럭)
+//   GPIO 10 → WS  (채널선택)   GPIO 11 → LRCLK(채널선택)
 //   3.3V    → VDD               GPIO 14 → SD   (앰프 ON/OFF)
 //   GND     → GND + L/R        3.3V    → VIN
 // ============================================================
@@ -1491,8 +1491,8 @@ void audio_showstation(const char *info) {
 #define API_RETRY_DELAY_MS 1500
 
 // ── 마이크 핀 (INMP441) ──────────────────────────────────────
-#define MIC_SD 8
-#define MIC_SCK 9
+#define MIC_SD 9
+#define MIC_SCK 8
 #define MIC_WS 10
 
 // ── 스피커 핀 (MAX98357A) ────────────────────────────────────
